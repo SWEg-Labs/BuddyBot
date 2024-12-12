@@ -1,30 +1,28 @@
-import os
 import chromadb
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+import chromadb.utils.embedding_functions as embedding_functions
+import openai
 from langchain_core.documents import Document
-from logger import logger
+from utils.logger import logger
 
 class VectorStoreService:
     def __init__(self):
         self.client = None
+        self.collection_name = None
         self.collection = None
         self.initialize_vector_store()
 
     def initialize_vector_store(self):
-        try:
-            # Connetti al server ChromaDB
-            self.client = chromadb.HttpClient(host= os.getenv("CHROMA_HOST", "localhost"),
-                    port= int(os.getenv("CHROMA_PORT", "8000")))
-            self.client.heartbeat()  # Verifica connessione
+        # Connetti al server ChromaDB
+        self.client = chromadb.HttpClient(host="localhost", port=8000)
+        self.client.heartbeat()  # Verifica connessione
 
-            # Crea o ottieni una collezione esistente
-            self.collection = self.client.get_or_create_collection(
-                name="buddybot-vector-store"
-            )
-            logger.info("Successfully connected to Chroma vector store.")
-        except Exception as error:
-            logger.error(f"Error initializing Chroma vector store: {error}")
-            raise
+        self.collection_name = "buddybot-vector-store"
+
+        # Crea o ottieni una collezione esistente
+        self.collection = self.client.get_or_create_collection(
+            name=self.collection_name
+        )
+        logger.info("Successfully connected to Chroma vector store.")
 
     def split_github_documents(self, documents):
         try:
@@ -202,49 +200,26 @@ class VectorStoreService:
 
 
 
+
     def similarity_search(self, query, k=2):
-        try:
-            queries = [query] # Per il momento facciamo una sola query alla volta, forse in futuro ne faremo di più
+        # Esegui una ricerca di similarità
+        results = self.collection.query(
+            query_texts=[query],
+            n_results=k,
+        )
 
-            print("\n\n\n")
-            print(self.collection.get())
-            print(self.collection.get().get("ids", []))
-            print("\n\n\n")
+        logger.info(f"Similarity search results: {results}")
 
-            # Verifica lo stato
-            remaining = self.collection.get()
-            print("Documenti rimasti dopo la cancellazione:", remaining)
-            print("IDs rimasti dopo la cancellazione:", remaining.get("ids", []))
-            #print("\n\n\n Documents included: ", remaining["included"][0], "\n\n\n")
-            #print("\n\n\n metadatas included: ", remaining["included"][1], "\n\n\n")
+        # Perchè funzioni correttamente, il database vettoriale deve contenere documenti che hanno il campo "metadata" diverso da None
 
-            # Rigenera indici
-            # self.collection.persist()
-            # self.collection.reload()
+        # Converte i risultati in oggetti Document
+        langchain_docs = []
+        for i in range(len(results['documents'])):
+            for j in range(len(results['documents'][i])):
+                document = results['documents'][i][j]
+                metadata = results['metadatas'][i][j]
+                langchain_docs.append(Document(page_content=document, metadata=metadata))
 
+        logger.info(f"Converted documents: {langchain_docs}")
 
-
-            results = self.collection.query(
-                query_texts=queries,
-                n_results=k,
-            )
-            
-            logger.info(f"\n\n\nSimilarity search results: {results}\n\n\n")      # per debug
-
-            # Converte i risultati in oggetti Document
-            langchain_docs = []
-            for i in range(len(queries)):
-                for j in range(len(results['documents'][i])):
-                    document = results['documents'][i][j]
-                    metadata = results['metadatas'][i][j]
-
-                    print(f"\n\n\n{document}\n\n\n{type(document)}\n\n\n")
-                    print(f"\n\n\n{metadata}\n\n\n{type(metadata)}\n\n\n")
-
-                    langchain_docs.append(Document(page_content=document, metadata=metadata))
-
-            return langchain_docs
-        except Exception as error:
-            logger.error(f"Error performing similarity search: {error}")
-            raise
-
+        return langchain_docs

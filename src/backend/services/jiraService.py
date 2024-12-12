@@ -1,7 +1,7 @@
 import os
 import requests
 import base64
-from logger import logger
+from utils.logger import logger
 from langchain.schema import Document
 
 class JiraService:

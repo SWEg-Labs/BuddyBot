@@ -1,7 +1,7 @@
 import os
 import base64
 from github import Github
-from logger import logger
+from utils.logger import logger
 from langchain.schema import Document
 
 class GithubService:
