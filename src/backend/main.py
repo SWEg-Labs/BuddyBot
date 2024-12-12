@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 # Carica le variabili d'ambiente dal file .env
 load_dotenv()
 
-from services.embeddingsService import EmbeddingsService
+# from services.embeddingsService import EmbeddingsService
 from services.githubService import GithubService
 from services.jiraService import JiraService
 from services.confluenceService import ConfluenceService

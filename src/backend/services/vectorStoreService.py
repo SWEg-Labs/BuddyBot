@@ -1,6 +1,8 @@
+import os
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 import chromadb
-import chromadb.utils.embedding_functions as embedding_functions
-import openai
+# import chromadb.utils.embedding_functions as embedding_functions
+# import openai
 from langchain_core.documents import Document
 from utils.logger import logger
 
@@ -12,17 +14,22 @@ class VectorStoreService:
         self.initialize_vector_store()
 
     def initialize_vector_store(self):
-        # Connetti al server ChromaDB
-        self.client = chromadb.HttpClient(host="localhost", port=8000)
-        self.client.heartbeat()  # Verifica connessione
+        try:
+            # Connetti al server ChromaDB
+            self.client = chromadb.HttpClient(host= os.getenv("CHROMA_HOST", "localhost"),
+                        port= int(os.getenv("CHROMA_PORT", "8000")))
+            self.client.heartbeat()  # Verifica connessione
 
-        self.collection_name = "buddybot-vector-store"
+            self.collection_name = "buddybot-vector-store"
 
-        # Crea o ottieni una collezione esistente
-        self.collection = self.client.get_or_create_collection(
-            name=self.collection_name
-        )
-        logger.info("Successfully connected to Chroma vector store.")
+            # Crea o ottieni una collezione esistente
+            self.collection = self.client.get_or_create_collection(
+                name=self.collection_name
+            )
+            logger.info("Successfully connected to Chroma vector store.")
+        except Exception as error:
+            logger.error(f"Error initializing Chroma vector store: {error}")
+            raise
 
     def split_github_documents(self, documents):
         try:
@@ -202,24 +209,27 @@ class VectorStoreService:
 
 
     def similarity_search(self, query, k=2):
-        # Esegui una ricerca di similarità
-        results = self.collection.query(
-            query_texts=[query],
-            n_results=k,
-        )
+        try:
+            # Esegui una ricerca di similarità
+            results = self.collection.query(
+                query_texts=[query],
+                n_results=k,
+            )
 
-        # logger.info(f"Similarity search results: {results}")     # DEBUG
+            # logger.info(f"Similarity search results: {results}")     # DEBUG
 
-        # Perchè funzioni correttamente, il database vettoriale deve contenere documenti che hanno il campo "metadata" diverso da None
+            # Converte i risultati in oggetti Document
+            # Perchè funzioni correttamente, il database vettoriale deve contenere documenti che hanno il campo "metadata" diverso da None
+            langchain_docs = []
+            for i in range(len(results['documents'])):
+                for j in range(len(results['documents'][i])):
+                    document = results['documents'][i][j]
+                    metadata = results['metadatas'][i][j]
+                    langchain_docs.append(Document(page_content=document, metadata=metadata))
 
-        # Converte i risultati in oggetti Document
-        langchain_docs = []
-        for i in range(len(results['documents'])):
-            for j in range(len(results['documents'][i])):
-                document = results['documents'][i][j]
-                metadata = results['metadatas'][i][j]
-                langchain_docs.append(Document(page_content=document, metadata=metadata))
+            logger.info(f"Converted documents: {langchain_docs}")
 
-        logger.info(f"Converted documents: {langchain_docs}")
-
-        return langchain_docs
+            return langchain_docs
+        except Exception as error:
+            logger.error(f"Error performing similarity search: {error}")
+            raise
