@@ -10,7 +10,7 @@ class ChatService:
         self.vector_store = vector_store
 
     def process_user_input(self, user_input: str) -> str:
-        #try:
+        try:
             # Esegue una ricerca di similarità per ottenere documenti rilevanti
             relevant_docs = self.vector_store.similarity_search(user_input)
             logger.info(f"Found {len(relevant_docs)} relevant documents")
@@ -30,6 +30,6 @@ class ChatService:
             response = rag_chain.invoke({"user_input": user_input, "context": relevant_docs})
 
             return response
-        #except Exception as error:
-        #    logger.error(f"Error processing user input: {error}")
-        #    raise
+        except Exception as error:
+            logger.error(f"Error processing user input: {error}")
+            raise

@@ -14,7 +14,7 @@ from services.chatService import ChatService
 from utils.logger import logger
 
 def main():
-    #try:
+    try:
         # inizialize language model
         llm = initialize_llm()
 
@@ -120,12 +120,12 @@ def main():
                     except Exception as e:
                         logger.error(f"Error viewing documents: {e}")
                 else:
-                    #try:
+                    try:
                         # Ottiene la risposta dal servizio LLM
                         response = chat_service.process_user_input(input_text)
                         print("Assistant:", response)
-                    #except Exception as e:
-                    #    logger.error(f"Error fetching response: {e}")
+                    except Exception as e:
+                        logger.error(f"Error fetching response: {e}")
                 
                 if input_text.lower() != "help":
                     logger.info("Type 'exit' to quit or 'help' to see the available commands.")
@@ -137,8 +137,8 @@ def main():
                 logger.error("\nExiting the chat application.")
 
         ask_question()
-    #except Exception as e:
-    #    logger.error(f"Failed to start the chat: {e}")
+    except Exception as e:
+        logger.error(f"Failed to start the chat: {e}")
 
 
 if __name__ == "__main__":
