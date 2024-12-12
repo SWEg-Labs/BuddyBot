@@ -1,6 +1,6 @@
 import os
 from langchain_openai import ChatOpenAI
-from logger import logger  # Usa il logger che ti ho fornito in precedenza
+from utils.logger import logger  # Usa il logger che ti ho fornito in precedenza
 
 def initialize_llm():
     try:
