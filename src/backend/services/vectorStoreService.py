@@ -206,30 +206,12 @@ class VectorStoreService:
         try:
             queries = [query] # Per il momento facciamo una sola query alla volta, forse in futuro ne faremo di più
 
-            print("\n\n\n")
-            print(self.collection.get())
-            print(self.collection.get().get("ids", []))
-            print("\n\n\n")
-
-            # Verifica lo stato
-            remaining = self.collection.get()
-            print("Documenti rimasti dopo la cancellazione:", remaining)
-            print("IDs rimasti dopo la cancellazione:", remaining.get("ids", []))
-            #print("\n\n\n Documents included: ", remaining["included"][0], "\n\n\n")
-            #print("\n\n\n metadatas included: ", remaining["included"][1], "\n\n\n")
-
-            # Rigenera indici
-            # self.collection.persist()
-            # self.collection.reload()
-
-
-
             results = self.collection.query(
                 query_texts=queries,
                 n_results=k,
             )
             
-            logger.info(f"\n\n\nSimilarity search results: {results}\n\n\n")      # per debug
+            # logger.info(f"\n\n\nSimilarity search results: {results}\n\n\n")      # per debug
 
             # Converte i risultati in oggetti Document
             langchain_docs = []
@@ -237,10 +219,6 @@ class VectorStoreService:
                 for j in range(len(results['documents'][i])):
                     document = results['documents'][i][j]
                     metadata = results['metadatas'][i][j]
-
-                    print(f"\n\n\n{document}\n\n\n{type(document)}\n\n\n")
-                    print(f"\n\n\n{metadata}\n\n\n{type(metadata)}\n\n\n")
-
                     langchain_docs.append(Document(page_content=document, metadata=metadata))
 
             return langchain_docs
