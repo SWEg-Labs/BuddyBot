@@ -14,7 +14,7 @@ class VectorStoreService:
         try:
             # Connetti al server ChromaDB
             self.client = chromadb.HttpClient(host= os.getenv("CHROMA_HOST", "localhost"),
-                    port= os.getenv("CHROMA_PORT", 8000))
+                    port= int(os.getenv("CHROMA_PORT", "8000")))
             self.client.heartbeat()  # Verifica connessione
 
             # Crea o ottieni una collezione esistente
@@ -210,6 +210,18 @@ class VectorStoreService:
             print(self.collection.get())
             print(self.collection.get().get("ids", []))
             print("\n\n\n")
+
+            # Verifica lo stato
+            remaining = self.collection.get()
+            print("Documenti rimasti dopo la cancellazione:", remaining)
+            print("IDs rimasti dopo la cancellazione:", remaining.get("ids", []))
+            #print("\n\n\n Documents included: ", remaining["included"][0], "\n\n\n")
+            #print("\n\n\n metadatas included: ", remaining["included"][1], "\n\n\n")
+
+            # Rigenera indici
+            # self.collection.persist()
+            # self.collection.reload()
+
 
 
             results = self.collection.query(
