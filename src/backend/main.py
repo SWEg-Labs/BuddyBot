@@ -7,7 +7,7 @@ load_dotenv()
 from services.githubService import GithubService
 from services.jiraService import JiraService
 from services.confluenceService import ConfluenceService
-from services.vectorStoreService import VectorStoreService
+from repositories.vectorStoreRepository import VectorStoreRepository
 from utils.llm import initialize_llm
 from services.chatService import ChatService
 from utils.logger import logger
@@ -18,7 +18,7 @@ def main():
         llm = initialize_llm()
 
         # inizialize vector store
-        vector_store = VectorStoreService()
+        vector_store = VectorStoreRepository()
 
         # create chat service instance
         chat_service = ChatService(llm, vector_store)

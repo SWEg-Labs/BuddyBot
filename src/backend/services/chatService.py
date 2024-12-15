@@ -1,11 +1,11 @@
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain.chains.combine_documents import create_stuff_documents_chain
-from services.vectorStoreService import VectorStoreService
+from repositories.vectorStoreRepository import VectorStoreRepository
 from utils.logger import logger
 
 class ChatService:
-    def __init__(self, llm: ChatOpenAI, vector_store: VectorStoreService):
+    def __init__(self, llm: ChatOpenAI, vector_store: VectorStoreRepository):
         try:
             self.llm = llm
             self.vector_store = vector_store

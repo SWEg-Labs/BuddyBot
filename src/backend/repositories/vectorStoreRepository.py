@@ -4,7 +4,7 @@ import chromadb
 from langchain_core.documents import Document
 from utils.logger import logger
 
-class VectorStoreService:
+class VectorStoreRepository:
     def __init__(self):
         try:
             # Connessione al server ChromaDB
