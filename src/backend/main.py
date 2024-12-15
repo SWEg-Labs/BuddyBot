@@ -39,7 +39,7 @@ def main():
                     '- Write "lg" to load documents from GitHub into the Chroma database \n' \
                     '- Write "lj" to load issues from Jira into the Chroma database \n' \
                     '- Write "lc" to load pages from Confluence into the Chroma database \n' \
-                    '- Write "r" to remove all Chroma documents from the database \n' \
+                    '- Write "dr" to delete and recreate the Chroma collection \n' \
                     '- Write "v" to view all Chroma documents')
 
         # Recursive function to keep asking for input
@@ -60,7 +60,7 @@ def main():
                                 '- Write "lg" to load documents from GitHub into the Chroma database \n' \
                                 '- Write "lj" to load issues from Jira into the Chroma database \n' \
                                 '- Write "lc" to load pages from Confluence into the Chroma database \n' \
-                                '- Write "r" to remove all Chroma documents from the database \n' \
+                                '- Write "dr" to delete and recreate the Chroma collection \n' \
                                 '- Write "v" to view all Chroma documents')
                 elif(input_text.lower() == "lg"):
                     try:
@@ -99,11 +99,11 @@ def main():
 
                     except Exception as e:
                         logger.error(f"Error getting Confluence pages: {e}")
-                elif(input_text.lower() == "r"):
+                elif(input_text.lower() == "dr"):
                     try:
-                        # Rimuovi tutti i documenti dal vector store
-                        vector_store.delete_all_documents()
-                        logger.info("All documents removed from the vector store.")
+                        # Elimina e ricrea la collezione Chroma
+                        vector_store.delete_and_recreate_collection()
+                        logger.info("The collection has been deleted and recreated successfully.")
                     except Exception as e:
                         logger.error(f"Error removing documents: {e}")
                 elif(input_text.lower() == "v"):

@@ -6,8 +6,11 @@ from utils.logger import logger
 
 class ChatService:
     def __init__(self, llm: ChatOpenAI, vector_store: VectorStoreService):
-        self.llm = llm
-        self.vector_store = vector_store
+        try:
+            self.llm = llm
+            self.vector_store = vector_store
+        except Exception as e:
+            logger.error(f"Error initializing ChatService: {e}")
 
     def process_user_input(self, user_input: str) -> str:
         try:
@@ -30,6 +33,6 @@ class ChatService:
             response = rag_chain.invoke({"user_input": user_input, "context": relevant_docs})
 
             return response
-        except Exception as error:
-            logger.error(f"Error processing user input: {error}")
+        except Exception as e:
+            logger.error(f"Error processing user input: {e}")
             raise

@@ -1,162 +1,155 @@
 import os
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 import chromadb
-# import openai
 from langchain_core.documents import Document
 from utils.logger import logger
 
 class VectorStoreService:
     def __init__(self):
-        self.client = None
-        self.collection_name = None
-        self.collection = None
-        self.initialize_vector_store()
-
-    def initialize_vector_store(self):
         try:
-            # Connetti al server ChromaDB
-            self.client = chromadb.HttpClient(host= os.getenv("CHROMA_HOST", "localhost"),
-                        port= int(os.getenv("CHROMA_PORT", "8000")))
+            # Connessione al server ChromaDB
+            self.client = chromadb.HttpClient(host=os.getenv("CHROMA_HOST", "localhost"),
+                                              port=int(os.getenv("CHROMA_PORT", "8000")))
             self.client.heartbeat()  # Verifica connessione
 
             self.collection_name = "buddybot-vector-store"
+            self.max_chunk_size = 41666  # 42KB
 
             # Crea o ottieni una collezione esistente
             self.collection = self.client.get_or_create_collection(
                 name=self.collection_name
             )
             logger.info("Successfully connected to Chroma vector store.")
-        except Exception as error:
-            logger.error(f"Error initializing Chroma vector store: {error}")
+        except Exception as e:
+            logger.error(f"Error initializing Chroma vector store: {e}")
             raise
 
     def split_github_documents(self, documents):
+        """
+        Splits GitHub documents into chunks of a maximum size of self.max_chunk_size characters.
+        """
         try:
-            text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
-            split_docs = text_splitter.create_documents([doc.page_content for doc in documents])
-            logger.info(f"Documents split into {len(split_docs)} chunks.")
+            split_docs = []
+            for doc in documents:
+                content = doc.page_content
+                metadata = doc.metadata
+                for i in range(0, len(content), self.max_chunk_size):
+                    chunk_content = content[i:i+self.max_chunk_size]
+                    chunk_metadata = metadata.copy()
+                    chunk_metadata["chunk_index"] = i // self.max_chunk_size
+                    split_docs.append(Document(page_content=chunk_content, metadata=chunk_metadata))
+            logger.info(f"GitHub documents split into {len(split_docs)} chunks.")
             return split_docs
-        except Exception as error:
-            logger.error(f"Error splitting documents: {error}")
+        except Exception as e:
+            logger.error(f"Error splitting GitHub documents: {e}")
             raise
 
     def add_github_documents(self, documents):
+        """
+        Adds GitHub documents to the Chroma database after splitting them into chunks.
+        """
         try:
-            # split_docs = self.split_documents(documents)
-            # for doc in split_docs:
-            for doc in documents:
+            split_docs = self.split_github_documents(documents)
+            for doc in split_docs:
                 self.collection.add(
                     documents=[doc.page_content],
                     metadatas=[doc.metadata],
                     ids=[doc.metadata["id"]],
                 )
-            logger.info("Documents added successfully to vector store.")
-        except Exception as error:
-            logger.error(f"Error adding documents to vector store: {error}")
+            logger.info("GitHub documents added successfully to vector store.")
+        except Exception as e:
+            logger.error(f"Error adding GitHub documents to vector store: {e}")
             raise
 
-    def add_jira_issues(self, issues):
+    def split_jira_issues(self, issues):
         """
-        Adds a list of issues to the Chroma database.
-
-        Args:
-            issues (list): A list of dictionaries representing issues. Each dictionary
-                        should contain the following keys:
-                            - summary (str): The summary of the issue.
-                            - project (str): The project the issue belongs to.
-                            - status (str): The current status of the issue.
-                            - assignee (str, optional): The assignee of the issue.
-                            - priority (str, optional): The priority of the issue.
-                            - id (str, optional): The unique identifier of the issue.
-
-        Returns:
-            None
-
-        Raises:
-            Exception: If an error occurs while adding the issues to Chroma.
+        Splits Jira issues into chunks of a maximum size of self.max_chunk_size characters.
         """
-
         try:
+            split_issues = []
             for issue in issues:
                 assignee = issue["fields"].get("assignee")
                 if assignee:
                     assignee_name = assignee["displayName"]
                 else:
-                    assignee_name = "" # Default to empty string if assignee is not present (NoneType)
+                    assignee_name = ""  # Default to empty string if assignee is not present (NoneType)
 
-                # Extract issue data based on Chroma's expected format
-                document = {
-                    "page_content": issue["fields"]["summary"],
-                    "metadatas": {
-                        "project": issue["fields"]["project"]["name"],
-                        "status": issue["fields"]["status"]["name"],
-                        "assignee": assignee_name,
-                        "priority": issue["fields"]["priority"]["name"],
-                        "id": issue["key"],
-                    },
+                content = issue["fields"]["summary"]
+                metadata = {
+                    "project": issue["fields"]["project"]["name"],
+                    "status": issue["fields"]["status"]["name"],
+                    "assignee": assignee_name,
+                    "priority": issue["fields"]["priority"]["name"],
+                    "id": issue["key"],
                 }
 
-                self.collection.add(
-                    documents=[document["page_content"]],
-                    metadatas=[document["metadatas"]],
-                    ids=[document["metadatas"]["id"]],
-                )
+                for i in range(0, len(content), self.max_chunk_size):
+                    chunk_content = content[i:i+self.max_chunk_size]
+                    chunk_metadata = metadata.copy()
+                    chunk_metadata["chunk_index"] = i // self.max_chunk_size
+                    split_issues.append({"page_content": chunk_content, "metadatas": chunk_metadata})
 
-            logger.info("Issues added successfully to Chroma database.")
-        except Exception as error:
-            logger.error(f"Error adding issues to Chroma database: {error}")
+            logger.info(f"Jira issues split into {len(split_issues)} chunks.")
+            return split_issues
+        except Exception as e:
+            logger.error(f"Error splitting Jira issues: {e}")
+            raise
+
+    def add_jira_issues(self, issues):
+        """
+        Adds Jira issues to the Chroma database after splitting them into chunks.
+        """
+        try:
+            split_issues = self.split_jira_issues(issues)
+            for issue in split_issues:
+                self.collection.add(
+                    documents=[issue["page_content"]],
+                    metadatas=[issue["metadatas"]],
+                    ids=[issue["metadatas"]["id"]],
+                )
+            logger.info("Jira issues added successfully to Chroma database.")
+        except Exception as e:
+            logger.error(f"Error adding Jira issues to Chroma database: {e}")
+            raise
+
+    def split_confluence_pages(self, pages):
+        try:
+            text_splitter = RecursiveCharacterTextSplitter(chunk_size=self.max_chunk_size, chunk_overlap=0)
+            split_pages = []
+            for page in pages:
+                split_content = text_splitter.split_text(page["body"]["storage"]["value"])
+                for chunk in split_content:
+                    metadata = {
+                        "title": page["title"],
+                        "page_id": page["id"]
+                    }
+                    if page.get("version"):
+                        metadata.update({
+                            "created_by": page["version"].get("createdBy", {}).get("displayName", ""),
+                            "created_date": page["version"].get("created", "")
+                        })
+                    split_pages.append({
+                        "page_content": chunk,
+                        "metadata": metadata
+                    })
+            logger.info(f"Confluence pages split into {len(split_pages)} chunks.")
+            return split_pages
+        except Exception as e:
+            logger.error(f"Error splitting Confluence pages: {e}")
             raise
 
     def add_confluence_pages(self, pages):
-        """
-        Adds a list of Confluence pages to the Chroma database.
-
-        Args:
-            pages (list): A list of dictionaries representing Confluence pages.
-                Each dictionary should contain the following keys:
-                    - id (str): The unique identifier of the page.
-                    - title (str): The title of the Confluence page.
-                    - body (str): The content of the page body.
-                    - version (dict, optional): Information about the version of the page.
-
-        Returns:
-            None
-
-        Raises:
-            Exception: If an error occurs while adding the pages to Chroma.
-        """
-
         try:
-            for page in pages:
-                # Extract relevant data from the Confluence page
-                page_title = page["title"]
-                page_content = page["body"]["storage"]["value"]
-
-                # Prepare document structure for Chroma
-                document = {
-                    "page_content": page_content,
-                    "metadatas": {
-                        "title": page_title,  # Add title as metadata
-                        "page_id": page["id"],  # Include page ID for potential reference
-                    }
-                }
-
-                # Add version information if available (optional)
-                if page.get("version"):
-                    version_info = page["version"]
-                    document["metadatas"]["created_by"] = version_info.get("createdBy", {}).get("displayName", "")
-                    document["metadatas"]["created_date"] = version_info.get("created", "")
-
-                # Add the page to Chroma
+            split_pages = self.split_confluence_pages(pages)
+            for page in split_pages:
                 self.collection.add(
-                    documents=[document["page_content"]],
-                    metadatas=[document["metadatas"]],
-                    ids=[page["id"]],  # Use page ID as unique identifier
+                    documents=[page["page_content"]],
+                    metadatas=[page["metadata"]],
+                    ids=[page["metadata"]["page_id"]],
                 )
-
-            logger.info("Confluence pages added successfully to Chroma database.")
-        except Exception as error:
-            logger.error(f"Error adding Confluence pages to Chroma database: {error}")
+            logger.info("Confluence pages added successfully to vector store.")
+        except Exception as e:
+            logger.error(f"Error adding Confluence pages to vector store: {e}")
             raise
 
     def view_all_documents(self):
@@ -176,36 +169,25 @@ class VectorStoreService:
                 print("-" * 50)
             
             logger.info(f"Retrieved and displayed {len(all_documents['ids'])} documents.")
-        except Exception as error:
-            logger.error(f"Error viewing all documents: {error}")
+        except Exception as e:
+            logger.error(f"Error viewing all documents: {e}")
             raise
 
-    def delete_all_documents(self):
+    def delete_and_recreate_collection(self):
+        """
+        Deletes the entire collection with the name self.collection_name and recreates it as an empty collection.
+        """
         try:
-            # Recupera tutti gli ID dei documenti nella collezione
-            all_documents = self.collection.get()
-            document_ids = all_documents.get("ids", [])
+            # Delete the collection
+            self.client.delete_collection(name=self.collection_name)
+            logger.info(f"Collection '{self.collection_name}' successfully deleted.")
 
-            if document_ids:
-                # Elimina tutti i documenti specificando gli ID
-                self.collection.delete(ids=document_ids)
-
-                # Verifica che tutti i documenti siano stati rimossi
-                remaining_documents = self.collection.get()
-                if remaining_documents and remaining_documents.get("ids"):
-                    logger.error("Some documents or IDs were not removed correctly.")
-                else:
-                    logger.info("All documents and IDs successfully removed from the vector store.")
-            else:
-                logger.info("No documents found to remove.")
-
-        except Exception as error:
-            logger.error(f"Error removing all documents from vector store: {error}")
+            # Recreate the collection
+            self.collection = self.client.create_collection(name=self.collection_name)
+            logger.info(f"Collection '{self.collection_name}' successfully recreated.")
+        except Exception as e:
+            logger.error(f"Error deleting and recreating the collection: {e}")
             raise
-
-
-
-
 
     def similarity_search(self, query, k=2):
         try:
@@ -226,9 +208,9 @@ class VectorStoreService:
                     metadata = results['metadatas'][i][j]
                     langchain_docs.append(Document(page_content=document, metadata=metadata))
 
-            logger.info(f"Converted documents: {langchain_docs}")
+            # logger.info(f"Converted documents: {langchain_docs}")     # DEBUG
 
             return langchain_docs
-        except Exception as error:
-            logger.error(f"Error performing similarity search: {error}")
+        except Exception as e:
+            logger.error(f"Error performing similarity search: {e}")
             raise

@@ -6,13 +6,17 @@ from langchain.schema import Document
 
 class GithubService:
     def __init__(self):
-        github_token = os.getenv("GITHUB_TOKEN")
-        if not github_token:
-            raise ValueError("GITHUB_TOKEN is not set in the environment variables.")
-        
-        # Inizializza il client di GitHub
-        self.github = Github(github_token)
-        logger.info("Initialized Github client")
+        try:
+            github_token = os.getenv("GITHUB_TOKEN")
+            if not github_token:
+                raise ValueError("GITHUB_TOKEN is not set in the environment variables.")
+            
+            # Inizializza il client di GitHub
+            self.github = Github(github_token)
+            logger.info("Initialized Github client")
+        except Exception as e:
+            logger.error(f"Error initializing Github client: {e}")
+            raise
 
     def get_repositories(self):
         try:
@@ -75,47 +79,3 @@ class GithubService:
             elif content.type == "dir":
                 sub_contents = repo.get_contents(content.path)
                 self._fetch_files_recursively(sub_contents, repo, documents)
-
-    def format_data_for_chroma(self, repositories, issues, pull_requests):
-        documents = []
-
-        # Format repositories
-        for repo in repositories:
-            documents.append(Document(
-                page_content=str(repo.raw_data),
-                metadata={
-                    "type": "repository",
-                    "id": str(repo.id),
-                    "name": repo.name,
-                    "owner": repo.owner.login,
-                    "url": repo.html_url
-                }
-            ))
-
-        # Format issues
-        for issue in issues:
-            documents.append(Document(
-                page_content=str(issue.raw_data),
-                metadata={
-                    "type": "issue",
-                    "id": str(issue.id),
-                    "title": issue.title,
-                    "url": issue.html_url,
-                    "repository": issue.repository.name if issue.repository else "unknown"
-                }
-            ))
-
-        # Format pull requests
-        for pr in pull_requests:
-            documents.append(Document(
-                page_content=str(pr.raw_data),
-                metadata={
-                    "type": "pull-request",
-                    "id": str(pr.id),
-                    "title": pr.title,
-                    "url": pr.html_url,
-                    "repository": pr.base.repo.name
-                }
-            ))
-
-        return documents

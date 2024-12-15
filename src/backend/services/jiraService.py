@@ -6,25 +6,29 @@ from langchain.schema import Document
 
 class JiraService:
     def __init__(self):
-        self.token = os.getenv("ATLASSIAN_TOKEN")
-        self.email = os.getenv("ATLASSIAN_USER_EMAIL")
-        self.base_url = os.getenv("JIRA_BASE_URL")
-        self.project_key = os.getenv("JIRA_PROJECT_KEY")
-        self.timeout = int(os.getenv("TIMEOUT", "10"))
+        try:
+            self.token = os.getenv("ATLASSIAN_TOKEN")
+            self.email = os.getenv("ATLASSIAN_USER_EMAIL")
+            self.base_url = os.getenv("JIRA_BASE_URL")
+            self.project_key = os.getenv("JIRA_PROJECT_KEY")
+            self.timeout = int(os.getenv("TIMEOUT", "10"))
 
-        if not all([self.token, self.email, self.base_url, self.project_key]):
-            raise ValueError("Environment variables ATLASSIAN_TOKEN, ATLASSIAN_USER_EMAIL, JIRA_BASE_URL, or JIRA_PROJECT_KEY are missing.")
-        
-       # Codifica in Base64
-        auth_str = f"{self.email}:{self.token}"
-        auth_bytes = base64.b64encode(auth_str.encode("utf-8")).decode("utf-8")
+            if not all([self.token, self.email, self.base_url, self.project_key]):
+                raise ValueError("Environment variables ATLASSIAN_TOKEN, ATLASSIAN_USER_EMAIL, JIRA_BASE_URL, or JIRA_PROJECT_KEY are missing.")
+            
+        # Codifica in Base64
+            auth_str = f"{self.email}:{self.token}"
+            auth_bytes = base64.b64encode(auth_str.encode("utf-8")).decode("utf-8")
 
-        self.headers = {
-            "Authorization": f"Basic {auth_bytes}",
-            "Accept": "application/json",
-            "Content-Type": "application/json"
-        }
-        logger.info("Initialized Jira client")
+            self.headers = {
+                "Authorization": f"Basic {auth_bytes}",
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            }
+            logger.info("Initialized Jira client")
+        except Exception as e:
+            logger.error(f"Error initializing Jira client: {e}")
+            raise
 
     def get_projects(self):
         try:
@@ -86,34 +90,3 @@ class JiraService:
         except Exception as e:
             logger.error(f"Error fetching project files: {e}")
             raise
-
-    def format_data_for_chroma(self, projects, issues):
-        documents = []
-
-        # Format projects
-        for project in projects:
-            documents.append(Document(
-                page_content=str(project),
-                metadata={
-                    "type": "project",
-                    "id": project["id"],
-                    "name": project["name"],
-                    "key": project["key"],
-                    "url": f"{self.base_url}/browse/{project['key']}"
-                }
-            ))
-
-        # Format issues
-        for issue in issues:
-            documents.append(Document(
-                page_content=str(issue),
-                metadata={
-                    "type": "issue",
-                    "id": issue["id"],
-                    "key": issue["key"],
-                    "summary": issue["fields"]["summary"],
-                    "url": f"{self.base_url}/browse/{issue['key']}"
-                }
-            ))
-
-        return documents

@@ -8,12 +8,18 @@ LOGGING_ENABLED = os.getenv("LOGGING_ENABLED", "false").lower() == "true"
 class Logger:
     @staticmethod
     def info(message: str):
-        if LOGGING_ENABLED:
-            print(f"[INFO] {message}")
+        try:
+            if LOGGING_ENABLED:
+                print(f"[INFO] {message}")
+        except Exception as e:
+            print(f"Error logging message: {e}")
 
     @staticmethod
     def error(message: str):
-        if LOGGING_ENABLED:
-            print(f"[ERROR] {message}")
+        try:
+            if LOGGING_ENABLED:
+                print(f"[ERROR] {message}")
+        except Exception as e:
+            print(f"Error logging message: {e}")
 
 logger = Logger()
