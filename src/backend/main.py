@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 # Carica le variabili d'ambiente dal file .env
 load_dotenv()
 
-# from services.embeddingsService import EmbeddingsService
 from services.githubService import GithubService
 from services.jiraService import JiraService
 from services.confluenceService import ConfluenceService
@@ -17,12 +16,6 @@ def main():
     try:
         # inizialize language model
         llm = initialize_llm()
-
-        # inizialize embedding model
-        #embeddings_service = EmbeddingsService()
-
-        # inizialize vector store
-        #vector_store = VectorStoreService(embeddings_service)
 
         # inizialize vector store
         vector_store = VectorStoreService()

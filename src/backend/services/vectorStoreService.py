@@ -1,7 +1,6 @@
 import os
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 import chromadb
-# import chromadb.utils.embedding_functions as embedding_functions
 # import openai
 from langchain_core.documents import Document
 from utils.logger import logger
