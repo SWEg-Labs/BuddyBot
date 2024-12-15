@@ -5,16 +5,43 @@ from utils.logger import logger
 from langchain.schema import Document
 
 class GithubService:
+    """
+    A class that provides methods for interacting with the GitHub API.
+
+    Requires a `GITHUB_TOKEN` environment variable to be set for authentication.
+
+    Raises:
+        ValueError: If the `GITHUB_TOKEN` environment variable is not set.
+    """
     def __init__(self):
-        github_token = os.getenv("GITHUB_TOKEN")
-        if not github_token:
-            raise ValueError("GITHUB_TOKEN is not set in the environment variables.")
-        
-        # Inizializza il client di GitHub
-        self.github = Github(github_token)
-        logger.info("Initialized Github client")
+        """
+        Initializes the GitHub client using the `GITHUB_TOKEN` environment variable.
+
+        Raises:
+            Exception: If an error occurs during initialization
+        """
+        try:
+            github_token = os.getenv("GITHUB_TOKEN")
+            if not github_token:
+                raise ValueError("GITHUB_TOKEN is not set in the environment variables.")
+            
+            # Inizializza il client di GitHub
+            self.github = Github(github_token)
+            logger.info("Initialized Github client")
+        except Exception as e:
+            logger.error(f"Error initializing Github client: {e}")
+            raise
 
     def get_repositories(self):
+        """
+        Retrieves a list of open repositories for the authenticated user.
+
+        Returns:
+            list: A list of GitHub repository objects.
+
+        Raises:
+            Exception: If an error occurs while fetching repositories.
+        """
         try:
             # Ottieni una lista di repository per l'utente autenticato
             user = self.github.get_user()
@@ -25,6 +52,18 @@ class GithubService:
             raise
 
     def get_issues(self, repositories):
+        """
+        Fetches all open issues from a provided list of GitHub repositories.
+
+        Args:
+            repositories (list): A list of GitHub repository objects.
+
+        Returns:
+            list: A list of GitHub issue objects.
+
+        Raises:
+            Exception: If an error occurs while fetching issues.
+        """
         try:
             issues = []
             for repo in repositories:
@@ -36,6 +75,18 @@ class GithubService:
             raise
 
     def get_pull_requests(self, repositories):
+        """
+        Fetches all open pull requests from a provided list of GitHub repositories.
+
+        Args:
+            repositories (list): A list of GitHub repository objects.
+
+        Returns:
+            list: A list of GitHub pull request objects.
+
+        Raises:
+            Exception: If an error occurs while fetching pull requests.
+        """
         try:
             pull_requests = []
             for repo in repositories:
@@ -47,6 +98,20 @@ class GithubService:
             raise
 
     def get_repository_files(self, owner, repo_name):
+        """
+        Retrieves a list of files from a specified GitHub repository.
+
+        Args:
+            owner (str): The owner of the repository.
+            repo_name (str): The name of the repository.
+
+        Returns:
+            list: A list of `Document` objects containing decoded file content
+                  and metadata (type, id, name, path, and URL).
+
+        Raises:
+            Exception: If an error occurs while fetching repository files.
+        """
         try:
             documents = []
             repo = self.github.get_repo(f"{owner}/{repo_name}")
@@ -58,6 +123,16 @@ class GithubService:
             raise
 
     def _fetch_files_recursively(self, contents, repo, documents):
+        """
+        Recursively fetches file content and metadata from a GitHub repository.
+
+        This helper function is called internally by `get_repository_files`.
+
+        Args:
+            contents (list): A list of GitHub content objects.
+            repo (Github.Repository): The GitHub repository object.
+            documents (list): A list to store `Document` objects.
+        """
         for content in contents:
             if content.type == "file":
                 file_content = repo.get_contents(content.path)
@@ -75,47 +150,3 @@ class GithubService:
             elif content.type == "dir":
                 sub_contents = repo.get_contents(content.path)
                 self._fetch_files_recursively(sub_contents, repo, documents)
-
-    def format_data_for_chroma(self, repositories, issues, pull_requests):
-        documents = []
-
-        # Format repositories
-        for repo in repositories:
-            documents.append(Document(
-                page_content=str(repo.raw_data),
-                metadata={
-                    "type": "repository",
-                    "id": str(repo.id),
-                    "name": repo.name,
-                    "owner": repo.owner.login,
-                    "url": repo.html_url
-                }
-            ))
-
-        # Format issues
-        for issue in issues:
-            documents.append(Document(
-                page_content=str(issue.raw_data),
-                metadata={
-                    "type": "issue",
-                    "id": str(issue.id),
-                    "title": issue.title,
-                    "url": issue.html_url,
-                    "repository": issue.repository.name if issue.repository else "unknown"
-                }
-            ))
-
-        # Format pull requests
-        for pr in pull_requests:
-            documents.append(Document(
-                page_content=str(pr.raw_data),
-                metadata={
-                    "type": "pull-request",
-                    "id": str(pr.id),
-                    "title": pr.title,
-                    "url": pr.html_url,
-                    "repository": pr.base.repo.name
-                }
-            ))
-
-        return documents

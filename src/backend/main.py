@@ -4,28 +4,30 @@ from dotenv import load_dotenv
 # Carica le variabili d'ambiente dal file .env
 load_dotenv()
 
-# from services.embeddingsService import EmbeddingsService
 from services.githubService import GithubService
 from services.jiraService import JiraService
 from services.confluenceService import ConfluenceService
-from services.vectorStoreService import VectorStoreService
+from repositories.vectorStoreRepository import VectorStoreRepository
 from utils.llm import initialize_llm
 from services.chatService import ChatService
 from utils.logger import logger
 
 def main():
+    """
+    Main function to run the chat application.
+
+    Initializes the language model, vector store, chat service, and other services.
+    Provides a command-line interface for interacting with the chat application.
+
+    Raises:
+        Exception: If an error occurs during initialization or processing.
+    """
     try:
         # inizialize language model
         llm = initialize_llm()
 
-        # inizialize embedding model
-        #embeddings_service = EmbeddingsService()
-
         # inizialize vector store
-        #vector_store = VectorStoreService(embeddings_service)
-
-        # inizialize vector store
-        vector_store = VectorStoreService()
+        vector_store = VectorStoreRepository()
 
         # create chat service instance
         chat_service = ChatService(llm, vector_store)
@@ -46,11 +48,17 @@ def main():
                     '- Write "lg" to load documents from GitHub into the Chroma database \n' \
                     '- Write "lj" to load issues from Jira into the Chroma database \n' \
                     '- Write "lc" to load pages from Confluence into the Chroma database \n' \
-                    '- Write "r" to remove all Chroma documents from the database \n' \
+                    '- Write "dr" to delete and recreate the Chroma collection \n' \
                     '- Write "v" to view all Chroma documents')
 
         # Recursive function to keep asking for input
         def ask_question():
+            """
+            Function to ask the user for input and process it.
+            
+            Raises:
+                KeyboardInterrupt: If the user exits the chat application.
+            """
             try:
                 # Chiede l'input all'utente
                 input_text = input("You: ")
@@ -67,7 +75,7 @@ def main():
                                 '- Write "lg" to load documents from GitHub into the Chroma database \n' \
                                 '- Write "lj" to load issues from Jira into the Chroma database \n' \
                                 '- Write "lc" to load pages from Confluence into the Chroma database \n' \
-                                '- Write "r" to remove all Chroma documents from the database \n' \
+                                '- Write "dr" to delete and recreate the Chroma collection \n' \
                                 '- Write "v" to view all Chroma documents')
                 elif(input_text.lower() == "lg"):
                     try:
@@ -106,11 +114,11 @@ def main():
 
                     except Exception as e:
                         logger.error(f"Error getting Confluence pages: {e}")
-                elif(input_text.lower() == "r"):
+                elif(input_text.lower() == "dr"):
                     try:
-                        # Rimuovi tutti i documenti dal vector store
-                        vector_store.delete_all_documents()
-                        logger.info("All documents removed from the vector store.")
+                        # Elimina e ricrea la collezione Chroma
+                        vector_store.delete_and_recreate_collection()
+                        logger.info("The collection has been deleted and recreated successfully.")
                     except Exception as e:
                         logger.error(f"Error removing documents: {e}")
                 elif(input_text.lower() == "v"):

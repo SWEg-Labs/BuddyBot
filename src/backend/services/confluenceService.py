@@ -5,29 +5,57 @@ from utils.logger import logger
 from langchain.schema import Document
 
 class ConfluenceService:
+    """
+    A class that provides methods for interacting with the Confluence API.
+
+    Requires
+    - `ATLASSIAN_TOKEN` and `ATLASSIAN_USER_EMAIL` environment variables for authentication.
+    - `CONFLUENCE_BASE_URL` and `CONFLUENCE_SPACE_KEY` environment variables for configuration.
+
+    Raises:
+        ValueError: If any of the required environment variables are missing.
+    """
     def __init__(self):
-        self.token = os.getenv("ATLASSIAN_TOKEN")
-        self.email = os.getenv("ATLASSIAN_USER_EMAIL")
-        self.base_url = os.getenv("CONFLUENCE_BASE_URL")
-        self.space_key = os.getenv("CONFLUENCE_SPACE_KEY")
-        self.timeout = int(os.getenv("TIMEOUT", "10"))
+        """
+        Initializes the Confluence client using the required environment variables.
 
-        if not all([self.token, self.email, self.base_url, self.space_key]):
-            raise ValueError("Environment variables ATLASSIAN_TOKEN, ATLASSIAN_USER_EMAIL, CONFLUENCE_BASE_URL, or CONFLUENCE_SPACE_KEY are missing.")
+        Raises:
+            Exception: If an error occurs during initialization.
+        """
+        try:
+            self.token = os.getenv("ATLASSIAN_TOKEN")
+            self.email = os.getenv("ATLASSIAN_USER_EMAIL")
+            self.base_url = os.getenv("CONFLUENCE_BASE_URL")
+            self.space_key = os.getenv("CONFLUENCE_SPACE_KEY")
+            self.timeout = int(os.getenv("TIMEOUT", "10"))
 
-        # Codifica in Base64 per l'autenticazione
-        auth_str = f"{self.email}:{self.token}"
-        auth_bytes = base64.b64encode(auth_str.encode("utf-8")).decode("utf-8")
+            if not all([self.token, self.email, self.base_url, self.space_key]):
+                raise ValueError("Environment variables ATLASSIAN_TOKEN, ATLASSIAN_USER_EMAIL, CONFLUENCE_BASE_URL, or CONFLUENCE_SPACE_KEY are missing.")
 
-        self.headers = {
-            "Authorization": f"Basic {auth_bytes}",
-            "Accept": "application/json",
-            "Content-Type": "application/json"
-        }
-        logger.info("Initialized Confluence client")
+            # Codifica in Base64 per l'autenticazione
+            auth_str = f"{self.email}:{self.token}"
+            auth_bytes = base64.b64encode(auth_str.encode("utf-8")).decode("utf-8")
+
+            self.headers = {
+                "Authorization": f"Basic {auth_bytes}",
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            }
+            logger.info("Initialized Confluence client")
+        except Exception as e:
+            logger.error(f"Error initializing Confluence client: {e}")
+            raise
 
     def get_pages(self):
-        """Ottiene le pagine dello spazio Confluence."""
+        """
+        Fetches a list of pages from the Confluence space.
+
+        Returns:
+            list: A list of Confluence page objects.
+
+        Raises:
+            Exception: If an error occurs while fetching pages.
+        """
         try:
             url = f"{self.base_url}/rest/api/content"
             params = {
@@ -46,7 +74,18 @@ class ConfluenceService:
             raise
 
     def get_page_details(self, page_id):
-        """Ottiene i dettagli di una specifica pagina Confluence."""
+        """
+        Fetches the details of a specific Confluence page.
+
+        Args:
+            page_id (str): The ID of the Confluence page.
+
+        Returns:
+            dict: A dictionary containing the details of the Confluence page.
+
+        Raises:
+            Exception: If an error occurs while fetching page details.
+        """
         try:
             url = f"{self.base_url}/rest/api/content/{page_id}"
             params = {
@@ -59,26 +98,16 @@ class ConfluenceService:
             logger.error(f"Error fetching page details for {page_id}: {e}")
             raise
 
-    def format_data_for_chroma(self, pages):
-        """Formatta le pagine di Confluence come Documenti per l'utilizzo con Chroma."""
-        documents = []
-
-        for page in pages:
-            documents.append(Document(
-                page_content=page["body"]["storage"]["value"],
-                metadata={
-                    "type": "page",
-                    "id": page["id"],
-                    "title": page["title"],
-                    "version": page["version"]["number"],
-                    "url": f"{self.base_url}/pages/viewpage.action?pageId={page['id']}"
-                }
-            ))
-
-        return documents
-
     def get_space_overview(self):
-        """Ottiene un sommario dello spazio Confluence."""
+        """
+        Fetches the overview of the Confluence space.
+
+        Returns:
+            dict: A dictionary containing the overview of the Confluence space.
+
+        Raises:
+            Exception: If an error occurs while fetching the space overview.
+        """
         try:
             url = f"{self.base_url}/rest/api/space/{self.space_key}"
             response = requests.get(url, headers=self.headers, timeout=self.timeout)
