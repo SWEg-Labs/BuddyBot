@@ -5,7 +5,23 @@ from utils.logger import logger
 from langchain.schema import Document
 
 class JiraService:
+    """
+    A class that provides methods for interacting with the Jira API.
+
+    Requires
+    - `ATLASSIAN_TOKEN` and `ATLASSIAN_USER_EMAIL` environment variables for authentication.
+    - `JIRA_BASE_URL` and `JIRA_PROJECT_KEY` environment variables for configuration.
+
+    Raises:
+        ValueError: If any of the required environment variables are missing.
+    """
     def __init__(self):
+        """
+        Initializes the Jira client using the required environment variables.
+
+        Raises:
+            Exception: If an error occurs during initialization.
+        """
         try:
             self.token = os.getenv("ATLASSIAN_TOKEN")
             self.email = os.getenv("ATLASSIAN_USER_EMAIL")
@@ -31,6 +47,15 @@ class JiraService:
             raise
 
     def get_projects(self):
+        """
+        Fetches a list of projects from Jira.
+
+        Returns:
+            list: A list of Jira project objects.
+
+        Raises:
+            Exception: If an error occurs while fetching projects.
+        """
         try:
             url = f"{self.base_url}/rest/api/3/project"
             response = requests.get(url, headers=self.headers, timeout=self.timeout)
@@ -42,6 +67,15 @@ class JiraService:
             raise
 
     def get_issues(self):
+        """
+        Fetches all open issues from the configured Jira project.
+
+        Returns:
+            list: A list of Jira issue objects.
+
+        Raises:
+            Exception: If an error occurs while fetching issues.
+        """
         try:
             url = f"{self.base_url}/rest/api/3/search"
             params = {
@@ -57,6 +91,18 @@ class JiraService:
             raise
 
     def get_issue_details(self, issue_key):
+        """
+        Fetches the details of a specific Jira issue.
+
+        Args:
+            issue_key (str): The key of the Jira issue.
+
+        Returns:
+            dict: A dictionary containing the details of the Jira issue.
+
+        Raises:
+            Exception: If an error occurs while fetching issue details.
+        """
         try:
             url = f"{self.base_url}/rest/api/3/issue/{issue_key}"
             response = requests.get(url, headers=self.headers, timeout=self.timeout)
@@ -67,7 +113,15 @@ class JiraService:
             raise
 
     def get_issue_attachments(self):
-        """" Ottiene i file allegati ai ticket del progetto Jira. """
+        """
+        Fetches all attachments from the open issues in the configured Jira project.
+
+        Returns:
+            list: A list of Document objects representing the attachments.
+
+        Raises:
+            Exception: If an error occurs while fetching attachments.
+        """
         try:
             issues = self.get_issues()
             documents = []

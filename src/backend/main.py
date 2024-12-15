@@ -13,6 +13,15 @@ from services.chatService import ChatService
 from utils.logger import logger
 
 def main():
+    """
+    Main function to run the chat application.
+
+    Initializes the language model, vector store, chat service, and other services.
+    Provides a command-line interface for interacting with the chat application.
+
+    Raises:
+        Exception: If an error occurs during initialization or processing.
+    """
     try:
         # inizialize language model
         llm = initialize_llm()
@@ -44,6 +53,12 @@ def main():
 
         # Recursive function to keep asking for input
         def ask_question():
+            """
+            Function to ask the user for input and process it.
+            
+            Raises:
+                KeyboardInterrupt: If the user exits the chat application.
+            """
             try:
                 # Chiede l'input all'utente
                 input_text = input("You: ")

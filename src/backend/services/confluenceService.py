@@ -5,7 +5,23 @@ from utils.logger import logger
 from langchain.schema import Document
 
 class ConfluenceService:
+    """
+    A class that provides methods for interacting with the Confluence API.
+
+    Requires
+    - `ATLASSIAN_TOKEN` and `ATLASSIAN_USER_EMAIL` environment variables for authentication.
+    - `CONFLUENCE_BASE_URL` and `CONFLUENCE_SPACE_KEY` environment variables for configuration.
+
+    Raises:
+        ValueError: If any of the required environment variables are missing.
+    """
     def __init__(self):
+        """
+        Initializes the Confluence client using the required environment variables.
+
+        Raises:
+            Exception: If an error occurs during initialization.
+        """
         try:
             self.token = os.getenv("ATLASSIAN_TOKEN")
             self.email = os.getenv("ATLASSIAN_USER_EMAIL")
@@ -31,7 +47,15 @@ class ConfluenceService:
             raise
 
     def get_pages(self):
-        """Ottiene le pagine dello spazio Confluence."""
+        """
+        Fetches a list of pages from the Confluence space.
+
+        Returns:
+            list: A list of Confluence page objects.
+
+        Raises:
+            Exception: If an error occurs while fetching pages.
+        """
         try:
             url = f"{self.base_url}/rest/api/content"
             params = {
@@ -50,7 +74,18 @@ class ConfluenceService:
             raise
 
     def get_page_details(self, page_id):
-        """Ottiene i dettagli di una specifica pagina Confluence."""
+        """
+        Fetches the details of a specific Confluence page.
+
+        Args:
+            page_id (str): The ID of the Confluence page.
+
+        Returns:
+            dict: A dictionary containing the details of the Confluence page.
+
+        Raises:
+            Exception: If an error occurs while fetching page details.
+        """
         try:
             url = f"{self.base_url}/rest/api/content/{page_id}"
             params = {
@@ -64,7 +99,15 @@ class ConfluenceService:
             raise
 
     def get_space_overview(self):
-        """Ottiene un sommario dello spazio Confluence."""
+        """
+        Fetches the overview of the Confluence space.
+
+        Returns:
+            dict: A dictionary containing the overview of the Confluence space.
+
+        Raises:
+            Exception: If an error occurs while fetching the space overview.
+        """
         try:
             url = f"{self.base_url}/rest/api/space/{self.space_key}"
             response = requests.get(url, headers=self.headers, timeout=self.timeout)

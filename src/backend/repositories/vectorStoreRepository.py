@@ -5,7 +5,23 @@ from langchain_core.documents import Document
 from utils.logger import logger
 
 class VectorStoreRepository:
+    """
+    A repository class for interacting with the Chroma vector store.
+
+    Requires the following environment variables to be set:
+    - CHROMA_HOST: The host address of the ChromaDB server. Default is 'localhost'.
+    - CHROMA_PORT: The port number of the ChromaDB server. Default is 8000.
+
+    Raises:
+        Exception: If an error occurs during initialization or while interacting with the vector store.
+    """
     def __init__(self):
+        """ 
+        Initializes the VectorStoreRepository by connecting to the ChromaDB server and setting up the collection.
+
+        Raises: 
+            Exception: If an error occurs during initialization. 
+        """
         try:
             # Connessione al server ChromaDB
             self.client = chromadb.HttpClient(host=os.getenv("CHROMA_HOST", "localhost"),
@@ -25,8 +41,17 @@ class VectorStoreRepository:
             raise
 
     def _split_github_documents(self, documents):
-        """
-        Splits GitHub documents into chunks of a maximum size of self.max_chunk_size characters.
+        """ 
+        Splits GitHub documents into chunks of a maximum size of self.max_chunk_size characters. 
+        
+        Args: 
+            documents (list): A list of Document objects representing GitHub documents. 
+            
+        Returns: 
+            list: A list of Document objects, each representing a chunk of the original documents. 
+            
+        Raises: 
+            Exception: If an error occurs while splitting the documents. 
         """
         try:
             split_docs = []
@@ -45,8 +70,14 @@ class VectorStoreRepository:
             raise
 
     def add_github_documents(self, documents):
-        """
-        Adds GitHub documents to the Chroma database after splitting them into chunks.
+        """ 
+        Adds GitHub documents to the Chroma database after splitting them into chunks. 
+        
+        Args: 
+            documents (list): A list of Document objects representing GitHub documents. 
+            
+        Raises: 
+            Exception: If an error occurs while adding the documents to the vector store. 
         """
         try:
             split_docs = self._split_github_documents(documents)
@@ -62,9 +93,17 @@ class VectorStoreRepository:
             raise
 
     def _split_jira_issues(self, issues):
-        """
-        Splits Jira issues into chunks of a maximum size of self.max_chunk_size characters.
-        """
+        """ 
+        Splits Jira issues into chunks of a maximum size of self.max_chunk_size characters. 
+        
+        Args: 
+            issues (list): A list of dictionaries representing Jira issues. 
+                
+        Returns: 
+            list: A list of dictionaries, each representing a chunk of the original issues. 
+            
+        Raises: 
+            Exception: If an error occurs while splitting the issues. """
         try:
             split_issues = []
             for issue in issues:
@@ -96,8 +135,14 @@ class VectorStoreRepository:
             raise
 
     def add_jira_issues(self, issues):
-        """
-        Adds Jira issues to the Chroma database after splitting them into chunks.
+        """ 
+        Adds Jira issues to the Chroma database after splitting them into chunks. 
+
+        Args: 
+            issues (list): A list of dictionaries representing Jira issues. 
+        
+        Raises: 
+            Exception: If an error occurs while adding the issues to the vector store. 
         """
         try:
             split_issues = self._split_jira_issues(issues)
@@ -113,6 +158,18 @@ class VectorStoreRepository:
             raise
 
     def _split_confluence_pages(self, pages):
+        """ 
+        Splits Confluence pages into chunks of a maximum size of self.max_chunk_size characters. 
+        
+        Args: 
+            pages (list): A list of dictionaries representing Confluence pages. 
+            
+        Returns: 
+            list: A list of dictionaries, each representing a chunk of the original pages. 
+            
+        Raises: 
+            Exception: If an error occurs while splitting the pages. 
+        """
         try:
             text_splitter = RecursiveCharacterTextSplitter(chunk_size=self.max_chunk_size, chunk_overlap=0)
             split_pages = []
@@ -139,6 +196,15 @@ class VectorStoreRepository:
             raise
 
     def add_confluence_pages(self, pages):
+        """ 
+        Adds Confluence pages to the Chroma database after splitting them into chunks. 
+        
+        Args: pages (list): 
+            A list of dictionaries representing Confluence pages. 
+            
+        Raises: 
+            Exception: If an error occurs while adding the pages to the vector store.
+        """
         try:
             split_pages = self._split_confluence_pages(pages)
             for page in split_pages:
@@ -153,6 +219,12 @@ class VectorStoreRepository:
             raise
 
     def view_all_documents(self):
+        """ 
+        Retrieves and displays all documents in the collection. 
+            
+        Raises: 
+            Exception: If an error occurs while retrieving or displaying the documents. 
+        """
         try:
             # Recupera tutti i documenti nella collezione
             all_documents = self.collection.get()
@@ -174,8 +246,11 @@ class VectorStoreRepository:
             raise
 
     def delete_and_recreate_collection(self):
-        """
-        Deletes the entire collection with the name self.collection_name and recreates it as an empty collection.
+        """ 
+        Deletes the entire collection with the name self.collection_name and recreates it as an empty collection. 
+            
+        Raises: 
+            Exception: If an error occurs while deleting or recreating the collection. 
         """
         try:
             # Delete the collection
@@ -190,6 +265,19 @@ class VectorStoreRepository:
             raise
 
     def similarity_search(self, query, k=2):
+        """ 
+        Performs a similarity search in the collection and returns the most relevant documents. 
+        
+        Args: 
+            query (str): The query text to search for. 
+            k (int): The number of top results to return. Default is 2. 
+            
+        Returns: 
+            list: A list of Document objects representing the most relevant documents. 
+            
+        Raises: 
+            Exception: If an error occurs while performing the similarity search. 
+        """
         try:
             # Esegui una ricerca di similarità
             results = self.collection.query(
