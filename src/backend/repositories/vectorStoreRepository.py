@@ -24,7 +24,7 @@ class VectorStoreRepository:
             logger.error(f"Error initializing Chroma vector store: {e}")
             raise
 
-    def split_github_documents(self, documents):
+    def _split_github_documents(self, documents):
         """
         Splits GitHub documents into chunks of a maximum size of self.max_chunk_size characters.
         """
@@ -49,7 +49,7 @@ class VectorStoreRepository:
         Adds GitHub documents to the Chroma database after splitting them into chunks.
         """
         try:
-            split_docs = self.split_github_documents(documents)
+            split_docs = self._split_github_documents(documents)
             for doc in split_docs:
                 self.collection.add(
                     documents=[doc.page_content],
@@ -61,7 +61,7 @@ class VectorStoreRepository:
             logger.error(f"Error adding GitHub documents to vector store: {e}")
             raise
 
-    def split_jira_issues(self, issues):
+    def _split_jira_issues(self, issues):
         """
         Splits Jira issues into chunks of a maximum size of self.max_chunk_size characters.
         """
@@ -100,7 +100,7 @@ class VectorStoreRepository:
         Adds Jira issues to the Chroma database after splitting them into chunks.
         """
         try:
-            split_issues = self.split_jira_issues(issues)
+            split_issues = self._split_jira_issues(issues)
             for issue in split_issues:
                 self.collection.add(
                     documents=[issue["page_content"]],
@@ -112,7 +112,7 @@ class VectorStoreRepository:
             logger.error(f"Error adding Jira issues to Chroma database: {e}")
             raise
 
-    def split_confluence_pages(self, pages):
+    def _split_confluence_pages(self, pages):
         try:
             text_splitter = RecursiveCharacterTextSplitter(chunk_size=self.max_chunk_size, chunk_overlap=0)
             split_pages = []
@@ -140,7 +140,7 @@ class VectorStoreRepository:
 
     def add_confluence_pages(self, pages):
         try:
-            split_pages = self.split_confluence_pages(pages)
+            split_pages = self._split_confluence_pages(pages)
             for page in split_pages:
                 self.collection.add(
                     documents=[page["page_content"]],

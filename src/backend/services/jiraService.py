@@ -59,16 +59,16 @@ class JiraService:
     def get_issue_details(self, issue_key):
         try:
             url = f"{self.base_url}/rest/api/3/issue/{issue_key}"
-            response = requests.get(url, headers=self.header, timeout=self.timeouts)
+            response = requests.get(url, headers=self.headers, timeout=self.timeout)
             response.raise_for_status()
             return response.json()
         except Exception as e:
             logger.error(f"Error fetching issue details for {issue_key}: {e}")
             raise
 
-    def get_project_files(self):
+    def get_issue_attachments(self):
+        """" Ottiene i file allegati ai ticket del progetto Jira. """
         try:
-            # Jira non gestisce file repository come GitHub; puoi eventualmente accedere agli allegati dei ticket.
             issues = self.get_issues()
             documents = []
             for issue in issues:
