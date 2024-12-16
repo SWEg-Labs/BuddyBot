@@ -27,6 +27,13 @@ class ChatService:
         try:
             self.llm = llm
             self.vector_store = vector_store
+            self.header = """Sei un assistente virtuale esperto che risponde a domande in italiano.
+                            Di seguito di verrà fornita una domanda dall'utente e un contesto, e riguarderanno 
+                            codice, issues o documentazione di un'azienda informatica, provenienti rispettivamente da GitHub, Jira e Confluence.
+                            Rispondi alla domanda basandoti esclusivamente sui dati forniti come contesto,
+                            dando una spiegazione dettagliata ed esaustiva della risposta data.
+                            Se possibile rispondi con un elenco puntato o numerato.
+                            Se la domanda ti chiede informazioni allora tu cercale e forniscile."""
         except Exception as e:
             logger.error(f"Error initializing ChatService: {e}")
 
@@ -50,7 +57,7 @@ class ChatService:
 
             # Crea un PromptTemplate per il modello AI
             prompt = ChatPromptTemplate.from_messages(
-                [("user", "{user_input}\n\n\n\n{context}")]
+                [("user", "{header}\n\n\n{user_input}\n\n\n{context}")]
             )
 
             # Crea una catena RAG (Retrieval-Augmented Generation)
@@ -59,8 +66,11 @@ class ChatService:
                 prompt=prompt
             )
 
+            print(f"relevant_docs: {relevant_docs}")
+
             # Esegue la catena per ottenere una risposta
-            response = rag_chain.invoke({"user_input": user_input, "context": relevant_docs})
+            response = rag_chain.invoke({"header": self.header, "user_input": user_input, "context": relevant_docs})
+            # rag_chain.invoke estrae il page_content e mostra solo quello!
 
             return response
         except Exception as e:
