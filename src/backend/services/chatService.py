@@ -29,12 +29,11 @@ class ChatService:
             self.vector_store = vector_store
             self.header = """Sei un assistente virtuale esperto che risponde a domande in italiano.
                             Di seguito di verrà fornita una domanda dall'utente e un contesto, e riguarderanno 
-                            codice, issues o documentazione di un'azienda, provenienti rispettivamente da GitHub, Jira e Confluence.
+                            codice, issues o documentazione di un'azienda informatica, provenienti rispettivamente da GitHub, Jira e Confluence.
                             Rispondi alla domanda basandoti esclusivamente sui dati forniti come contesto,
                             dando una spiegazione dettagliata ed esaustiva della risposta data.
                             Se possibile rispondi con un elenco puntato o numerato.
-                            Se la domanda non ha nulla a che fare con GitHub o Jira o Confluence la tua risposta deve essere esattamente la seguente: 
-                            "Mi dispiace, ma non sono in grado di rispondere a questa domanda perché è fuori contesto"."""
+                            Se la domanda ti chiede informazioni allora tu cercale e forniscile."""
         except Exception as e:
             logger.error(f"Error initializing ChatService: {e}")
 
@@ -67,8 +66,11 @@ class ChatService:
                 prompt=prompt
             )
 
+            print(f"relevant_docs: {relevant_docs}")
+
             # Esegue la catena per ottenere una risposta
             response = rag_chain.invoke({"header": self.header, "user_input": user_input, "context": relevant_docs})
+            # rag_chain.invoke estrae il page_content e mostra solo quello!
 
             return response
         except Exception as e:
