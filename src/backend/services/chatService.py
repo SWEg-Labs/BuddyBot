@@ -55,6 +55,11 @@ class ChatService:
             relevant_docs = self.vector_store.similarity_search(user_input)
             logger.info(f"Found {len(relevant_docs)} relevant documents")
 
+            # Aggiorna page_content di ogni documento con metadati e contenuto completo
+            # Perchè create_stuff_documents_chain fornisce al chatbot solo il campo page_content di ogni documento
+            for doc in relevant_docs:
+                doc.page_content = f"Metadata: {doc.metadata}\nContent: {doc.page_content}"
+
             # Crea un PromptTemplate per il modello AI
             prompt = ChatPromptTemplate.from_messages(
                 [("user", "{header}\n\n\n{user_input}\n\n\n{context}")]
@@ -69,8 +74,11 @@ class ChatService:
             print(f"relevant_docs: {relevant_docs}")
 
             # Esegue la catena per ottenere una risposta
-            response = rag_chain.invoke({"header": self.header, "user_input": user_input, "context": relevant_docs})
-            # rag_chain.invoke estrae il page_content e mostra solo quello!
+            response = rag_chain.invoke({
+                "header": self.header,
+                "user_input": user_input,
+                "context": relevant_docs
+            })
 
             return response
         except Exception as e:
