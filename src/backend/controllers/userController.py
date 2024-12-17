@@ -23,7 +23,7 @@ class UserController:
             KeyboardInterrupt: If the user exits the chat application.
         """
         try:
-            input_text = input("You: ").lower()
+            input_text = input("You: ")
             UserController.handle_command(
                 input_text, vector_store, chat_service, 
                 github_service, jira_service, confluence_service
@@ -57,12 +57,12 @@ class UserController:
             "v": UserController.view_documents,
         }
 
-        if input_text in command_handlers:
-            command_handlers[input_text](vector_store, github_service, jira_service, confluence_service)
+        if input_text.lower() in command_handlers:  # case insensitive
+            command_handlers[input_text.lower()](vector_store, github_service, jira_service, confluence_service)
         else:
             UserController.process_chat(input_text, chat_service)
 
-        if input_text != "help":
+        if input_text.lower() != "help":
             logger.info("Type 'exit' to quit or 'help' to see the available commands.")
 
     @staticmethod
