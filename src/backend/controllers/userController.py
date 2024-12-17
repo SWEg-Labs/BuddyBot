@@ -1,3 +1,4 @@
+import os
 from utils.logger import logger
 
 class UserController:
@@ -24,7 +25,7 @@ class UserController:
         """
         try:
             input_text = input("You: ")
-            UserController.handle_command(
+            UserController._handle_command(
                 input_text, vector_store, chat_service, 
                 github_service, jira_service, confluence_service
             )
@@ -35,7 +36,7 @@ class UserController:
             logger.error("\nExiting the chat application.")
 
     @staticmethod
-    def handle_command(input_text, vector_store, chat_service, github_service, jira_service, confluence_service):
+    def _handle_command(input_text, vector_store, chat_service, github_service, jira_service, confluence_service):
         """
         Processes a user command.
 
@@ -48,31 +49,31 @@ class UserController:
             confluence_service (ConfluenceService): Instance of the Confluence service.
         """
         command_handlers = {
-            "exit": UserController.exit_application,
-            "help": UserController.show_help,
-            "lg": UserController.load_github,
-            "lj": UserController.load_jira,
-            "lc": UserController.load_confluence,
-            "dr": UserController.delete_and_recreate,
-            "v": UserController.view_documents,
+            "exit": UserController._exit_application,
+            "help": UserController._show_help,
+            "lg": UserController._load_github,
+            "lj": UserController._load_jira,
+            "lc": UserController._load_confluence,
+            "dr": UserController._delete_and_recreate,
+            "v": UserController._view_documents,
         }
 
         if input_text.lower() in command_handlers:  # case insensitive
             command_handlers[input_text.lower()](vector_store, github_service, jira_service, confluence_service)
         else:
-            UserController.process_chat(input_text, chat_service)
+            UserController._process_chat(input_text, chat_service)
 
         if input_text.lower() != "help":
             logger.info("Type 'exit' to quit or 'help' to see the available commands.")
 
     @staticmethod
-    def exit_application(*args):
+    def _exit_application(*args):
         """Exits the chat application."""
         logger.info("Exiting the chat application.")
         exit()
 
     @staticmethod
-    def show_help(*args):
+    def _show_help(*args):
         """Displays help commands to the user."""
         logger.info('You can:\n'
                     '- Type a Message\n'
@@ -85,7 +86,7 @@ class UserController:
                     '- Write "v" to view all Chroma documents')
 
     @staticmethod
-    def load_github(vector_store, github_service, *args):
+    def _load_github(vector_store, github_service, *args):
         """Loads documents from GitHub into the vector store."""
         try:
             repo_files = github_service.get_repository_files(os.getenv("OWNER"), os.getenv("REPO"))
@@ -97,7 +98,7 @@ class UserController:
             logger.error(f"Error getting GitHub files: {e}")
 
     @staticmethod
-    def load_jira(vector_store, *args):
+    def _load_jira(vector_store, *args):
         """Loads issues from Jira into the vector store."""
         try:
             issues = args[1].get_issues()
@@ -109,7 +110,7 @@ class UserController:
             logger.error(f"Error getting Jira issues: {e}")
 
     @staticmethod
-    def load_confluence(vector_store, *args):
+    def _load_confluence(vector_store, *args):
         """Loads pages from Confluence into the vector store."""
         try:
             pages = args[2].get_pages()
@@ -121,7 +122,7 @@ class UserController:
             logger.error(f"Error getting Confluence pages: {e}")
 
     @staticmethod
-    def delete_and_recreate(vector_store, *args):
+    def _delete_and_recreate(vector_store, *args):
         """Deletes and recreates the vector store collection."""
         try:
             vector_store.delete_and_recreate_collection()
@@ -130,7 +131,7 @@ class UserController:
             logger.error(f"Error removing documents: {e}")
 
     @staticmethod
-    def view_documents(vector_store, *args):
+    def _view_documents(vector_store, *args):
         """Views all documents in the vector store."""
         try:
             vector_store.view_all_documents()
@@ -138,7 +139,7 @@ class UserController:
             logger.error(f"Error viewing documents: {e}")
 
     @staticmethod
-    def process_chat(input_text, chat_service):
+    def _process_chat(input_text, chat_service):
         """Processes user input and fetches a response from the chat service."""
         try:
             response = chat_service.process_user_input(input_text)
