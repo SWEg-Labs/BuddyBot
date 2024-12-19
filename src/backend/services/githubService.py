@@ -133,20 +133,24 @@ class GithubService:
             repo (Github.Repository): The GitHub repository object.
             documents (list): A list to store `Document` objects.
         """
-        for content in contents:
-            if content.type == "file":
-                file_content = repo.get_contents(content.path)
-                decoded_content = base64.b64decode(file_content.content).decode()
-                documents.append(Document(
-                    page_content=decoded_content,
-                    metadata={
-                        "type": "file",
-                        "id": content.sha,
-                        "name": content.name,
-                        "path": content.path,
-                        "url": content.html_url
-                    }
-                ))
-            elif content.type == "dir":
-                sub_contents = repo.get_contents(content.path)
-                self._fetch_files_recursively(sub_contents, repo, documents)
+        try:
+            for content in contents:
+                if content.type == "file":
+                    file_content = repo.get_contents(content.path)
+                    decoded_content = base64.b64decode(file_content.content).decode()
+                    documents.append(Document(
+                        page_content=decoded_content,
+                        metadata={
+                            "type": "file",
+                            "id": content.sha,
+                            "name": content.name,
+                            "path": content.path,
+                            "url": content.html_url
+                        }
+                    ))
+                elif content.type == "dir":
+                    sub_contents = repo.get_contents(content.path)
+                    self._fetch_files_recursively(sub_contents, repo, documents)
+        except Exception as e:
+            logger.error(f"Error fetching repository files recursively: {e}")
+            raise
