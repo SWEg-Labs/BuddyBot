@@ -1,0 +1,26 @@
+1)
+Gli ho chiesto:
+"Quando è che è stato scelto Postgres come database relazionale?"
+
+E mi ha trovato:
+- Il glossario nel posto dove si trova la voce "Database relazionale"
+- Il documento di candidatura dove è scritta una data: 22/04/2025
+
+Quindi in realtà si può dire che la similarità è andata bene, facendo una ricerca a singoli pezzi, però considerando tutta la frase in realtà la risposta non è soddisfacente.
+
+E' evidente che bisogna dare all'utente delle istruzioni più precise a riguardo di come porre una domanda.
+
+
+2)
+Gli ho chiesto:
+In quale verbale è stato deciso di utilizzare Postgres come database relazionale?
+
+Mi trova sempre  'candidatura.tex'   e     'src/RTB/Documentazione esterna/Glossario/contenuti/DEF.tex'
+Per gli stessi motivi di cui sopra.
+
+E l'assistente giustamente mi risponde:
+Non è possibile trovare informazioni specifiche riguardanti il verbale in cui è stata presa la decisione di utilizzare Postgres come database relazionale nel contenuto fornito.
+
+Quindi, aggiungere la parola 'verbale' è inutile, perché nel singolo documento 'diario.tex' la parola 'verbale' non è ovviamente presente.
+
+Però, non si può mica chiedere all'utente di scrivere 'cercami in diario.tex' oppure 'cercami in decisioni.tex' ahaah.
