@@ -64,7 +64,7 @@ class UserController:
             UserController._process_chat(input_text, chat_service)
 
         if input_text.lower() != "help":
-            logger.info("Type 'exit' to quit or 'help' to see the available commands.")
+            logger.info("Type a message! Otherwise, you can type 'exit' to quit or 'help' to see the available commands.")
 
     @staticmethod
     def _exit_application(*args):

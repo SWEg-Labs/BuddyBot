@@ -137,17 +137,20 @@ class GithubService:
             for content in contents:
                 if content.type == "file":
                     file_content = repo.get_contents(content.path)
-                    decoded_content = base64.b64decode(file_content.content).decode()
-                    documents.append(Document(
-                        page_content=decoded_content,
-                        metadata={
-                            "type": "file",
-                            "id": content.sha,
-                            "name": content.name,
-                            "path": content.path,
-                            "url": content.html_url
-                        }
-                    ))
+                    try:
+                        decoded_content = base64.b64decode(file_content.content).decode()
+                        documents.append(Document(
+                            page_content=decoded_content,
+                            metadata={
+                                "type": "file",
+                                "id": content.sha,
+                                "name": content.name,
+                                "path": content.path,
+                                "url": content.html_url
+                            }
+                        ))
+                    except UnicodeDecodeError as e:
+                        logger.info(f"Skipping file {content.path} due to decoding error: {e}")
                 elif content.type == "dir":
                     sub_contents = repo.get_contents(content.path)
                     self._fetch_files_recursively(sub_contents, repo, documents)
