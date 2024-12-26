@@ -101,3 +101,92 @@ con il valore di 0.5003709322282297.
 Da solo! (Found 1 relevant documents)
 
 E secondo è giusto così, io terrei questa funzione, con max_gap = 0.25 di default.
+
+
+Ora,
+DEFINIZIONI:
+1) Definizione di cos'è "fuori contesto" -> 0 documenti trovati
+2) Definizione di cos'è "informazione non trovata" -> il primo documento trovato ha similarità > 1.0
+
+Gliele ho scritte nell'header
+
+
+
+8)
+Chi vince tra un leone e una tigre?
+
+Mi ha trovato "Stendere requisiti di vincolo" (perchè c'è "vinc") a 1.0180100370585363.
+
+Giustamente il chatbot risponde "Informazione non trovata.".
+Ma, io vorrei rispondesse "domanda fuori contesto".
+
+Allora, ho dovuto rinunciare alla indicazioni oggettive, adesso ho scritto all'LLM di capire da solo
+se la domanda è fuori contesto o meno, quindi mi affido totalmente a lui, sperando ne valga la pena.
+
+
+
+9)
+Dimmi cosa c'è da fare durante le vacanze di Pasqua
+
+Uno schifo, purtroppo il primo documento è "Stendere requisiti di vincolo" a 0.8303134493805799.
+L'LLM vorrebbe scrivere "informazione non trovata", ma non può perchè gli ho scritto di scriverlo
+solamente quando il primo documento ha similarità > 1.0. 
+Dunque adesso, beh, per colpa dell'orribile confronto di similarità, sono costretto a delegare tutto
+il giudizio all'LLM, ed è un po' un peccato, ma me la metto via.
+
+Mi dà ancora che la domanda è fuori contesto. Provo allora a farla entrare meglio nel contesto:
+
+
+10)
+Dimmi cosa c'è da fare per il progetto BuddyBot durante le vacanze di Pasqua
+
+E mi dà l'elenco delle attività, anche se non c'è scritto da nessuna parte "Pasqua"! Mannaggia!
+Abbiamo idee diverse io e l'LLM, e questo è esattamente ciò che temevo!
+
+
+11)
+Dimmi cosa, per il progetto BuddyBot, c'è scritto espressamente che è da fare durante le vacanze di Pasqua?
+
+Mi dà "La domanda è fuori contesto.", mannaggia!
+
+
+12)
+Dimmi cosa, per il progetto BuddyBot, c'è scritto espressamente che è da fare durante le vacanze di Natale?
+
+Risposta perfetta, un unico documento, ed è quello giusto
+
+
+13)
+Cosa è previsto che faccia Giacomo Loat a riguardo di Angular?
+
+Adesso dice che deve approfondire anche Angular. Si fa facilmente persuadere l'LLM.
+La issue di Angular, per tutti, ha ottenuto "0.9394691898848317".
+
+
+14)
+Per caso Giacomo Loat ha assegnato a suo nome (assignee) qualche compito che riguarda Angular?
+
+Risposta corretta, e fin qui ok, fin lì c'eravamo.
+
+
+
+Ripeto la 11, stavolta dico che se viene citato almeno un termine di contesto, la domanda non può essere fuori contesto
+
+11)
+Dimmi cosa, per il progetto BuddyBot, c'è scritto espressamente che è da fare durante le vacanze di Pasqua?
+
+La domanda è fuori contesto
+
+
+
+15)
+Dimmi cosa, per il progetto informatico BuddyBot, c'è scritto espressamente che è da fare durante le vacanze di Pasqua?
+
+Informazione non trovata.
+
+Godo, alleluia ce l'abbiamo fatta!
+
+🏆🏆Bisognerà dire all'utente di descrivere sempre un minimo di contesto della domanda, puntando sulle due parole 
+"progetto informatico", così almeno GPT4o-mini non ti risponderà mai "domanda fuori contesto"!🏆🏆
+
+Per oggi ho finito con il trattamento dell'header!
