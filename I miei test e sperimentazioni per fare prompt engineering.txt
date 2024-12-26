@@ -35,5 +35,60 @@ Mi ha trovato:
 La issue giusta con distance: 0.03957073913065037
 La issue del cruscotto di valutazione della qualità: 0.7241383791087452
 
-Poi ho introdotto la funzione similarity_search_by_threshold, e mi ha trovato altri 16 risultati, tra 1.0936877952732282 e 1.4810937646072475.
+Poi ho introdotto la funzione similarity_search_by_threshold con threshold=1.5, 
+e mi ha trovato altri 16 risultati, tra 1.0936877952732282 e 1.4810937646072475.
 Che sia 1.0 il threshold giusto?
+
+
+4)
+Gli ho chiesto:
+Come si chiama il progetto a cui sta lavorando il team?
+
+Con threshold=1.5 trovato 20 documenti, di cui solo i primi 2 sono sotto l'1.0, e ha risposto giusto.
+
+Domanda inadatta, qui il nome del progetto è in un metadato, quindi basta anche un nome solo.
+
+
+5)
+Gli ho chiesto:
+Quali tecnologie devono essere studiate per il progetto?
+
+I primi 2 documenti hanno preso solo la parola "progetto". Quindi con k=2 non avrei avuto risultati
+Il primo documento realmente utile, cioè "Studiare le tecnologie selezionate, con particolare focus su Angular"
+ha similarità = 0.9129092352621573
+
+"Studiare e approfondire Postgres per il database relazionale" purtroppo ha similarità solo 1.0524195594607086.
+
+Giustamente il chatbot mi ha risposto "Angular" e "PostgreSQL", e questo vuol dire che sul chatbot possiamo fare per bene affidamento.
+Però, non avrebbe rilevato PostgreSQL se avessi messo 1.0 come soglia.
+
+Come incombent allora adesso mettiamo 1.1 ?
+
+
+6)
+Gli ho chiesto:
+Quali requisiti o tipi di requisiti sono da scrivere?
+
+C'è un "stendere tracciamento fonte-requisito" che ha fatto 1.0154040701727296.
+"Stendere requisiti implementativi" ha 1.0253274871704787
+"stendere requisiti funzionali" ha 1.0625918189593717
+"stendere requisiti prestazionali" ha 1.1076133703782485 mannaggia!!!
+
+Dal successivo 1.1481803063712028 iniziano ad andare a campi, ma fino a 1.107 c'era roba!
+
+Non posso rischiare di escludere, purtroppo, quindi mi tocca alzare l'incombent o a 1.11 o a 1.2.
+
+
+7)
+Gli ho chiesto:
+Dimmi cosa c'è da fare durante le vacanze di Natale
+
+"Incontrarsi, divisi per gruppi, durante le vacanze di Natale, per discutere dei propri casi d'uso" ha 0.5003709322282297.
+Però, "Stendere requisiti di vincolo" ha 0.8284832512704778. Diciamo che l'ha vista come una "cosa da fare".
+
+Ho capito che non posso fermare a 1.11 perchè mi perderei ben quattro cose da fare.
+1.2 mi sembra invece azzeccato, perchè le risposte iniziano a perdere un po' il focus da lì in poi.
+
+Quindi, con solo Jira adesso so che il threshold di similarità adatto è 1.2.
+
+Ho provato, ed in effetti, ok, niente prompt engineering o piano di qualifica, ma comunque ottengo una risposta bella organizzata.

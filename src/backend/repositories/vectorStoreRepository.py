@@ -308,7 +308,7 @@ class VectorStoreRepository:
             logger.error(f"Error performing similarity search: {e}")
             raise
 
-    def similarity_search_by_threshold(self, query, similarity_threshold=1.5):
+    def similarity_search_by_threshold(self, query, similarity_threshold=1.2):
         """ 
         Performs a similarity search in the collection and returns all documents below the similarity threshold.
         
@@ -327,7 +327,7 @@ class VectorStoreRepository:
             # n_results dovrebbe essere sufficientemente alto per includere tutti i documenti pertinenti
             results = self.collection.query(
                 query_texts=[query],
-                n_results=1000,  # Assumendo che non ci siano più di 1000 documenti nel database
+                n_results=10000,  # Assumendo che non ci siano più di 10000 documenti nel database vettoriale
             )
 
             # logger.info(f"Similarity search results: {results}")     # DEBUG
@@ -338,7 +338,7 @@ class VectorStoreRepository:
                 for j in range(len(results['documents'][i])):
                     document = results['documents'][i][j]
                     metadata = results['metadatas'][i][j]
-                    distance = results['distances'][i][j]  # Questo è il punteggio di similarità
+                    distance = results['distances'][i][j]
 
                     if distance <= similarity_threshold:
                         metadata["distance"] = distance
