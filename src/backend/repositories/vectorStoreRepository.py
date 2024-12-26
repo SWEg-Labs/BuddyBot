@@ -305,7 +305,7 @@ class VectorStoreRepository:
 
             return langchain_docs
         except Exception as e:
-            logger.error(f"Error performing similarity search: {e}")
+            logger.error(f"Error performing similarity search with k results: {e}")
             raise
 
     def similarity_search_by_threshold(self, query, similarity_threshold=1.2):
@@ -349,4 +349,59 @@ class VectorStoreRepository:
             return langchain_docs
         except Exception as e:
             logger.error(f"Error performing similarity search by threshold: {e}")
+            raise
+
+    def similarity_search_by_threshold_with_gap(self, query, similarity_threshold=1.2, max_gap=0.25):
+        """ 
+        Performs a similarity search in the collection and returns documents below the similarity threshold, 
+        stopping if the gap between consecutive documents exceeds the max_gap.
+        
+        Args: 
+            query (str): The query text to search for.
+            similarity_threshold (float): The maximum similarity score to include a document.
+            max_gap (float): The maximum allowed gap between consecutive documents in similarity scores.
+            
+        Returns: 
+            list: A list of Document objects representing the most relevant documents below the threshold.
+            
+        Raises: 
+            Exception: If an error occurs while performing the similarity search.
+        """
+        try:
+            # Esegui una ricerca di similarità con un alto valore di n_results
+            results = self.collection.query(
+                query_texts=[query],
+                n_results=10000,  # Assumendo che non ci siano più di 10000 documenti nel database vettoriale
+            )
+
+            # logger.info(f"Similarity search results: {results}")     # DEBUG
+
+            # Filtra i risultati in base al punteggio di similarità
+            langchain_docs = []
+            previous_distance = None
+
+            for i in range(len(results['documents'])):
+                for j in range(len(results['documents'][i])):
+                    document = results['documents'][i][j]
+                    metadata = results['metadatas'][i][j]
+                    distance = results['distances'][i][j]
+
+                    # Controlla la soglia di similarità
+                    if distance > similarity_threshold:
+                        continue
+
+                    # Controlla il distacco massimo
+                    if previous_distance is not None and abs(distance - previous_distance) > max_gap:
+                        return langchain_docs  # Termina e restituisce i documenti trovati finora
+
+                    # Aggiungi il documento alla lista dei risultati
+                    metadata["distance"] = distance
+                    langchain_docs.append(Document(page_content=document, metadata=metadata))
+                    
+                    # Aggiorna la distanza precedente
+                    previous_distance = distance
+
+            return langchain_docs
+        except Exception as e:
+            logger.error(f"Error performing similarity search by threshold with gap: {e}")
             raise

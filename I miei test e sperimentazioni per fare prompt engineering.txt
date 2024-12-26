@@ -92,3 +92,12 @@ Ho capito che non posso fermare a 1.11 perchè mi perderei ben quattro cose da f
 Quindi, con solo Jira adesso so che il threshold di similarità adatto è 1.2.
 
 Ho provato, ed in effetti, ok, niente prompt engineering o piano di qualifica, ma comunque ottengo una risposta bella organizzata.
+
+_
+
+Ho riprovato, stavolta usando la funzione "similarity_search_by_threshold_with_gap", e
+Mi ha giustamente trovato solo "Incontrarsi, divisi per gruppi, durante le vacanze di Natale, per discutere dei propri casi d'uso",
+con il valore di 0.5003709322282297.
+Da solo! (Found 1 relevant documents)
+
+E secondo è giusto così, io terrei questa funzione, con max_gap = 0.25 di default.
