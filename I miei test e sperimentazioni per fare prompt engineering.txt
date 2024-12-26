@@ -24,3 +24,16 @@ Non è possibile trovare informazioni specifiche riguardanti il verbale in cui �
 Quindi, aggiungere la parola 'verbale' è inutile, perché nel singolo documento 'diario.tex' la parola 'verbale' non è ovviamente presente.
 
 Però, non si può mica chiedere all'utente di scrivere 'cercami in diario.tex' oppure 'cercami in decisioni.tex' ahaah.
+
+
+
+3)
+Gli ho chiesto:
+Chi deve redigere la sezione "Valutazioni per il miglioramento" del piano di qualifica?
+
+Mi ha trovato:
+La issue giusta con distance: 0.03957073913065037
+La issue del cruscotto di valutazione della qualità: 0.7241383791087452
+
+Poi ho introdotto la funzione similarity_search_by_threshold, e mi ha trovato altri 16 risultati, tra 1.0936877952732282 e 1.4810937646072475.
+Che sia 1.0 il threshold giusto?

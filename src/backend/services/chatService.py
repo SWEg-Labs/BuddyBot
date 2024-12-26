@@ -52,7 +52,7 @@ class ChatService:
         """
         try:
             # Esegue una ricerca di similarità per ottenere documenti rilevanti
-            relevant_docs = self.vector_store.similarity_search(user_input)
+            relevant_docs = self.vector_store.similarity_search_by_threshold(user_input)
             logger.info(f"Found {len(relevant_docs)} relevant documents")
 
             # Aggiorna page_content di ogni documento con metadati e contenuto completo

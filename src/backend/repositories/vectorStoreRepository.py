@@ -264,7 +264,7 @@ class VectorStoreRepository:
             logger.error(f"Error deleting and recreating the collection: {e}")
             raise
 
-    def similarity_search(self, query, k=2):
+    def similarity_search_with_k_results(self, query, k=2):
         """ 
         Performs a similarity search in the collection and returns the most relevant documents. 
         
@@ -288,12 +288,17 @@ class VectorStoreRepository:
             # logger.info(f"Similarity search results: {results}")     # DEBUG
 
             # Converte i risultati in oggetti Document
-            # Perchè funzioni correttamente, il database vettoriale deve contenere documenti che hanno il campo "metadata" diverso da None
+            # Perchè funzioni correttamente, il database vettoriale deve contenere documenti che hanno il campo "metadatas" diverso da None
             langchain_docs = []
             for i in range(len(results['documents'])):
                 for j in range(len(results['documents'][i])):
                     document = results['documents'][i][j]
                     metadata = results['metadatas'][i][j]
+                    distance = results['distances'][i][j]
+
+                    # Aggiungi la distanza come metadato
+                    metadata["distance"] = distance
+
                     langchain_docs.append(Document(page_content=document, metadata=metadata))
 
             # logger.info(f"Converted documents: {langchain_docs}")     # DEBUG
@@ -301,4 +306,47 @@ class VectorStoreRepository:
             return langchain_docs
         except Exception as e:
             logger.error(f"Error performing similarity search: {e}")
+            raise
+
+    def similarity_search_by_threshold(self, query, similarity_threshold=1.5):
+        """ 
+        Performs a similarity search in the collection and returns all documents below the similarity threshold.
+        
+        Args: 
+            query (str): The query text to search for.
+            similarity_threshold (float): The maximum similarity score to include a document. 
+            
+        Returns: 
+            list: A list of Document objects representing the most relevant documents below the threshold.
+            
+        Raises: 
+            Exception: If an error occurs while performing the similarity search.
+        """
+        try:
+            # Esegui una ricerca di similarità con un alto valore di n_results
+            # n_results dovrebbe essere sufficientemente alto per includere tutti i documenti pertinenti
+            results = self.collection.query(
+                query_texts=[query],
+                n_results=1000,  # Assumendo che non ci siano più di 1000 documenti nel database
+            )
+
+            # logger.info(f"Similarity search results: {results}")     # DEBUG
+
+            # Filtra i risultati in base al punteggio di similarità
+            langchain_docs = []
+            for i in range(len(results['documents'])):
+                for j in range(len(results['documents'][i])):
+                    document = results['documents'][i][j]
+                    metadata = results['metadatas'][i][j]
+                    distance = results['distances'][i][j]  # Questo è il punteggio di similarità
+
+                    if distance <= similarity_threshold:
+                        metadata["distance"] = distance
+                        langchain_docs.append(Document(page_content=document, metadata=metadata))
+
+            # logger.info(f"Filtered documents: {langchain_docs}")     # DEBUG
+
+            return langchain_docs
+        except Exception as e:
+            logger.error(f"Error performing similarity search by threshold: {e}")
             raise
