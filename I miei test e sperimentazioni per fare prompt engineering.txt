@@ -190,3 +190,111 @@ Godo, alleluia ce l'abbiamo fatta!
 "progetto informatico", così almeno GPT4o-mini non ti risponderà mai "domanda fuori contesto"!🏆🏆
 
 Per oggi ho finito con il trattamento dell'header!
+
+
+
+Adesso, introduco GitHub, e vediamo che valori di similarità ci troverò.
+
+16)
+Chi è l'autore del progetto BrickBreaker?
+
+Mi ha trovato "Terminare il documento di Norme di Progetto" a 1.0324760491732514, dunque
+il resto era distante 0.25.
+Maledetto Jira!
+
+Riprovo allora solamente con GitHub.
+
+[INFO] Found 0 relevant documents
+relevant_docs: []
+Assistant: La domanda è fuori contesto.
+
+Vabbè, per GitHub serve allora porre domande più specifiche.
+
+
+17)
+Che licenza ha il progetto?
+
+Ancora fuori contesto.
+
+
+18)
+Mi mostri un documento dove è stato utilizzato il framework di test JUnit?
+
+Fuori contesto.
+
+Per GitHub è tutto più difficile, il threshold di 1.2 mi sa che non funziona più.
+
+Provo con la funzione vecchia "similarity_search_with_k_results" :
+
+Il file notice è a 1.25712027786884, mentre BrickBreakerTest.java (il documento risposta giusta) è a 1.552585526195122.
+
+Fintanto che i file sono così lunghi non credo che la similarità verrà mai più lunga di così, perchè ovviamente se anche
+un pezzo di frase è molto simile poi comunque ci sono centinaia di altre righe a "distanziare", mentre le issue di Jira sono
+così corte che per forza di cose la similarità viene bassa, perchè ci sono meno "righe distanzianti".
+Molte issues Jira che non c'entrano niente finiscono davanti ai lunghi documenti GitHub che sono invece rilevanti.
+
+Possibilità:
+1) Imponiamo sempre uno alla volta, o solo GitHub e Jira. E' INAMMISSIBILE, CI E' STATO CHIARAMENTE DETTO CHE IL DATABASE VETTORIALE
+DEVE CONTENERE ENTRAMBI.
+2) Dividiamo i documenti GitHub in documentini lunghi come le issue Jira. EH, MA SPEZZANDO TROPPO SI PERDE LA VISIONE D'INSIEME 
+DEL DOCUMENTO, E ALLORA NON CI TRAI PIU' INFORMAZIONI.
+3) Diamo un peso alla similarità di GitHub perchè sia più pesante della similarità di Jira. NO, PERCHE' UNA VOLTA CHE SONO NEL 
+DATABASE VETTORIALE NON E' PIU' POSSIBILE DISTINGUERE L'ORIGINE DEI DOCUMENTI. IN REALTA', USANDO I METADATI SI PUO', PERO'
+ESISTONO ANCHE DOCUMENTI PROVENIENTI DA GITHUB CHE SONO CORTI, E QUINDI LORO USCIREBBERO FUORI SEMPRE!
+
+
+19)
+Qual è la data dell'ultimo commit di BrickBreaker?
+
+BrickBreakerTest.java : 1.6413434730712964
+README.md : 1.6453533610747808
+
+"Informazione non trovata."
+Godo, ho istruito il chatbot bene, ho fatto un buon lavoro!
+
+Usando il threshold invece ovviamente (visto che non trova documenti) mi dà:
+
+[INFO] Found 0 relevant documents
+relevant_docs: []
+Assistant: La domanda è fuori contesto.
+
+E' il solito discorso, la similarità dei documenti di GitHub è molto più alta, e quel threshold non è più adatto.
+Confermo dunque quanto già scritto.
+
+
+
+Passo a Confluence per vedere su che valori si aggira la similarità sulle sue pagine.
+In teoria, siccome contengono tanto testo, purtroppo anche da loro mi aspetto di incontrare una similarità alta, purtroppo!
+
+20) Come si chiama il progetto a cui sta lavorando il team?
+
+Found 1 relevant documents
+'title': 'Sprint Retrospettiva: Il Progetto "Connettività per Tutti"', 'distance': 1.0568217419342338
+
+Ha funzionato perfettamente! Sono contento di essere rimasto dentro al threshold, però sono perfettamente
+consapevole che Jira avrebbe fatto meglio e avrebbe battuto questo documento.
+Provo ad aggiungere Jira:
+Confermo, come immaginavo.
+_
+Found 7 relevant documents
+Studiare e approfondire Postgres per il database relazionale : 0.9797200954101462
+Terminare il documento di Norme di Progetto : 0.9896156543847999
+'title': 'Sprint Retrospettiva: Il Progetto "Connettività per Tutti"', 'distance': 1.0568217419342338
+_
+Confluence è arrivato terzo, per carità, buon risultato, ma l'LLM ha risposto solo con BuddyBot, il che vuol dire che
+Confluence è stato oscurato pur essendo terzo!
+
+
+21) 
+Per quale progetto è stata svolta di recente la Retrospettiva di una sprint?
+_
+Found 14 relevant documents
+'distance': 0.9797555929844596}\nContent: Terminare il documento di Norme di Progetto"
+'distance': 0.9977851255568352}\nContent: Stendere requisiti di vincolo"
+'title': 'Sprint Retrospettiva: Il Progetto "Connettività per Tutti"', 'distance': 1.0090792822755426
+_
+Confluence aveva perso un'altra volta! Per fortuna l'LLM è intelligente e ha saputo leggere i dati e dare la risposta giusta.
+Però il discorso è che questa volta Confluence non avrebbe dovuto perdere.
+Non è nemmeno riuscita a scendere sotto l'1.0 !!
+E questa è la prova definitiva che più un documento è lungo peggio sta messa la sua similarità. Sad.
+Prima avevo azzeccato il problema, e niente, adesso devo pensare a quelle 3 possibilità.
