@@ -27,6 +27,10 @@ Però, non si può mica chiedere all'utente di scrivere 'cercami in diario.tex' 
 
 
 
+
+Giovedì 26/12/24 :
+
+
 3)
 Gli ho chiesto:
 Chi deve redigere la sezione "Valutazioni per il miglioramento" del piano di qualifica?
@@ -299,3 +303,30 @@ Però il discorso è che questa volta Confluence non avrebbe dovuto perdere.
 Non è nemmeno riuscita a scendere sotto l'1.0 !!
 E questa è la prova definitiva che più un documento è lungo peggio sta messa la sua similarità. Sad.
 Prima avevo azzeccato il problema, e niente, adesso devo pensare a quelle 4 possibilità🍇.
+
+
+
+
+
+Sabato 28/12/24
+
+
+Riscrivo le proposte e le mie considerazioni aggiornate:
+
+🍇Possibilità:
+1) Imponiamo sempre uno alla volta, o solo GitHub e Jira. E' INAMMISSIBILE, CI E' STATO CHIARAMENTE DETTO CHE IL DATABASE VETTORIALE
+DEVE CONTENERE ENTRAMBI CONTEMPORANEAMENTE.
+2) Dividiamo i documenti GitHub in documentini lunghi come le issue Jira. EH, MA SPEZZANDO TROPPO SI PERDE LA VISIONE D'INSIEME 
+DEL DOCUMENTO, E ALLORA NON CI TRAI PIU' INFORMAZIONI. La stessa similarità verrebbe falsata cos8.
+3) Diamo un peso alla similarità di GitHub perchè sia più pesante della similarità di Jira. ❌{NO, PERCHE' UNA VOLTA CHE SONO NEL 
+DATABASE VETTORIALE NON E' PIU' POSSIBILE DISTINGUERE L'ORIGINE DEI DOCUMENTI. [IN REALTA', USANDO I METADATI SI PUO']}❌, PERO'
+ESISTONO ANCHE DOCUMENTI PROVENIENTI DA GITHUB CHE SONO CORTI, E QUINDI LORO USCIREBBERO FUORI SEMPRE perché hanno la similarità che sarebbe già bassa di suo e poi se gli dai pure maggior peso anche allora viene veramente troppo bassa!
+4) Togliere i tag a Confluence, così accorcio il suo testo. OK, MA, C'E', QUESTO MITIGA UN PO' IL PROBLEMA MA NON LO RISOLVE IN SENSO GENERALE.
+5) Dovremo accettare che le issues Jira siano più simili. E allora, bisogna alzare il threshold perché vengano mostrati all'LLM anche documenti provenienti da GitHub, poco da fare. MA COSÌ ALLORA OGNI VOLTA VERREBBERO FORNITE AL CHATBOT TUTTE LE ISSUES (perché tutte o quasi tutte entrerebbero nel range), CHE VUOL DIRE UTILIZZARE TANTISSIMI TOKEN!
+
+
+L'unica soluzione effettivamente realizzabile è la 4, cioè rimuovere i tag HTML da Confluence, che può mitigare un po'.
+Le altre hanno tutte troppi punti deboli.
+
+Come threshold, io terrei 1.2 per il momento, perché comunque è importante fare risparmio di token, è l'obiettivo primario della similarità.
+
