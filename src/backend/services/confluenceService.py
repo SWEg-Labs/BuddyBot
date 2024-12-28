@@ -1,6 +1,7 @@
 import os
 import requests
 import base64
+import re
 from utils.logger import logger
 from langchain.schema import Document
 
@@ -46,6 +47,31 @@ class ConfluenceService:
             logger.error(f"Error initializing Confluence client: {e}")
             raise
 
+    def _replace_html_entities(self, text):
+        replacements = {
+            '&agrave;': 'à',
+            '&egrave;': 'è',
+            '&igrave;': 'ì',
+            '&ograve;': 'ò',
+            '&ugrave;': 'ù',
+            '&quot;': '"',
+            '&Egrave;' : 'È',
+        }
+        for entity, char in replacements.items():
+            text = text.replace(entity, char)
+        return text
+
+    def _remove_html_tags(self, text):
+        clean = re.sub(r'<[^>]+>', ' ', text)
+        return self._replace_html_entities(clean)
+    
+    def _clean_content(self, pages):
+        for page in pages:
+            html_content = page.get('body', {}).get('storage', {}).get('value', '')
+            if html_content:
+                page['body']['storage']['value'] = self._remove_html_tags(html_content)
+        return pages
+
     def get_pages(self):
         """
         Fetches a list of pages from the Confluence space.
@@ -67,6 +93,14 @@ class ConfluenceService:
             response.raise_for_status()
 
             pages = response.json().get("results", [])
+
+            print(f"Found {len(pages)} pages")
+            print(pages)
+
+            cleaned_pages = self._clean_content(pages)
+
+            print(f"Cleaned {len(cleaned_pages)} pages")
+            print(cleaned_pages)
 
             return pages
         except Exception as e:

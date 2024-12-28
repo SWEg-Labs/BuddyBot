@@ -330,3 +330,5 @@ Le altre hanno tutte troppi punti deboli.
 
 Come threshold, io terrei 1.2 per il momento, perché comunque è importante fare risparmio di token, è l'obiettivo primario della similarità.
 
+
+Ok, ho fatto le funzioni di strip dei tag di Confluence.
