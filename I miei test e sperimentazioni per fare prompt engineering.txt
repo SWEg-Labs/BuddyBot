@@ -303,6 +303,8 @@ Però il discorso è che questa volta Confluence non avrebbe dovuto perdere.
 Non è nemmeno riuscita a scendere sotto l'1.0 !!
 E questa è la prova definitiva che più un documento è lungo peggio sta messa la sua similarità. Sad.
 Prima avevo azzeccato il problema, e niente, adesso devo pensare a quelle 4 possibilità🍇.
+_
+SONO RIUSCITO A RISOLVERE QUESTO PROBLEMA RIMUOVENDO I TAG A CONFLUENCE, SI PUO' VEDERE QUA SOTTO!
 
 
 
@@ -332,3 +334,36 @@ Come threshold, io terrei 1.2 per il momento, perché comunque è importante far
 
 
 Ok, ho fatto le funzioni di strip dei tag di Confluence.
+
+
+
+E adesso riprovo la domanda 21 già provata sopra quando c'erano i tag:
+
+21) 
+Per quale progetto è stata svolta di recente la Retrospettiva di una sprint?
+
+You: Per quale progetto è stata svolta di recente la Retrospettiva di una sprint?
+[INFO] Found 1 relevant documents
+\'title\': \'Sprint Retrospettiva: Il Progetto "Connettività per Tutti"\', \'distance\': 0.8602511921421436
+
+Ho migliorato di 0,1966, in pratica 0,2, cioè di 2 decimi di unità!
+Un eccellente miglioramento, tale per cui sono contento di aver tolto i tag.
+
+(ottimo anche il fatto che abbia funzionato il max_gap di 0.3).
+
+Adesso riprovo dopo aver caricato anche Jira:
+
+[INFO] Found 14 relevant documents
+Mannaggia!
+
+'title': 'Sprint Retrospettiva: Il Progetto "Connettività per Tutti"', 'distance': 0.8602511921421436
+Per fortuna ha vinto Confluence!
+
+Poi:
+'distance': 0.9797555929844596}\nContent: Terminare il documento di Norme di Progetto"
+'distance': 0.9977851255568352}\nContent: Stendere requisiti di vincolo"
+[e le altre]
+
+(Il chatbot per fortuna ha risposto correttamente)
+
+Adesso è stato risolto il problema della domanda 21, sono contento!
