@@ -51,7 +51,8 @@ class UserController:
         command_handlers = {
             "exit": UserController._exit_application,
             "help": UserController._show_help,
-            "lg": UserController._load_github,
+            "lgf": UserController._load_github_files,
+            "lgc": UserController._load_github_commits,
             "lj": UserController._load_jira,
             "lc": UserController._load_confluence,
             "dr": UserController._delete_and_recreate,
@@ -79,23 +80,37 @@ class UserController:
                     '- Type a Message\n'
                     '- Write "exit" to quit\n'
                     '- Write "help" to see the available commands\n'
-                    '- Write "lg" to load documents from GitHub into the Chroma database\n'
+                    '- Write "lgf" to load files from GitHub into the Chroma database\n'
+                    '- Write "lgc" to load commits from GitHub into the Chroma database\n'
                     '- Write "lj" to load issues from Jira into the Chroma database\n'
                     '- Write "lc" to load pages from Confluence into the Chroma database\n'
                     '- Write "dr" to delete and recreate the Chroma collection\n'
                     '- Write "v" to view all Chroma documents')
 
     @staticmethod
-    def _load_github(vector_store, github_service, *args):
-        """Loads documents from GitHub into the vector store."""
+    def _load_github_files(vector_store, github_service, *args):
+        """Loads files from GitHub into the vector store."""
         try:
             repo_files = github_service.get_repository_files(os.getenv("OWNER"), os.getenv("REPO"))
             for i, file in enumerate(repo_files):
-                logger.info(f"Trying to add document {i}...")
+                logger.info(f"Trying to add file {i}...")
                 vector_store.add_github_documents([file])
-            logger.info(f"Added {len(repo_files)} documents to the vector store.")
+            logger.info(f"Added {len(repo_files)} files to the vector store.")
         except Exception as e:
             logger.error(f"Error getting GitHub files: {e}")
+
+    @staticmethod
+    def _load_github_commits(vector_store, github_service, *args):
+        """Loads commits from GitHub into the vector store."""
+        try:
+            commits = github_service.get_repository_commits(os.getenv("OWNER"), os.getenv("REPO"))
+
+            for i, commit in enumerate(commits):
+                logger.info(f"Trying to add commit {i}...")
+                vector_store.add_github_commits([commit])
+            logger.info(f"Added {len(commits)} commits to the vector store.")
+        except Exception as e:
+            logger.error(f"Error getting GitHub commits: {e}")
 
     @staticmethod
     def _load_jira(vector_store, *args):

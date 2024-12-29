@@ -47,7 +47,8 @@ def main():
                     '- Type a Message\n' \
                     '- Write "exit" to quit\n' \
                     '- Write "help" to see the available commands\n' \
-                    '- Write "lg" to load documents from GitHub into the Chroma database \n' \
+                    '- Write "lgf" to load files from GitHub into the Chroma database \n' \
+                    '- Write "lgc" to load commits from GitHub into the Chroma database \n' \
                     '- Write "lj" to load issues from Jira into the Chroma database \n' \
                     '- Write "lc" to load pages from Confluence into the Chroma database \n' \
                     '- Write "dr" to delete and recreate the Chroma collection \n' \

@@ -85,12 +85,76 @@ class VectorStoreRepository:
                 self.collection.add(
                     documents=[doc.page_content],
                     metadatas=[doc.metadata],
-                    ids=[doc.metadata["id"]],
+                    ids=[doc.metadata["id"] + f"_{doc.metadata['chunk_index']}"],
                 )
             logger.info("GitHub documents added successfully to vector store.")
         except Exception as e:
             logger.error(f"Error adding GitHub documents to vector store: {e}")
             raise
+
+    def _split_github_commits(self, commits):
+        """ 
+        Splits GitHub commits into chunks of a maximum size of self.max_chunk_size characters. 
+
+        Args: 
+            commits (list): A list of dictionaries representing GitHub commits. 
+
+        Returns: 
+            list: A list of dictionaries, each representing a chunk of the original commits. 
+
+        Raises: 
+            Exception: If an error occurs while splitting the commits. 
+        """
+        try:
+            split_commits = []
+            for commit in commits:
+                content = commit.get("message", "")
+                metadata = {
+                    "author": commit.get("author", ""),
+                    "email": commit.get("email", ""),
+                    "date": commit.get("date", ""),
+                    "commit_hash": commit.get("sha", ""),
+                    "url": commit.get("url", "")
+                }
+
+                for i in range(0, len(content), self.max_chunk_size):
+                    chunk_content = content[i:i+self.max_chunk_size]
+                    chunk_metadata = metadata.copy()
+                    chunk_metadata["chunk_index"] = i // self.max_chunk_size
+                    split_commits.append({
+                        "page_content": chunk_content,
+                        "metadata": chunk_metadata
+                    })
+
+            logger.info(f"GitHub commits split into {len(split_commits)} chunks.")
+            return split_commits
+        except Exception as e:
+            logger.error(f"Error splitting GitHub commits: {e}")
+            raise
+
+    def add_github_commits(self, commits):
+        """ 
+        Adds GitHub commits to the Chroma database after splitting them into chunks. 
+
+        Args: 
+            commits (list): A list of dictionaries representing GitHub commits. 
+
+        Raises: 
+            Exception: If an error occurs while adding the commits to the vector store. 
+        """
+        try:
+            split_commits = self._split_github_commits(commits)
+            for commit in split_commits:
+                self.collection.add(
+                    documents=[commit["page_content"]],
+                    metadatas=[commit["metadata"]],
+                    ids=[commit["metadata"]["commit_hash"] + f"_{commit['metadata']['chunk_index']}"]
+                )
+            logger.info("GitHub commits added successfully to vector store.")
+        except Exception as e:
+            logger.error(f"Error adding GitHub commits to vector store: {e}")
+            raise
+
 
     def _split_jira_issues(self, issues):
         """ 
@@ -126,7 +190,7 @@ class VectorStoreRepository:
                     chunk_content = content[i:i+self.max_chunk_size]
                     chunk_metadata = metadata.copy()
                     chunk_metadata["chunk_index"] = i // self.max_chunk_size
-                    split_issues.append({"page_content": chunk_content, "metadatas": chunk_metadata})
+                    split_issues.append({"page_content": chunk_content, "metadata": chunk_metadata})
 
             logger.info(f"Jira issues split into {len(split_issues)} chunks.")
             return split_issues
@@ -149,8 +213,8 @@ class VectorStoreRepository:
             for issue in split_issues:
                 self.collection.add(
                     documents=[issue["page_content"]],
-                    metadatas=[issue["metadatas"]],
-                    ids=[issue["metadatas"]["id"]],
+                    metadatas=[issue["metadata"]],
+                    ids=[issue["metadata"]["id"] + f"_{issue['metadata']['chunk_index']}"],
                 )
             logger.info("Jira issues added successfully to Chroma database.")
         except Exception as e:
@@ -211,7 +275,7 @@ class VectorStoreRepository:
                 self.collection.add(
                     documents=[page["page_content"]],
                     metadatas=[page["metadata"]],
-                    ids=[page["metadata"]["page_id"]],
+                    ids=[page["metadata"]["page_id"] + f"_{page['metadata']['chunk_index']}"],
                 )
             logger.info("Confluence pages added successfully to vector store.")
         except Exception as e:

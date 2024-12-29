@@ -367,3 +367,33 @@ Poi:
 (Il chatbot per fortuna ha risposto correttamente)
 
 Adesso è stato risolto il problema della domanda 21, sono contento!
+
+
+
+
+
+
+
+29/12/24
+
+AzzurroDigitale ci aveva chiesto di implementare le seguenti funzionalità da GitHub:
+
+1) Sia il codice
+2) Sia quando è stato scritto
+3) Sia chi l'ha scritto
+
+Di conseguenza, la prima cosa da fare è implementare una funzione get_commits(self, owner, repo_name).
+
+Successivamente, devo anche aggiungere una funzione alla classe VectorStoreRepository perchè vada ad 
+aggiungere i commit allo store. C'è però un design smell, non è accettabile che ogni volta si debba
+creare una nuova funzione per poter aggiungere un nuovo elemento GitHub. Sarà da risolvere in fase
+di design, servirà inserire un middleware di conversione dati, per poter ottenere delle classi più
+piccole, non il blob di codice che è diventato VectorStoreRepository! Questo middleware si chiama Adapter!
+Ecco un nuovo design pattern che possiamo utilizzare, oltre allo Strategy!
+_
+Comunque, al momento aggiungo i due metodi add_github_commits(self, commits) e _split_github_commits(self, commits), 
+perchè non siamo ancora nella PB, non è ancora tempo di design.
+
+E, ovviamente, c'è da modificare correttamente la gestione dell'input.
+
+Ok, implementato il tutto, adesso, qualche domanda:
