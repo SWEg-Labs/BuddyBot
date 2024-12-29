@@ -48,29 +48,79 @@ class ConfluenceService:
             raise
 
     def _replace_html_entities(self, text):
-        replacements = {
-            '&agrave;': 'à',
-            '&egrave;': 'è',
-            '&igrave;': 'ì',
-            '&ograve;': 'ò',
-            '&ugrave;': 'ù',
-            '&quot;': '"',
-            '&Egrave;' : 'È',
-        }
-        for entity, char in replacements.items():
-            text = text.replace(entity, char)
-        return text
+        """
+        Replaces HTML entities with their corresponding characters.
+
+        Args:
+            text (str): The text containing HTML entities.
+
+        Returns:
+            str: The text with HTML entities replaced by their corresponding characters.
+
+        Raises:
+            Exception: If an error occurs while replacing HTML entities.
+        """
+        try:
+            replacements = {
+                '&agrave;': 'à',
+                '&egrave;': 'è',
+                '&igrave;': 'ì',
+                '&ograve;': 'ò',
+                '&ugrave;': 'ù',
+                '&quot;': '"',
+                '&Egrave;' : 'È',
+            }
+            for entity, char in replacements.items():
+                text = text.replace(entity, char)
+            return text
+        except Exception as e: 
+            logger.error(f"Error replacing HTML entities: {e}")
+            raise
 
     def _remove_html_tags(self, text):
-        clean = re.sub(r'<[^>]+>', ' ', text)
-        return self._replace_html_entities(clean)
+        """
+        Removes HTML tags from the text.
+
+        Args:
+            text (str): The text containing HTML tags.
+
+        Returns:
+            str: The text with HTML tags removed.
+
+        Raises:
+            Exception: If an error occurs while removing HTML tags.
+        """
+        try:
+            clean = re.sub(r'<[^>]+>', ' ', text)
+            return self._replace_html_entities(clean)
+        except Exception as e:
+            logger.error(f"Error removing HTML tags: {e}")
+            raise
     
     def _clean_content(self, pages):
-        for page in pages:
-            html_content = page.get('body', {}).get('storage', {}).get('value', '')
-            if html_content:
-                page['body']['storage']['value'] = self._remove_html_tags(html_content)
-        return pages
+        """
+        Cleans the content of the Confluence pages by removing HTML tags.
+
+        Args:
+            pages (list): A list of Confluence page objects.
+
+        Returns:
+            list: A list of Confluence page objects with cleaned content.
+
+        Raises:
+            Exception: If an error occurs while cleaning page content.
+        """
+        try:
+            cleaned_pages = []
+            for page in pages:
+                html_content = page.get('body', {}).get('storage', {}).get('value', '')
+                if html_content:
+                    page['body']['storage']['value'] = self._remove_html_tags(html_content)
+                    cleaned_pages.append(page)
+            return cleaned_pages
+        except Exception as e:
+            logger.error(f"Error cleaning content: {e}")
+            raise
 
     def get_pages(self):
         """
