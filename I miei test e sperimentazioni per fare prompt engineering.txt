@@ -471,4 +471,11 @@ Ma, se li inserisci tutti assieme:
 8 7 6 5 4 3 2 1
 
 
+Per quanto riguarda il codice modificato nella singola commit, ci sono un botto di possibili campi, e non so
+quali inserire, secondo me è da chiedere ad AzzurroDigitale la prossima volta.
+Sono molto curioso del campo 'patch', sarà da provare!
+La chat ChatGPT dedicata:
+https://chatgpt.com/c/6771c958-5a00-8010-88bf-9f875e3a17a6
+
+
 Per un po' ho finito, serve ora fare delle domande ad AzzurroDigitale, quindi faccio il merge!
