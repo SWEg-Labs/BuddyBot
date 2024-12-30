@@ -460,3 +460,12 @@ Sono contento che le issues Jira abbiano trovato nei commits di GitHub dei degni
 
 Adesso attendo di avere il repo della Documentazione di SWEg Labs pieno di commits con linkate le issues di Jira, così
 da poter fare domande incrociate di confronto commit-issue, con sia commits sia issues nel database vettoriale!
+
+
+Ho aggiunto un paio di commit al repo, e poi li ho inseriti su Chroma, piccola nota:
+Succede che quando vai a inserire un gruppo di documenti, l'ultimo viene inserito per primo, ma ovviamente
+successivamente ai documenti già presenti:
+3 2 1  5 4  8 7 6
+_
+Ma, se li inserisci tutti assieme:
+8 7 6 5 4 3 2 1
