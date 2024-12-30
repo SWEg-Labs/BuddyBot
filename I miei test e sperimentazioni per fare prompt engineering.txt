@@ -397,3 +397,66 @@ perchè non siamo ancora nella PB, non è ancora tempo di design.
 E, ovviamente, c'è da modificare correttamente la gestione dell'input.
 
 Ok, implementato il tutto, adesso, qualche domanda:
+
+
+22) 
+In che data Riccardo Stefani ha inserito il token a Coveralls?
+
+Found 1 relevant documents
+'distance': 0.5261122566888996}\nContent: Ho inserito il token a Coveralls")
+
+E il chatbot ha azzeccato.
+GODO!
+
+
+23)
+Chi è l'autore che è tornato alla versione originale del gioco?
+
+Found 19 relevant documents
+'distance': 0.6619325448500666}\nContent: Sono tornato alla versione originale del gioco, poichè infatti questo è il gioco puro: la possibilità di controllare la pallina aveva reso il gioco troppo facile")
+'distance': 0.7750848948392448}\nContent: Prima vera build funzionante, ma il gioco non è interattivo")
+'distance': 0.8559951123414155}\nContent: Sono finalmente giunto alla prima build funzionante")
+_
+Il primo l'ha azzeccato, gli altri anche, secondo me, perchè è stato collegato "versione" con "build", il che è una grande cosa.
+Se i documenti fossero stati più lunghi non mi sarei mai accorto di quelli collegamenti, perchè lo stesso modello di embedding se
+li perde, perchè quando c'è troppo testo i collegamenti sottili perdono peso.
+Confermo che il meglio del meglio per la similarità è avere documenti piccoli e corti, come questi qua, infatti i
+valori di similarità sono belli bassi e si riescono a cogliere degli intelligenti collegamenti semantici.
+
+Ovviamente GPT4o-mini è intelligente e quindi ha risposto giusto.
+
+
+24) E' stato corretto prima il problema del game over oppure è stato prima introdotto 
+il modulo Header a sostituzione del modulo RegexpHeader?
+
+Found 19 relevant documents
+'distance': 0.596783378066887}\nContent: Introduzione del modulo Header a sostituzione del modulo RegexpHeader, cosicchè il controllo d'ora in poi avvenga riga per riga e non utilizzi espressioni regolari, che impedivano l'utilizzo di () e *."
+'distance': 0.7129539399233067}\nContent: Introduzione di un file Header coincidente con la licenza, ma senza parentesi, siccome il module RegexpHeader purtroppo non riconosce le parentesi"
+'distance': 0.87259294551703}\nContent: Corretto il problema del game over, ma adesso è tornato il problema che la pallina non parte dalla posizione iniziale fissata"
+_
+Non mi aspettavo che il game over lo rilevasse con similarità così alta. Per fortuna che si è messa una issue in mezzo,
+sennò il max_gap l'avrebbe tagliato fuori, seppur di poco. Si deve risolvere la cosa!
+In conseguenza di ciò, alzo il max_gap a 0.3.
+Così adesso posso fare una domanda di confronto tra un commit lungo e un commit avendo più fiducia che come contesto non apparirà
+solo quello lungo, ma bensì tutti e due.
+
+Comunque, risposta DIVINA.
+E similarità molto basse, appunto perchè i commit sono corti come le issues Jira.
+
+
+25) Chi ha generato i badges?
+
+Found 13 relevant documents
+'distance': 0.8427063580326658}\nContent: Generated badges"
+E tutti quanti sotto hanno similarity uguale, sempre 0.8427063580326658.
+Tutti e 13! Anche l'ultimo:
+'distance': 0.8427063580326658}\nContent: Generated badges")]
+Assistant: I badges sono stati generati da **GitHub Actions**. Questo è confermato dal fatto che tutti i commit che contengono il messaggio "Generated badges" sono stati effettuati dall'autore identificato come `github-actions`, un bot di GitHub che gestisce l'automazione dei workflow nei progetti.
+
+Beh, un altro ottimo risultato!
+
+La similarità è salita, ma ci sta! In media essa è 0.8, e ci sta, è la stessa delle issues Jira più o meno.
+Sono contento che le issues Jira abbiano trovato nei commits di GitHub dei degni rivali!
+
+Adesso attendo di avere il repo della Documentazione di SWEg Labs pieno di commits con linkate le issues di Jira, così
+da poter fare domande incrociate di confronto commit-issue, con sia commits sia issues nel database vettoriale!

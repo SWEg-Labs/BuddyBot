@@ -415,7 +415,7 @@ class VectorStoreRepository:
             logger.error(f"Error performing similarity search by threshold: {e}")
             raise
 
-    def similarity_search_by_threshold_with_gap(self, query, similarity_threshold=1.2, max_gap=0.25):
+    def similarity_search_by_threshold_with_gap(self, query, similarity_threshold=1.2, max_gap=0.3):
         """ 
         Performs a similarity search in the collection and returns documents below the similarity threshold, 
         stopping if the gap between consecutive documents exceeds the max_gap.
