@@ -65,6 +65,7 @@ class UserController:
             UserController._process_chat(input_text, chat_service)
 
         if input_text.lower() != "help":
+            print()   # Print a new line after each command
             logger.info("Type a message! Otherwise, you can type 'exit' to quit or 'help' to see the available commands.")
 
     @staticmethod
@@ -158,6 +159,6 @@ class UserController:
         """Processes user input and fetches a response from the chat service."""
         try:
             response = chat_service.process_user_input(input_text)
-            print("Assistant:", response)
+            print("\n\nAssistant:\n", response)
         except Exception as e:
             logger.error(f"Error fetching response: {e}")

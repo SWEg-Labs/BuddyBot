@@ -77,8 +77,8 @@ class ChatService:
             )
 
             print("relevant_docs : ")
-            for doc in relevant_docs:
-                print(doc.page_content)
+            for i, doc in enumerate(relevant_docs, start=1):
+                print(f"\nDocumento {i}:\n{doc.page_content}")
 
             # Esegue la catena per ottenere una risposta
             response = rag_chain.invoke({
