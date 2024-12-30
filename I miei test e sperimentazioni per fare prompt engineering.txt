@@ -469,3 +469,6 @@ successivamente ai documenti già presenti:
 _
 Ma, se li inserisci tutti assieme:
 8 7 6 5 4 3 2 1
+
+
+Per un po' ho finito, serve ora fare delle domande ad AzzurroDigitale, quindi faccio il merge!
