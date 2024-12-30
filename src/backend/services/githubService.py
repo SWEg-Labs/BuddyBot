@@ -157,3 +157,40 @@ class GithubService:
         except Exception as e:
             logger.error(f"Error fetching repository files recursively: {e}")
             raise
+
+    def get_repository_commits(self, owner, repo_name):
+        """
+        Retrieves all commit data from a specified GitHub repository.
+
+        Args:
+            owner (str): The owner of the repository.
+            repo_name (str): The name of the repository.
+
+        Returns:
+            list: A list of dictionaries containing commit data, including message, author,
+                date, and commit URL.
+
+        Raises:
+            Exception: If an error occurs while fetching commits.
+        """
+        try:
+            commits = []
+            repo = self.github.get_repo(f"{owner}/{repo_name}")
+
+            # Ottieni i commit dal repository
+            for commit in repo.get_commits():
+                commit_data = {
+                    "sha": commit.sha,
+                    "message": commit.commit.message,
+                    "author": commit.commit.author.name,
+                    "email": commit.commit.author.email,
+                    "date": commit.commit.author.date.strftime("%Y-%m-%d %H:%M:%S %Z"),
+                    "url": commit.html_url
+                }
+                commits.append(commit_data)
+
+            return commits
+        except Exception as e:
+            logger.error(f"Error fetching commits for repository {owner}/{repo_name}: {e}")
+            raise
+

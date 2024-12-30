@@ -33,7 +33,12 @@ class ChatService:
                             Rispondi alla domanda basandoti esclusivamente sui dati forniti come contesto,
                             dando una spiegazione dettagliata ed esaustiva della risposta data.
                             Se possibile rispondi con un elenco puntato o numerato.
-                            Se la domanda ti chiede informazioni allora tu cercale e forniscile."""
+                            Se la domanda ti chiede informazioni allora tu cercale nel contesto e forniscile.
+                            Se non sono presenti documenti di contesto, oppure se tu ritieni che l'utente sia uscito fuori dal contesto, 
+                            rispondi con "La domanda è fuori contesto".
+                            La domanda non può essere fuori contesto se almeno un sostantivo citato è presente nel contesto.
+                            Se ritieni che l'utente sia rimasto nel contesto, ma non riesci a trovare la risposta nei documenti forniti, 
+                            rispondi con "Informazione non trovata"."""
         except Exception as e:
             logger.error(f"Error initializing ChatService: {e}")
 
@@ -52,7 +57,7 @@ class ChatService:
         """
         try:
             # Esegue una ricerca di similarità per ottenere documenti rilevanti
-            relevant_docs = self.vector_store.similarity_search(user_input)
+            relevant_docs = self.vector_store.similarity_search_by_threshold_with_gap(user_input)
             logger.info(f"Found {len(relevant_docs)} relevant documents")
 
             # Aggiorna page_content di ogni documento con metadati e contenuto completo

@@ -1,6 +1,7 @@
 import os
 import requests
 import base64
+import re
 from utils.logger import logger
 from langchain.schema import Document
 
@@ -46,6 +47,81 @@ class ConfluenceService:
             logger.error(f"Error initializing Confluence client: {e}")
             raise
 
+    def _replace_html_entities(self, text):
+        """
+        Replaces HTML entities with their corresponding characters.
+
+        Args:
+            text (str): The text containing HTML entities.
+
+        Returns:
+            str: The text with HTML entities replaced by their corresponding characters.
+
+        Raises:
+            Exception: If an error occurs while replacing HTML entities.
+        """
+        try:
+            replacements = {
+                '&agrave;': 'à',
+                '&egrave;': 'è',
+                '&igrave;': 'ì',
+                '&ograve;': 'ò',
+                '&ugrave;': 'ù',
+                '&quot;': '"',
+                '&Egrave;' : 'È',
+            }
+            for entity, char in replacements.items():
+                text = text.replace(entity, char)
+            return text
+        except Exception as e: 
+            logger.error(f"Error replacing HTML entities: {e}")
+            raise
+
+    def _remove_html_tags(self, text):
+        """
+        Removes HTML tags from the text.
+
+        Args:
+            text (str): The text containing HTML tags.
+
+        Returns:
+            str: The text with HTML tags removed.
+
+        Raises:
+            Exception: If an error occurs while removing HTML tags.
+        """
+        try:
+            clean = re.sub(r'<[^>]+>', ' ', text)
+            return self._replace_html_entities(clean)
+        except Exception as e:
+            logger.error(f"Error removing HTML tags: {e}")
+            raise
+    
+    def _clean_content(self, pages):
+        """
+        Cleans the content of the Confluence pages by removing HTML tags.
+
+        Args:
+            pages (list): A list of Confluence page objects.
+
+        Returns:
+            list: A list of Confluence page objects with cleaned content.
+
+        Raises:
+            Exception: If an error occurs while cleaning page content.
+        """
+        try:
+            cleaned_pages = []
+            for page in pages:
+                html_content = page.get('body', {}).get('storage', {}).get('value', '')
+                if html_content:
+                    page['body']['storage']['value'] = self._remove_html_tags(html_content)
+                    cleaned_pages.append(page)
+            return cleaned_pages
+        except Exception as e:
+            logger.error(f"Error cleaning content: {e}")
+            raise
+
     def get_pages(self):
         """
         Fetches a list of pages from the Confluence space.
@@ -67,6 +143,14 @@ class ConfluenceService:
             response.raise_for_status()
 
             pages = response.json().get("results", [])
+
+            print(f"Found {len(pages)} pages")
+            print(pages)
+
+            cleaned_pages = self._clean_content(pages)
+
+            print(f"Cleaned {len(cleaned_pages)} pages")
+            print(cleaned_pages)
 
             return pages
         except Exception as e:
