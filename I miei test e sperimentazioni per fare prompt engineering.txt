@@ -479,3 +479,33 @@ https://chatgpt.com/c/6771c958-5a00-8010-88bf-9f875e3a17a6
 
 
 Per un po' ho finito, serve ora fare delle domande ad AzzurroDigitale, quindi faccio il merge!
+
+
+
+
+30/12/24
+
+Ho introdotto i commits in un ramo a parte, in attesa dell'approvazione di AzzurroDigitale
+
+
+25) Quali file sono stati modificati (e in quali righe) quando è stato corretto il problema del game over?
+
+Found 25 relevant documents
+'distance': 0.7496161544680473} Content: Corretto il problema del game over, ma adesso è tornato il problema che la pallina non parte dalla posizione iniziale fissata
+'distance': 0.8676455772586552} Content: Sistemazione dei test, la variabile play deve essere true, perchè funzionino
+
+Tutto funziona perfettamente, ma adesso è un casino muoversi nel terminale e visualizzare i file.
+La similarità comunque mi sembra buona, anzi, addirittura è così bassa che ha trovato un botto di file!
+
+
+26) Quali file sono stati modificati (e in quali righe) quando è stato introdotto il modulo Header a sostituzione del modulo RegexpHeader?
+
+Found 2 relevant documents
+'distance': 0.6296385184431952} Content: Introduzione di un file Header coincidente con la licenza, ma senza parentesi, siccome il module RegexpHeader purtroppo non riconosce le parentesi
+'distance': 0.6353571089346104} Content: Introduzione del modulo Header a sostituzione del modulo RegexpHeader, cosicchè il controllo d'ora in poi avvenga riga per riga e non utilizzi espressioni regolari, che impedivano l'utilizzo di () e *.
+
+Strano, mi aspettavo questi due a ordine invertito.
+Comunque, bene che la similarità sia bassa!
+0.596783378066887 vs 0.6353571089346104
+Non si per niente abbassata di tanto!
+GODO!

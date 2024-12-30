@@ -114,7 +114,8 @@ class VectorStoreRepository:
                     "email": commit.get("email", ""),
                     "date": commit.get("date", ""),
                     "commit_hash": commit.get("sha", ""),
-                    "url": commit.get("url", "")
+                    "url": commit.get("url", ""),
+                    "files": commit.get("files", "")
                 }
 
                 for i in range(0, len(content), self.max_chunk_size):

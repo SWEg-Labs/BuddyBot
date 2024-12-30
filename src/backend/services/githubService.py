@@ -168,7 +168,7 @@ class GithubService:
 
         Returns:
             list: A list of dictionaries containing commit data, including message, author,
-                date, and commit URL.
+                date, commit URL, and file details as a string.
 
         Raises:
             Exception: If an error occurs while fetching commits.
@@ -179,18 +179,28 @@ class GithubService:
 
             # Ottieni i commit dal repository
             for commit in repo.get_commits():
+                # Dettagli base del commit
                 commit_data = {
                     "sha": commit.sha,
                     "message": commit.commit.message,
-                    "author": commit.commit.author.name,
-                    "email": commit.commit.author.email,
-                    "date": commit.commit.author.date.strftime("%Y-%m-%d %H:%M:%S %Z"),
-                    "url": commit.html_url
+                    "author": commit.commit.author.name if commit.commit.author else "Unknown",
+                    "email": commit.commit.author.email if commit.commit.author else "Unknown",
+                    "date": commit.commit.author.date.strftime("%Y-%m-%d %H:%M:%S %Z") if commit.commit.author else "Unknown",
+                    "url": commit.html_url,
+                    "files": "[]"  # Inizializza come stringa vuota
                 }
+
+                # Aggiungi dettagli sui file modificati (se presenti)
+                if hasattr(commit, "files") and commit.files:
+                    files_details = [
+                        f"- {file.filename} (Status: {file.status}, Changes: {file.changes}, Additions: {file.additions}, Deletions: {file.deletions})\n  Patch:\n{file.patch}\n"
+                        for file in commit.files
+                    ]
+                    commit_data["files"] = f"[{', '.join(files_details)}]"  # Converte la lista in una stringa formattata
+
                 commits.append(commit_data)
 
             return commits
         except Exception as e:
             logger.error(f"Error fetching commits for repository {owner}/{repo_name}: {e}")
             raise
-
