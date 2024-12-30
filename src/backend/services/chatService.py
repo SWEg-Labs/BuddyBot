@@ -76,7 +76,9 @@ class ChatService:
                 prompt=prompt
             )
 
-            print(f"relevant_docs: {relevant_docs}")
+            print("relevant_docs : ")
+            for doc in relevant_docs:
+                print(doc.page_content)
 
             # Esegue la catena per ottenere una risposta
             response = rag_chain.invoke({
