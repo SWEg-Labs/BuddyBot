@@ -426,7 +426,8 @@ valori di similarità sono belli bassi e si riescono a cogliere degli intelligen
 Ovviamente GPT4o-mini è intelligente e quindi ha risposto giusto.
 
 
-24) E' stato corretto prima il problema del game over oppure è stato prima introdotto 
+24) 
+E' stato corretto prima il problema del game over oppure è stato prima introdotto 
 il modulo Header a sostituzione del modulo RegexpHeader?
 
 Found 19 relevant documents
@@ -444,7 +445,8 @@ Comunque, risposta DIVINA.
 E similarità molto basse, appunto perchè i commit sono corti come le issues Jira.
 
 
-25) Chi ha generato i badges?
+25) 
+Chi ha generato i badges?
 
 Found 13 relevant documents
 'distance': 0.8427063580326658}\nContent: Generated badges"
@@ -479,3 +481,175 @@ https://chatgpt.com/c/6771c958-5a00-8010-88bf-9f875e3a17a6
 
 
 Per un po' ho finito, serve ora fare delle domande ad AzzurroDigitale, quindi faccio il merge!
+
+
+
+
+30/12/24
+
+Ho introdotto i commits in un ramo a parte, in attesa dell'approvazione di AzzurroDigitale
+
+
+26) 
+Quali file sono stati modificati (e in quali righe) quando è stato corretto il problema del game over?
+
+Found 25 relevant documents
+'distance': 0.7496161544680473} Content: Corretto il problema del game over, ma adesso è tornato il problema che la pallina non parte dalla posizione iniziale fissata
+'distance': 0.8676455772586552} Content: Sistemazione dei test, la variabile play deve essere true, perchè funzionino
+
+Tutto funziona perfettamente, ma adesso è un casino muoversi nel terminale e visualizzare i file.
+La similarità comunque mi sembra buona, anzi, addirittura è così bassa che ha trovato un botto di file!
+
+
+27) 
+Quali file sono stati modificati (e in quali righe) quando è stato introdotto il modulo Header a sostituzione del modulo RegexpHeader?
+
+Found 2 relevant documents
+'distance': 0.6296385184431952} Content: Introduzione di un file Header coincidente con la licenza, ma senza parentesi, siccome il module RegexpHeader purtroppo non riconosce le parentesi
+'distance': 0.6353571089346104} Content: Introduzione del modulo Header a sostituzione del modulo RegexpHeader, cosicchè il controllo d'ora in poi avvenga riga per riga e non utilizzi espressioni regolari, che impedivano l'utilizzo di () e *.
+
+Strano, mi aspettavo questi due a ordine invertito.
+Comunque, bene che la similarità sia bassa!
+0.596783378066887 vs 0.6353571089346104
+Non si per niente abbassata di tanto!
+GODO!
+
+
+
+
+Se il trend continua così allora posso praticamente mergeare subito, ma prima rifaccio il test sulle 4 domande di ieri,
+in cui avevo interrogato il chatbot sui metadati semplici:
+
+22)
+In che data Riccardo Stefani ha inserito il token a Coveralls?
+
+[INFO] Found 1 relevant documents
+'distance': 0.5261122566888996}
+Content: Ho inserito il token a Coveralls
+Assistant: Riccardo Stefani ha inserito il token a Coveralls in data **14 settembre 2024**.
+_
+Vittoria!
+Identica similarità: 0.5261122566888996
+
+
+23)
+Chi è l'autore che è tornato alla versione originale del gioco?
+
+Found 20 relevant documents
+'author': 'Riccardo Stefani'
+'distance': 0.6619325448500666}
+Content: Sono tornato alla versione originale del gioco, poichè infatti questo è il gioco puro: la possibilità di controllare la pallina aveva reso il gioco troppo facile
+_
+L'autore che è tornato alla versione originale del gioco è **Riccardo Stefani**. Ha dichiarato di aver fatto questo ritorno perché la possibilità di controllare la pallina aveva reso il gioco troppo facile.
+_
+Vittoria!
+Identica similarità: 0.6619325448500666
+
+
+24)
+E' stato corretto prima il problema del game over oppure è stato prima introdotto 
+il modulo Header a sostituzione del modulo RegexpHeader?
+
+[INFO] Found 19 relevant documents
+'distance': 0.596783378066887}
+Content: Introduzione del modulo Header a sostituzione del modulo RegexpHeader, cosicchè il controllo d'ora in poi avvenga riga per riga e non utilizzi espressioni regolari, che impedivano l'utilizzo di () e *.
+'distance': 0.7129539399233067}
+Content: Introduzione di un file Header coincidente con la licenza, ma senza parentesi, siccome il module RegexpHeader purtroppo non riconosce le parentesi
+'distance': 0.87259294551703}
+Content: Corretto il problema del game over, ma adesso è tornato il problema che la pallina non parte dalla posizione iniziale fissata
+_
+Ok, la similarità è identica nei 3 documenti davanti.
+'date': '2024-09-14 12:05:48 UTC' per il game over
+'date': '2024-09-18 08:04:58 UTC' per il RegexpHeader
+_
+Ma il chatbot ha dato la risposta sbagliata!
+- **Il modulo Header è stato introdotto prima della correzione definitiva del problema del game over**. La sequenza delle modifiche suggerisce che l'implementazione del nuovo modulo è stata una priorità, seguita dalle correzioni relative al gioco.
+NON E' VERO!
+Probabilmente il troppo testo lo ha confuso!
+
+E' stato corretto prima il problema del game over oppure è stato prima introdotto 
+il modulo Header a sostituzione del modulo RegexpHeader? Guarda bene la data di esecuzione dei rispettivi commits.
+
+Found 2 relevant documents
+Che sono i due di RegexpHeader. Il successivo era sopra i 0.3 allora. Perchè la domanda è stata troppo lunga!
+
+E' stato prima corretto il problema del game over oppure è stato prima introdotto 
+il modulo Header a sostituzione del modulo RegexpHeader? Guarda bene la data di esecuzione dei rispettivi commits.
+
+Cosa è avvenuto prima?
+Corretto il problema del game over
+oppure
+Introdotto il modulo Header a sostituzione del modulo RegexpHeader?
+
+[INFO] Found 16 relevant documents
+'distance': 0.5867446827616661}
+Content: Introduzione del modulo Header a sostituzione del modulo RegexpHeader, cosicchè il controllo d'ora in poi avvenga riga per riga e non utilizzi espressioni regolari, che impedivano l'utilizzo di () e *.
+'distance': 0.7159637137738014}
+Content: Introduzione di un file Header coincidente con la licenza, ma senza parentesi, siccome il module RegexpHeader purtroppo non riconosce le parentesi
+'distance': 0.9252032896316474}
+Content: Corretto il problema del game over, ma adesso è tornato il problema che la pallina non parte dalla posizione iniziale fissata
+_
+Dunque, l'ordine cronologico degli eventi è il seguente:
+
+- **Correzione del problema del game over (14 settembre 2024)**
+- **Introduzione del modulo Header (17 settembre 2024)**
+
+In conclusione, prima è stato corretto il problema del game over, seguito dall'introduzione del modulo Header.
+_
+Ok, quindi, se gli fai la domanda coincisa lui riesce a rispondere!
+Cose tipo "Guarda bene la data di esecuzione dei rispettivi commits." sono assolutamente da evitare!
+CAPITO!
+Domanda coincisa e diretta, senza giri di parole, e stando attenti a mettere in risalto le parole chiave!
+
+NELLE DOMANDE LUNGHE VA UN PO' IN DIFFICOLTA', PERCHE' C'E' UN PEZZO DI DOMANDA A CUI VIENE DATO PIU' risalto
+rispetto all'altro. Ma non è un problema risolvibile purtroppo.
+
+
+25)
+Chi ha generato i badges?
+
+Found 16 relevant documents
+'distance': 0.8427063580326658}
+Content: Generated badges
+_
+Stessa similarità: 0.8427063580326658
+_
+IDENTICA!
+
+E qua i primi 14 documenti sono uguali (perchè si è aggiunto anche quello di ieri sera).
+
+Sono contesto perchè aver introdotto i file ha fatto sì di rilevare anche:
+'distance': 1.110598530430815}
+Content: Ho inserito build.yml
+'distance': 1.178655953210149}
+Content: Update README.md - Inserimento del badge di Quality Gate di SonarCloud
+
+Sopratutto "Ho inserito build.yml", che ha nel contenuto anche un "git commit -m "Generated badges"", ecco,
+non sarebbe MAI stato rilevato senza avere le patch sui file modificati!
+Neanche "- .github/workflows/build.yml (Status: added, Changes: 57, Additions: 57, Deletions: 0)\n" sarebbe stato
+sufficiente, neanche il nome del file, qua serviva proprio la patch! E sono stracontento dunque di aver introdotto
+la patch!!
+GODO!!
+
+Assistant: I badge sono stati generati da **GitHub Actions**. Questo è indicato dai metadati associati alle modifiche nei file, dove l'autore è specificato come `github-actions`. Ecco un riepilogo delle informazioni relative alla generazione dei badge:
+
+1. **Autore**: github-actions
+2. **Funzione**: La generazione dei badge è parte di un workflow di automazione in cui viene utilizzato GitHub Actions per gestire le build e il monitoraggio della qualità del codice.
+3. **Commit**: I badge sono stati generati in diversi commit, come evidenziato dai messaggi di commit che indicano "Generated badges".
+
+In particolare, si fa riferimento a diversi commit in cui i badge sono stati aggiornati, come ad esempio:
+- Commit `63f437f8222344c142e9b2c59686111ea7347159` - Generazione di badge.
+- Commit `449e2505b5dea1f185d812f7c62cabcc04cfa395` - Generazione di badge.
+- Commit `3441a125b5962a5f2d02c7f3e2d268742530353c` - Aggiunta di un file di workflow che include la generazione di badge.
+
+In sintesi, i badge sono stati generati automaticamente attraverso un processo di Continuous Integration/Continuous Deployment (CI/CD) utilizzando GitHub Actions.
+_
+"Aggiunta di un file di workflow che include la generazione di badge."
+GODO!
+
+
+Tutto sommato, ok, 
+Bisogna fare domande coincise e che non abbiano due contesti in cui uno dei due è troppo più rilevante dell'altro!
+_
+Ma, per il resto l'introduzione dei file ha dato un grande valore aggiunto!
+Quindi faccio il merge!
