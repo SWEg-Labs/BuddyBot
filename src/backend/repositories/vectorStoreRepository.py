@@ -40,56 +40,56 @@ class VectorStoreRepository:
             logger.error(f"Error initializing Chroma vector store: {e}")
             raise
 
-    def _split_github_documents(self, documents):
+    def _split_github_files(self, files):
         """ 
-        Splits GitHub documents into chunks of a maximum size of self.max_chunk_size characters. 
+        Splits GitHub files into chunks of a maximum size of self.max_chunk_size characters. 
         
         Args: 
-            documents (list): A list of Document objects representing GitHub documents. 
+            files (list): A list of Document objects representing GitHub files. 
             
         Returns: 
-            list: A list of Document objects, each representing a chunk of the original documents. 
+            list: A list of Document objects, each representing a chunk of the original files. 
             
         Raises: 
-            Exception: If an error occurs while splitting the documents. 
+            Exception: If an error occurs while splitting the files. 
         """
         try:
-            split_docs = []
-            for doc in documents:
-                content = doc.page_content
-                metadata = doc.metadata
+            split_files = []
+            for file in files:
+                content = file.page_content
+                metadata = file.metadata
                 for i in range(0, len(content), self.max_chunk_size):
                     chunk_content = content[i:i+self.max_chunk_size]
                     chunk_metadata = metadata.copy()
                     chunk_metadata["chunk_index"] = i // self.max_chunk_size
-                    split_docs.append(Document(page_content=chunk_content, metadata=chunk_metadata))
-            logger.info(f"GitHub documents split into {len(split_docs)} chunks.")
-            return split_docs
+                    split_files.append(Document(page_content=chunk_content, metadata=chunk_metadata))
+            logger.info(f"GitHub files split into {len(split_files)} chunks.")
+            return split_files
         except Exception as e:
-            logger.error(f"Error splitting GitHub documents: {e}")
+            logger.error(f"Error splitting GitHub files: {e}")
             raise
 
-    def add_github_documents(self, documents):
+    def add_github_files(self, files):
         """ 
-        Adds GitHub documents to the Chroma database after splitting them into chunks. 
+        Adds GitHub files to the Chroma database after splitting them into chunks. 
         
         Args: 
-            documents (list): A list of Document objects representing GitHub documents. 
+            files (list): A list of Document objects representing GitHub files. 
             
         Raises: 
-            Exception: If an error occurs while adding the documents to the vector store. 
+            Exception: If an error occurs while adding the files to the vector store. 
         """
         try:
-            split_docs = self._split_github_documents(documents)
-            for doc in split_docs:
+            split_files = self._split_github_files(files)
+            for file in split_files:
                 self.collection.add(
-                    documents=[doc.page_content],
-                    metadatas=[doc.metadata],
-                    ids=[doc.metadata["id"] + f"_{doc.metadata['chunk_index']}"],
+                    documents=[file.page_content],
+                    metadatas=[file.metadata],
+                    ids=[file.metadata["id"] + f"_{file.metadata['chunk_index']}"],
                 )
-            logger.info("GitHub documents added successfully to vector store.")
+            logger.info("GitHub files added successfully to vector store.")
         except Exception as e:
-            logger.error(f"Error adding GitHub documents to vector store: {e}")
+            logger.error(f"Error adding GitHub files to vector store: {e}")
             raise
 
     def _split_github_commits(self, commits):

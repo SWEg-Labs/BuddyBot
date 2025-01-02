@@ -113,16 +113,16 @@ class GithubService:
             Exception: If an error occurs while fetching repository files.
         """
         try:
-            documents = []
+            files = []
             repo = self.github.get_repo(f"{owner}/{repo_name}")
             contents = repo.get_contents("")  # Root directory
-            self._fetch_files_recursively(contents, repo, documents)
-            return documents
+            self._fetch_files_recursively(contents, repo, files)
+            return files
         except Exception as e:
             logger.error(f"Error fetching repository files: {e}")
             raise
 
-    def _fetch_files_recursively(self, contents, repo, documents):
+    def _fetch_files_recursively(self, contents, repo, files):
         """
         Recursively fetches file content and metadata from a GitHub repository.
 
@@ -131,7 +131,7 @@ class GithubService:
         Args:
             contents (list): A list of GitHub content objects.
             repo (Github.Repository): The GitHub repository object.
-            documents (list): A list to store `Document` objects.
+            files (list): A list to store `Document` objects.
         """
         try:
             for content in contents:
@@ -139,7 +139,7 @@ class GithubService:
                     file_content = repo.get_contents(content.path)
                     try:
                         decoded_content = base64.b64decode(file_content.content).decode()
-                        documents.append(Document(
+                        files.append(Document(
                             page_content=decoded_content,
                             metadata={
                                 "type": "file",
@@ -153,7 +153,7 @@ class GithubService:
                         logger.info(f"Skipping file {content.path} due to decoding error: {e}")
                 elif content.type == "dir":
                     sub_contents = repo.get_contents(content.path)
-                    self._fetch_files_recursively(sub_contents, repo, documents)
+                    self._fetch_files_recursively(sub_contents, repo, files)
         except Exception as e:
             logger.error(f"Error fetching repository files recursively: {e}")
             raise

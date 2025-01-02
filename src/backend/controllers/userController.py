@@ -95,7 +95,7 @@ class UserController:
             repo_files = github_service.get_repository_files(os.getenv("OWNER"), os.getenv("REPO"))
             for i, file in enumerate(repo_files):
                 logger.info(f"Trying to add file {i}...")
-                vector_store.add_github_documents([file])
+                vector_store.add_github_files([file])
             logger.info(f"Added {len(repo_files)} files to the vector store.")
         except Exception as e:
             logger.error(f"Error getting GitHub files: {e}")
