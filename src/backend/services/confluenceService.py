@@ -144,15 +144,9 @@ class ConfluenceService:
 
             pages = response.json().get("results", [])
 
-            print(f"Found {len(pages)} pages")
-            print(pages)
-
             cleaned_pages = self._clean_content(pages)
 
-            print(f"Cleaned {len(cleaned_pages)} pages")
-            print(cleaned_pages)
-
-            return pages
+            return cleaned_pages
         except Exception as e:
             logger.error(f"Error fetching pages: {e}")
             raise

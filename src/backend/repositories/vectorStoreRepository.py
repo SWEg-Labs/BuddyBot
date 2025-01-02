@@ -240,10 +240,11 @@ class VectorStoreRepository:
             split_pages = []
             for page in pages:
                 split_content = text_splitter.split_text(page["body"]["storage"]["value"])
-                for chunk in split_content:
+                for i, chunk in enumerate(split_content):
                     metadata = {
-                        "title": page["title"],
-                        "page_id": page["id"]
+                    "title": page["title"],
+                    "page_id": page["id"],
+                    "chunk_index": i
                     }
                     if page.get("version"):
                         metadata.update({
@@ -251,8 +252,8 @@ class VectorStoreRepository:
                             "created_date": page["version"].get("created", "")
                         })
                     split_pages.append({
-                        "page_content": chunk,
-                        "metadata": metadata
+                    "page_content": chunk,
+                    "metadata": metadata
                     })
             logger.info(f"Confluence pages split into {len(split_pages)} chunks.")
             return split_pages
