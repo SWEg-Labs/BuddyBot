@@ -24,7 +24,7 @@ class GithubService:
             github_token = os.getenv("GITHUB_TOKEN")
             if not github_token:
                 raise ValueError("GITHUB_TOKEN is not set in the environment variables.")
-            
+
             # Inizializza il client di GitHub
             self.github = Github(github_token)
             logger.info("Initialized Github client")

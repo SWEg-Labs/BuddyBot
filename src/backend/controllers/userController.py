@@ -26,7 +26,7 @@ class UserController:
         try:
             input_text = input("You: ")
             UserController._handle_command(
-                input_text, vector_store, chat_service, 
+                input_text, vector_store, chat_service,
                 github_service, jira_service, confluence_service
             )
 
