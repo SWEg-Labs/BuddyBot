@@ -64,8 +64,7 @@ async def chat(request: Request):
         return JSONResponse(content={"error": "Messaggio vuoto"}, status_code=400)
 
     # Usa il servizio ChatService per ottenere una risposta
-    response = UserController.ask_question(vector_store, chat_service, github_service, jira_service, confluence_service)
-
+    response = chat_service.process_user_input(user_message)
 
     return {"response": response}
 
@@ -79,12 +78,9 @@ async def load_from_github():
         Dict[str, str]: Stato dell'operazione con un messaggio.
     """
     try:
-        github_service.get_issues()
-        github_service.get_repositories()
-        github_service.get_repository_commits()
-        github_service.get_repository_files()
-        github_service.get_pull_requests()
-        return {"status": "ok", "message": "File caricati con successo da GitHub"}
+        UserController._load_github_files(vector_store, github_service)
+        UserController._load_github_commits(vector_store, github_service)
+        return {"response": "File caricati con successo da GitHub"}
     except Exception as e:
         logger.error(str(e))
         return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
@@ -99,11 +95,8 @@ async def load_from_jira():
         Dict[str, str]: Stato dell'operazione con un messaggio.
     """
     try:
-        jira_service.get_issues()
-        jira_service.get_projects()
-        #jira_service.get_issue_details()
-        jira_service.get_issue_attachments()
-        return {"status": "ok", "message": "Issue caricate con successo da Jira"}
+        UserController._load_jira(vector_store)
+        return {"response": "File caricati con successo da Jira"}
     except Exception as e:
         logger.error(str(e))
         return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
@@ -118,16 +111,13 @@ async def load_from_confluence():
         Dict[str, str]: Stato dell'operazione con un messaggio.
     """
     try:
-        confluence_service.get_pages()
-        confluence_service.get_page_details()
-        confluence_service.get_space_overview()
-        return {"status": "ok", "message": "Pagine caricate con successo da Confluence"}
+        UserController._load_confluence(vector_store)
+        return {"response": "File caricati con successo da Confluence"}
     except Exception as e:
         logger.error(str(e))
         return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
 
 
-# Avvio con uvicorn (solo se eseguito direttamente)
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=5000)

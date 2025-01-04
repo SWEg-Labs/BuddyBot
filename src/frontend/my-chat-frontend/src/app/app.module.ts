@@ -16,7 +16,7 @@ import { ChatComponent } from './chat/chat.component';
     FormsModule,
   ],
   providers: [
-    provideHttpClient(), // Use provideHttpClient here
+    provideHttpClient(),
   ],
   bootstrap: [AppComponent],
 })
