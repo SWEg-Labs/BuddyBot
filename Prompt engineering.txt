@@ -653,3 +653,128 @@ Bisogna fare domande coincise e che non abbiano due contesti in cui uno dei due 
 _
 Ma, per il resto l'introduzione dei file ha dato un grande valore aggiunto!
 Quindi faccio il merge!
+
+
+
+
+
+
+05/01/2025
+Issue:
+BUD-177: Provare a pesare la similarità basandosi sulla lunghezza dei documenti, in modo da dare più importanza alla similarità 
+con documenti lunghi rispetto a quella con documenti corti.
+
+Lo scheduling di attività:
+1) Mi procuro domande di test, e le testo allo stato attuale
+2) Definisco Lunghezza di un documento = numero di caratteri
+3) Tra linea 453 e 454, lì devo fare la divisione "similarità/lunghezza".
+4) Adesso l'ordinamento è imposto da Chroma, che ti fa arrivare i documenti già ordinati. Cambiare la similarità significa anche 
+cambiare l'ordinamento degli oggetti Document. Al pratico, questo vuol dire prendere la lista degli oggetti Document "langchain_docs" 
+e ordinare la lista basandosi sul campo dato della distanza di similarità. Tra riga 461 e 463 lo devo fare.
+5) Testo le domande di test
+
+
+1) Mi procuro domande di test, e le testo allo stato attuale
+Me ne procuro 3.
+
+1💣 Chi è l'autore del repo BrickBreaker?
+2💣 Per quale progetto è stata svolta di recente la Retrospettiva di una Sprint?
+3💣 Che cosa contiene il file checkstyle.xml?
+
+Template di valutazione dei test:
+• Input noto 
+• Procedura nota
+• Stato noto
+• Attese note
+• Esiti verificabili da un automa
+
+1💣 Chi è l'autore del repo BrickBreaker?
+• Input noto : Caricati GitHub files e issues Jira, e immessa la domanda 1💣
+• Procedura nota : Il normale flusso di domanda e risposta di BuddyBot
+• Stato noto : Con threshold 1.2 appaiono solamente due issues Jira. Caricando solo GitHub e togliendo il threshold, si ottiene che
+il primo documento GitHub (NOTICE) ha similarità 1.4483149625447065, mentre il secondo (BrickBreakerTest.java) ha similarità
+1.499595069854887.
+• Attese note : Almeno un GitHub file deve essere visualizzabile dentro il threshold. L'obiettivo sarebbe abbassare entrambe le
+similarità, in particolare BrickBreakerTest.java che è un documento molto lungo.
+• Esiti verificabili da un automa : I miei occhi sono l'automa, speriamo che non sbaglino
+
+2💣 Per quale progetto è stata svolta di recente la Retrospettiva di una Sprint?
+• Input noto : Caricate pagine Confluence e issues Jira, e immessa la domanda 2💣
+• Procedura nota : Il normale flusso di domanda e risposta di BuddyBot
+• Stato noto : Il documento "Connettività per tutti" appare al secondo posto con 0.8602511921421436, mentre al primo posto c'è
+"Stendere punto 3.5 norme di progetto" con distanza 0.8530536237112848.
+• Attese note : Il documento "Connettività per tutti" deve apparire al primo posto, battendo le issues di Jira
+• Esiti verificabili da un automa : I miei occhi sono l'automa, speriamo che non sbaglino
+
+3💣 Che cosa contiene il file checkstyle.xml?
+• Input noto : Caricati GitHub files e GitHub commits, e immessa la domanda 3💣
+• Procedura nota : Il normale flusso di domanda e risposta di BuddyBot
+• Stato noto : Appaiono solamente 19 commit (lunghissimi, il primo è lungo 10507 caratteri, e gli altri sono tutti sugli 8000), e nessun GitHub file. Caricando solo GitHub e togliendo il threshold, 
+si ottiene che il primo documento GitHub (checkstyle.xml, lunghezza: 1592 caratteri) ha similarità 1.332253571922304, mentre il secondo (BrickBreaker.java, 12632 caratteri) ha
+distanza 1.3942717969004808 (probabilmente la parola "contiene" è inserita in più di un commento, nel codice).
+• Attese note : Il documento checkstyle.xml deve apparire prima dei commit appositi che sono serviti a modificarlo
+• Esiti verificabili da un automa : I miei occhi sono l'automa, speriamo che non sbaglino
+_
+IL PUNTO DELLA QUESTIONE:
+In questo caso i commit di GitHub sono più lunghi del documento GitHub stesso, siccome contengono anche la patch a tanti file.
+Il punto è che appaiono prima perchè la parola checkstyle.xml nel file GitHub "checkstyle.xml" appare solo nei metadati, cioè solo 
+nel titolo, mentre invece nei commit essa appariva sia nel messaggio sia nei file modificati (in cui anche altri file riferivano 
+checkstyle.xml). Per questo dico che in realtà non c'è nessun problema di similarità, perchè anche se un documento è lungo, comunque 
+se la parola appare più volte allora appare in cima. Il che vuol dire che nella similarità il controllo della lunghezza del documento 
+è già implementato, sono solo i documenti/dati che abbiamo che sono uno schifo. 
+Principio GIGO: Garbage In, Garbage Out (Dati orrendi -> Risposta orrenda).
+Poi, la similarità che c'è non è perfetta, bisogna ammetterlo, perchè tra i commit prima dei file ce n'erano anche di commit che non 
+c'entravano nulla, ma il punto è che il problema non è lunghezza, è qualcos'altro che, non essendo esperti, noi non possiamo sapere.
+Probabilmente chi ha creato l'algoritmo di similarità lo ha testato su dati migliori dei nostri, e comunque ci sta che un'AI non 
+arrivi a fare dei collegamenti che riescono solo alla mente umana, sennò avrebbero già conquistato il mondo!
+_
+ESITO DELLA QUESTIONE:
+Manomettere la similarità pesando la lunghezza aiuterebbe a risolvere alcuni casi, ma ne peggiorebbe molti altri. Quindi, 
+io non manometterei, quantomeno non basandosi su questo specifico criterio della lunghezza dei documenti, perchè ne possiamo avere 
+più svantaggi che vantaggi. 
+Quei casi limite per cui succede ciò che succede funzionano male o perchè i nostri dati fanno schifo, oppure perchè la similarità è 
+sbagliata per altri motivi, ma non perchè i documenti lunghi sono penalizzati. 
+Comunque, le domande "allucinate" sono dei casi limite, secondo me per gli scopi del progetto si possono ignorare. Nelle due demo di 
+PoC e MVP staremo attenti noi a porre delle domande per cui sappiamo che abbiamo dei dati puliti e adatti per generare la risposta, 
+evitando dati sporchi che mettono in difficoltà l'algoritmo di similarità, che è per noi una grande black box!
+_
+Proposta strana: dare maggior peso alle keyword dei metadati invece che del page_content (così si darebbe più peso ai titoli dei file).
+Proposta assolutamente impossibile visto che il documento è unico e Chroma ti calcola la similarità solamente sul pacchetto completo,
+senza distinguere tra metadati e page_content.
+
+
+Ultimissimo test:
+4💣 Che cosa contiene il file NOTICE.txt?
+
+Al primo posto viene "Update NOTICE.txt - Aggiunto il mio nome", con 0.7392583427035805 e 713 caratteri.
+E vabbè questo è finito primo perchè era corto.
+
+Però al secondo posto "Introduzione del file di licence e del file di notice", con 0.7954619961168048 e 6657 caratteri.
+Ecco, questo documento qua, pur essendo lungo, ha comunque ottenuto una similarità straordinaria!
+E questo è il documento su cui il chatbot si è basato per ottenere la risposta corretta!
+
+Gli altri 24 sono tutti commit, alcuni anche molto lunghi!
+
+Riprovo con solo file GitHub e senza threshold:
+Il primo documento GitHub ha 1.4587852431034662
+
+Nessuno dei due documenti è NOTICE.
+Perchè la parola appare solo nel titolo, che è una volta sola che è poco.
+_
+NOTICE.txt si trova ad essere il Documento 6, con 'distance': 1.8291790920270086.
+Nonostante possieda solamente 1654 caratteri.
+
+Quindi, una cosa da mettere nel manuale utente è:
+"
+Non fare domande sul contenuto di un file GitHub basandosi sul suo nome, perchè il nome appare solo una volta all'inizio,
+bensì sempre e solo puntare sul contenuto direttamente se si vuole puntare un contenuto! Sennò, chiedendo con il nome 
+apparirà solamente i commit di modifica, dove il nome del file è citato più volte tra "messaggio", "lista file" e 
+"file che che lo citano". E' come, in una mappa hash, non poter accedere al valore usando la chiave, ma bensì potendo usare
+solamente il valore. # Usare il valore per accedere al valore.
+"
+
+Comunque, la lunghezza non è assolutamente il problema, abbiamo messo in chiaro che il problema è altro!
+
+Anche nel caso 2💣, "Connettività per tutti" comunque appariva al 2° posto su 19, e le altre issues a parte la prima
+erano tutte dietro, appunto perchè il documento Confluence, pur essendo lungo, comunque aveva il sufficiente numero 
+di keywords per cavarsela comunque bene, perchè la similarità già le pesa le keywords in base alla lunghezza!
