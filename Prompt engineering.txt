@@ -725,8 +725,8 @@ se la parola appare più volte allora appare in cima. Il che vuol dire che nella
 Principio GIGO: Garbage In, Garbage Out (Dati orrendi -> Risposta orrenda).
 Poi, la similarità che c'è non è perfetta, bisogna ammetterlo, perchè tra i commit prima dei file ce n'erano anche di commit che non 
 c'entravano nulla, ma il punto è che il problema non è lunghezza, è qualcos'altro che, non essendo esperti, noi non possiamo sapere.
-Probabilmente chi ha creato l'algoritmo di similarità lo ha testato su dati migliori dei nostri, e comunque che un'AI non arrivi a
-fare dei collegamenti che riescono solo alla mente umana, sennò avrebbero già conquistato il mondo!
+Probabilmente chi ha creato l'algoritmo di similarità lo ha testato su dati migliori dei nostri, e comunque ci sta che un'AI non 
+arrivi a fare dei collegamenti che riescono solo alla mente umana, sennò avrebbero già conquistato il mondo!
 _
 ESITO DELLA QUESTIONE:
 Manomettere la similarità pesando la lunghezza aiuterebbe a risolvere alcuni casi, ma ne peggiorebbe molti altri. Quindi, 
@@ -742,3 +742,39 @@ Proposta strana: dare maggior peso alle keyword dei metadati invece che del page
 Proposta assolutamente impossibile visto che il documento è unico e Chroma ti calcola la similarità solamente sul pacchetto completo,
 senza distinguere tra metadati e page_content.
 
+
+Ultimissimo test:
+4💣 Che cosa contiene il file NOTICE.txt?
+
+Al primo posto viene "Update NOTICE.txt - Aggiunto il mio nome", con 0.7392583427035805 e 713 caratteri.
+E vabbè questo è finito primo perchè era corto.
+
+Però al secondo posto "Introduzione del file di licence e del file di notice", con 0.7954619961168048 e 6657 caratteri.
+Ecco, questo documento qua, pur essendo lungo, ha comunque ottenuto una similarità straordinaria!
+E questo è il documento su cui il chatbot si è basato per ottenere la risposta corretta!
+
+Gli altri 24 sono tutti commit, alcuni anche molto lunghi!
+
+Riprovo con solo file GitHub e senza threshold:
+Il primo documento GitHub ha 1.4587852431034662
+
+Nessuno dei due documenti è NOTICE.
+Perchè la parola appare solo nel titolo, che è una volta sola che è poco.
+_
+NOTICE.txt si trova ad essere il Documento 6, con 'distance': 1.8291790920270086.
+Nonostante possieda solamente 1654 caratteri.
+
+Quindi, una cosa da mettere nel manuale utente è:
+"
+Non fare domande sul contenuto di un file GitHub basandosi sul suo nome, perchè il nome appare solo una volta all'inizio,
+bensì sempre e solo puntare sul contenuto direttamente se si vuole puntare un contenuto! Sennò, chiedendo con il nome 
+apparirà solamente i commit di modifica, dove il nome del file è citato più volte tra "messaggio", "lista file" e 
+"file che che lo citano". E' come, in una mappa hash, non poter accedere al valore usando la chiave, ma bensì potendo usare
+solamente il valore. # Usare il valore per accedere al valore.
+"
+
+Comunque, la lunghezza non è assolutamente il problema, abbiamo messo in chiaro che il problema è altro!
+
+Anche nel caso 2💣, "Connettività per tutti" comunque appariva al 2° posto su 19, e le altre issues a parte la prima
+erano tutte dietro, appunto perchè il documento Confluence, pur essendo lungo, comunque aveva il sufficiente numero 
+di keywords per cavarsela comunque bene, perchè la similarità già le pesa le keywords in base alla lunghezza!
