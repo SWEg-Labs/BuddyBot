@@ -717,17 +717,26 @@ distanza 1.3942717969004808 (probabilmente la parola "contiene" è inserita in p
 _
 IL PUNTO DELLA QUESTIONE:
 In questo caso i commit di GitHub sono più lunghi del documento GitHub stesso, siccome contengono anche la patch a tanti file.
-Il punto è che appaiono prima perchè la parola checkstyle.xml nel file GitHub "checkstyle.xml" appare solo nei metadati, cioè solo nel titolo, mentre invece
-nei commit essa appariva sia nel messaggio sia nei file modificati (in cui anche altri file riferivano checkstyle.xml). Per questo dico che in realtà non c'è nessun problema di similarità, perchè anche
-se un documento è lungo, comunque se la parola appare più volte allora appare in cima. Il che vuol dire che nella similarità il controllo della lunghezza del documento è già implementato,
-sono solo i documenti/dati che abbiamo che sono uno schifo. Principio GIGO: Garbage In, Garbage Out (Dati orrendi -> Risposta orrenda).
-Poi, la similarità che c'è non è perfetta, perchè tra i commit prima dei file ce n'erano anche di commit che non c'entravano nulla, ma il punto è che il problema non è lunghezza, è qualcos'altro che, non essendo esperti, noi non possiamo sapere.
+Il punto è che appaiono prima perchè la parola checkstyle.xml nel file GitHub "checkstyle.xml" appare solo nei metadati, cioè solo 
+nel titolo, mentre invece nei commit essa appariva sia nel messaggio sia nei file modificati (in cui anche altri file riferivano 
+checkstyle.xml). Per questo dico che in realtà non c'è nessun problema di similarità, perchè anche se un documento è lungo, comunque 
+se la parola appare più volte allora appare in cima. Il che vuol dire che nella similarità il controllo della lunghezza del documento 
+è già implementato, sono solo i documenti/dati che abbiamo che sono uno schifo. 
+Principio GIGO: Garbage In, Garbage Out (Dati orrendi -> Risposta orrenda).
+Poi, la similarità che c'è non è perfetta, bisogna ammetterlo, perchè tra i commit prima dei file ce n'erano anche di commit che non 
+c'entravano nulla, ma il punto è che il problema non è lunghezza, è qualcos'altro che, non essendo esperti, noi non possiamo sapere.
+Probabilmente chi ha creato l'algoritmo di similarità lo ha testato su dati migliori dei nostri, e comunque che un'AI non arrivi a
+fare dei collegamenti che riescono solo alla mente umana, sennò avrebbero già conquistato il mondo!
 _
 ESITO DELLA QUESTIONE:
 Manomettere la similarità pesando la lunghezza aiuterebbe a risolvere alcuni casi, ma ne peggiorebbe molti altri. Quindi, 
-io direttamente non manometterei, ne possiamo avere più svantaggi che vantaggi. Quei casi limite per cui succede ciò che succede
-funzionano male perchè i nostri dati fanno schifo, non perchè la similarità è sbagliata. Sono dei casi limite, secondo me per gli
-scopi del progetto si possono ignorare.
+io non manometterei, quantomeno non basandosi su questo specifico criterio della lunghezza dei documenti, perchè ne possiamo avere 
+più svantaggi che vantaggi. 
+Quei casi limite per cui succede ciò che succede funzionano male o perchè i nostri dati fanno schifo, oppure perchè la similarità è 
+sbagliata per altri motivi, ma non perchè i documenti lunghi sono penalizzati. 
+Comunque, le domande "allucinate" sono dei casi limite, secondo me per gli scopi del progetto si possono ignorare. Nelle due demo di 
+PoC e MVP staremo attenti noi a porre delle domande per cui sappiamo che abbiamo dei dati puliti e adatti per generare la risposta, 
+evitando dati sporchi che mettono in difficoltà l'algoritmo di similarità, che è per noi una grande black box!
 _
 Proposta strana: dare maggior peso alle keyword dei metadati invece che del page_content (così si darebbe più peso ai titoli dei file).
 Proposta assolutamente impossibile visto che il documento è unico e Chroma ti calcola la similarità solamente sul pacchetto completo,
