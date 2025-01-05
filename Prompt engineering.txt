@@ -778,3 +778,57 @@ Comunque, la lunghezza non è assolutamente il problema, abbiamo messo in chiaro
 Anche nel caso 2💣, "Connettività per tutti" comunque appariva al 2° posto su 19, e le altre issues a parte la prima
 erano tutte dietro, appunto perchè il documento Confluence, pur essendo lungo, comunque aveva il sufficiente numero 
 di keywords per cavarsela comunque bene, perchè la similarità già le pesa le keywords in base alla lunghezza!
+
+
+
+
+Ho introdotto i commit del progetto BuddyBot:
+
+26)
+Quando sono state introdotte le funzioni di split dei documenti?
+
+Found 1 relevant documents
+'date': '2024-12-15 16:22:15 UTC'
+'distance': 0.33857485174414576
+Content: Introdotte le funzioni di split dei documenti per gestire la questione del massimo numero di documenti che è 41666
+
+Assistant:
+ Le funzioni di split dei documenti sono state introdotte per gestire la questione del massimo numero di caratteri consentiti, che è di 41666. Queste funzioni permettono di suddividere i documenti provenienti da GitHub, Jira e Confluence in parti più piccole, facilitando l'elaborazione e la gestione dei dati.
+
+Ecco alcuni dettagli importanti sulle funzioni di split:
+
+1. **Obiettivo**: Le funzioni sono progettate per dividere
+
+Non ha capito "quando".
+
+
+27) In quale data sono state introdotte le funzioni di split dei documenti?
+
+Lo stesso documento ma con 'distance': 0.4018341083018156
+(E' diminuita perchè la query è più lunga, e diminuisce di tanto con la lunghezza della query, ma veramente di tanto!)
+
+Assistant:
+ Le funzioni di split dei documenti sono state introdotte il **15 dicembre 2024**. Questa modifica è stata effettuata nel contesto di gestire la questione del massimo numero di documenti, che è di **41666** caratteri.
+
+In sintesi:
+- **Data di introduzione**: 15 dicembre 2024
+- **Funzione**: Gestione del massimo numero di caratteri per i documenti, fissato a 41666.
+
+Oh, quantomeno se gli fai la domanda precisa ti risponde giusto!
+Bisogna fare attenzione che ogni tanto anche l'LLM ha delle allucinazioni!
+
+
+
+Carico i commit del repo della Documentazione.
+
+06m 14s per aggiungere 485 commits (il numero di commit del main, vengono messi solo quelli del ramo principale).
+Andremo verso i 10-15 minuti per la fine della PB allora.
+
+
+28) Quando è stata creata la repo della documentazione di SWEg Labs?
+
+Ha trovato 115 commit:
+[ERROR] Error processing user input: Error code: 429 - {'error': {'message': 'Request too large for gpt-4o-mini in organization org-1JCYsbOuFtZ3TeJx8arpPWwF on tokens per min (TPM): Limit 200000, Requested 329868. The input or output tokens must be reduced in order to run successfully. Visit https://platform.openai.com/account/rate-limits to learn more.', 'type': 'tokens', 'param': None, 'code': 'rate_limit_exceeded'}}
+[ERROR] Error fetching response: Error code: 429 - {'error': {'message': 'Request too large for gpt-4o-mini in organization org-1JCYsbOuFtZ3TeJx8arpPWwF on tokens per min (TPM): Limit 200000, Requested 329868. The input or output tokens must be reduced in order to run successfully. Visit https://platform.openai.com/account/rate-limits to learn more.', 'type': 'tokens', 'param': None, 'code': 'rate_limit_exceeded'}}
+
+Mi sa che le dimensioni di questo repo sono abbastanza ingestibili.
