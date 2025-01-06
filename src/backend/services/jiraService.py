@@ -90,6 +90,30 @@ class JiraService:
             logger.error(f"Error fetching issues: {e}")
             raise
 
+    def get_open_issues(self):
+        """
+        Fetches all open issues from the configured Jira project.
+
+        Returns:
+            list: A list of Jira issue objects.
+
+        Raises:
+            Exception: If an error occurs while fetching issues.
+        """
+        try:
+            url = f"{self.base_url}/rest/api/3/search"
+            params = {
+                "jql": f"project={self.project_key} AND status!=Done",
+                "maxResults": 50
+            }
+            response = requests.get(url, headers=self.headers, params=params, timeout=self.timeout)
+            response.raise_for_status()
+            issues = response.json().get("issues", [])
+            return issues
+        except Exception as e:
+            logger.error(f"Error fetching issues: {e}")
+            raise
+
     def get_issue_details(self, issue_key):
         """
         Fetches the details of a specific Jira issue.
