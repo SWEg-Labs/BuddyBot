@@ -435,11 +435,11 @@ Found 19 relevant documents
 'distance': 0.7129539399233067}\nContent: Introduzione di un file Header coincidente con la licenza, ma senza parentesi, siccome il module RegexpHeader purtroppo non riconosce le parentesi"
 'distance': 0.87259294551703}\nContent: Corretto il problema del game over, ma adesso è tornato il problema che la pallina non parte dalla posizione iniziale fissata"
 _
-Non mi aspettavo che il game over lo rilevasse con similarità così alta. Per fortuna che si è messa una issue in mezzo,
+Non mi aspettavo che il game over lo rilevasse con similarità così alta. Per fortuna che si è messo un altro file con "Header" in mezzo,
 sennò il max_gap l'avrebbe tagliato fuori, seppur di poco. Si deve risolvere la cosa!
 In conseguenza di ciò, alzo il max_gap a 0.3.
-Così adesso posso fare una domanda di confronto tra un commit lungo e un commit avendo più fiducia che come contesto non apparirà
-solo quello lungo, ma bensì tutti e due.
+Così adesso posso fare una domanda di confronto tra un commit lungo e un commit corto avendo più fiducia che come contesto non apparirà
+solo quello lungo (che fa maggiore match), ma bensì tutti e due.
 
 Comunque, risposta DIVINA.
 E similarità molto basse, appunto perchè i commit sono corti come le issues Jira.
@@ -778,3 +778,292 @@ Comunque, la lunghezza non è assolutamente il problema, abbiamo messo in chiaro
 Anche nel caso 2💣, "Connettività per tutti" comunque appariva al 2° posto su 19, e le altre issues a parte la prima
 erano tutte dietro, appunto perchè il documento Confluence, pur essendo lungo, comunque aveva il sufficiente numero 
 di keywords per cavarsela comunque bene, perchè la similarità già le pesa le keywords in base alla lunghezza!
+
+
+
+
+Ho introdotto i commit del progetto BuddyBot:
+
+26)
+Quando sono state introdotte le funzioni di split dei documenti?
+
+Found 1 relevant documents
+'date': '2024-12-15 16:22:15 UTC'
+'distance': 0.33857485174414576
+Content: Introdotte le funzioni di split dei documenti per gestire la questione del massimo numero di documenti che è 41666
+
+Assistant:
+ Le funzioni di split dei documenti sono state introdotte per gestire la questione del massimo numero di caratteri consentiti, che è di 41666. Queste funzioni permettono di suddividere i documenti provenienti da GitHub, Jira e Confluence in parti più piccole, facilitando l'elaborazione e la gestione dei dati.
+
+Ecco alcuni dettagli importanti sulle funzioni di split:
+
+1. **Obiettivo**: Le funzioni sono progettate per dividere
+
+Non ha capito "quando".
+
+
+27) In quale data sono state introdotte le funzioni di split dei documenti?
+
+Lo stesso documento ma con 'distance': 0.4018341083018156
+(E' diminuita perchè la query è più lunga, e diminuisce di tanto con la lunghezza della query, ma veramente di tanto!)
+
+Assistant:
+ Le funzioni di split dei documenti sono state introdotte il **15 dicembre 2024**. Questa modifica è stata effettuata nel contesto di gestire la questione del massimo numero di documenti, che è di **41666** caratteri.
+
+In sintesi:
+- **Data di introduzione**: 15 dicembre 2024
+- **Funzione**: Gestione del massimo numero di caratteri per i documenti, fissato a 41666.
+
+Oh, quantomeno se gli fai la domanda precisa ti risponde giusto!
+Bisogna fare attenzione che ogni tanto anche l'LLM ha delle allucinazioni!
+
+
+
+Carico i commit del repo della Documentazione.
+
+06m 14s per aggiungere 485 commits (il numero di commit del main, vengono messi solo quelli del ramo principale).
+Andremo verso i 10-15 minuti per la fine della PB allora.
+
+
+28) Quando è stata creata la repo della documentazione di SWEg Labs?
+
+Ha trovato 115 commit:
+[ERROR] Error processing user input: Error code: 429 - {'error': {'message': 'Request too large for gpt-4o-mini in organization org-1JCYsbOuFtZ3TeJx8arpPWwF on tokens per min (TPM): Limit 200000, Requested 329868. The input or output tokens must be reduced in order to run successfully. Visit https://platform.openai.com/account/rate-limits to learn more.', 'type': 'tokens', 'param': None, 'code': 'rate_limit_exceeded'}}
+[ERROR] Error fetching response: Error code: 429 - {'error': {'message': 'Request too large for gpt-4o-mini in organization org-1JCYsbOuFtZ3TeJx8arpPWwF on tokens per min (TPM): Limit 200000, Requested 329868. The input or output tokens must be reduced in order to run successfully. Visit https://platform.openai.com/account/rate-limits to learn more.', 'type': 'tokens', 'param': None, 'code': 'rate_limit_exceeded'}}
+
+Mi sa che le dimensioni di questo repo sono abbastanza ingestibili.
+
+
+
+
+
+
+06/01/25
+
+Oggi, desidero valutare un po' meglio il threshold
+
+Come dataset scelgo:
+1-- Jira
+2-- GitHub (file + commenti)
+3-- Confluence
+
+Scelgo 30 domande
+
+1) Chi deve scrivere la sezione "Strategie di test" del piano di qualifica?
+Il documento soluzione: 0.11517202854156494
+Documenti validi fino a: [Unico documento]
+
+2) Quali tecnologie sono selezionate da studiare?
+// 59 documenti con threshold 1.2
+// 43 documenti con threshold 1.1
+Il documento soluzione: 0.9705120325088501
+Documenti validi fino a: [Tutti invalidi]
+
+3) Quali documenti bisogna redigere?
+Il documento soluzione: 0.7988483309745789
+Documenti validi fino a: 1.0918388366699219 (Creare la presentazione da presentare ad Azzurro Digitale il 03/01/25.)
+                o anche: 1.1255497932434082 (stendere requisiti prestazionali)
+Possibile abbassamento del threshold a 1.1
+
+4) Quali requisiti o tipi di requisiti sono da scrivere?
+Il documento soluzione: a partire da 0.7391524314880371
+Documenti validi fino a: 1.1076133251190186 (stendere requisiti prestazionali)
+Incombent: 1.12
+
+5) Cosa è previsto che faccia Giacomo Loat a riguardo di Angular?
+Il documento soluzione: 1.0484997034072876 (michael Angular)
+Documenti validi fino a: 1.1997367143630981 (Giacomo Docker)
+E siamo tornati a 1.2, ecco. Succede che ogni tanto lo trovi un documento con confine 1.2.
+E questo documento è stato l'unico con Giacomo Loat, è stato fondamentale per la risposta.
+Incombent: 1.2
+
+6) Cosa è previsto che faccia Michael Fantinato a riguardo di Angular?
+Il documento soluzione: 1.1075855493545532 (Implementare Angular in un ramo del PoC)(il 41° documento)
+Documenti validi fino a: Il primo documento valido ha 1.05952787399292, per Michael, che chiede di sistemare caso d'uso UC19.
+Perchè la domanda è lunga, e le domande lunghe danno risultati terribili.
+Mi ha dato 60 documenti! Significa che alzare sopra 1.2 significa consumare un fottio di token!
+Le domande lunghe BuddyBot le soffre tantissimo.
+
+7) Angular è di Michael Fantinato?
+0.9452953338623047
+Un po' meglio, ma comunque questo documento ha un bassissimo SEO, pur essendo cortissimo. 
+Non si sa bene cosa combini la similarità con questa domanda, è black box, ma di certo la colpa non è la lunghezza dato il documento 
+di soli 231 caratteri.
+Comunque, la domanda più corta ha fatto guadagnare 0,162. Importantissima la query corta!
+Purtroppo da "La domanda è fuori contesto.", mi sono già segnato di non fare mai domande colloquiali.
+
+8) Chi è l'autore del progetto BrickBreaker?
+Il documento soluzione: 1.0633978904475843
+Documenti validi fino a: Vabbè, di BrickBreaker ci sono documenti fino alla fine
+Comunqure, mettere 1.1 come threshold sarebbe troppo vicino alla risposta, non lo ritengo giusto.
+
+9) Chi ha scritto il README del progetto BrickBreaker?
+Il documento soluzione: 0.8916218280792236 (Sistemazione del README)
+Documenti validi fino a: 1.180303931236267 (Ultime sistemazioni a NOTICE e README)
+Si è parlato di README fino all'ultimo momento, e quasi sicuramente ce ne sarebbero stati altri anche dopo,
+però già mi ha trovato 29 documenti (tra cui molti che non c'entravano) così, non possono scatenare l'inferno
+dei token andando ad alzare il threshold, la scelta è solo se dimibuirli o no. Ed è evidente che diminuire
+non si può, perchè questa è una domanda perfetta per BuddyBot ed è evidente che si trovano risultati validi
+fino a 1.2 tranquillissimamente.
+
+10) Qual è la data dell'ultimo commit di BrickBreaker?
+Non era domanda facile.
+Il primo documento lo ha trovato a 1.0661883354187012, il primo di BrickBreaker a 1.0958337783813477.
+Poi, è stata trovata altra roba (fino a 10) di BrickBreaker fino a 1.2
+In questo caso per avere un tot di risultati era fondamentale giungere fino a 1.2
+
+11) Come si chiama il progetto a cui sta lavorando il team?
+Il documento soluzione: 0.9020334371191384 (Creazione progetto Maven)
+Documenti validi fino a: nessun altro valido
+
+12) Nome del progetto?
+Il documento soluzione: 0.7164918534610248 (Creazione progetto Maven)
+Documenti validi fino a: nessun altro
+Fondamentale porre query corte. Ha guadahnato 1.8 !!
+Ecco, in questo caso, gli altri 26 documenti erano inutili. Tuttavia, non si può cadere nella
+tentazione di abbassare il threshold, vedi domande precedenti, non si può pensare solo alla domanda
+perfetta!
+
+13) Per quale progetto è stata svolta di recente la Retrospettiva di una sprint?
+Il documento soluzione: 0.8602511921421436 (immagino sia come uno scorso test, dove era al secondo posto)
+Documenti validi fino a: nessun altro
+63 documenti cavolo, troppi!
+Il motivo che per cui avevo messo max_gap = 0.3 era
+"
+24) 
+E' stato corretto prima il problema del game over oppure è stato prima introdotto 
+il modulo Header a sostituzione del modulo RegexpHeader?
+"
+Cioè nei casi di confronto tra commit lungo e corto devono essere trovati tutti e due!
+"
+Così adesso posso fare una domanda di confronto tra un commit lungo e un commit corto avendo più fiducia che come contesto non apparirà
+solo quello lungo (che fa maggiore match), ma bensì tutti e due.
+"
+
+14) In che data Riccardo Stefani ha inserito il token a Coveralls?
+Il documento soluzione: 0.5261122566888996
+Documenti validi fino a: nessuno, max_gap ha funzionato perfettamente.
+
+15) Chi è l'autore che è tornato alla versione originale del gioco?
+Il documento soluzione: 0.6619325448500666 (Sono tornato alla versione originale del gioco, poichè infatti questo è il gioco puro: la possibilità di controllare la pallina aveva reso il gioco troppo facile)
+Il successivo ha 0.7750848948392448 (Prima vera build funzionante, ma il gioco non è interattivo), quindi qua il max_gap
+non era applicabile, perchè mettere 1.0 sarebbe inaccettabile.
+
+16) E' stato corretto prima il problema del game over oppure è stato prima introdotto 
+il modulo Header a sostituzione del modulo RegexpHeader?
+Gli stessi e identici 3 della volta scorsa il "24)" che mi aveva fatto scegliere max_gap = 0.3
+"Il problema del game over è stato corretto prima dell'introduzione del modulo Header a sostituzione del modulo RegexpHeader"
+game over ha 2024-09-14, mentre Header ha 2024-09-17 e 2024-09-18. Quindi, risposta corretta!
+
+17) Chi ha generato i badges?
+Il documento soluzione: 0.8427063580326658 (*14 volte)
+Documenti validi fino a: 1.110598530430815 e 1.178655862808227 centravano un poco, seppur poco.
+Viene la tentazione di mettere il threshold a 1.1, ma non si può per i motivi scritti sopra.
+
+18) Quali file sono stati modificati (e in quali righe) quando è stato corretto il problema del game over?
+Il documento soluzione: 0.7496161544680473
+Documenti validi fino a: Il successivo a 0.8544999513616444, il resto nessuno rilevante
+69 documenti sono troppi, peccato.
+
+19) Quali file sono stati modificati (e in quali righe) quando è stato introdotto il modulo Header a sostituzione del modulo RegexpHeader?
+Risposta perfetta, ha trovato i due commit che doveva trovare, e max_gap ha funzionato perfettamente.
+
+20) Chi è l'autore del repo BrickBreaker?
+Il documento soluzione: 1.1449483133671134 (Creazione progetto Maven)
+Documenti validi fino a: nessun altro.
+Fondamentale tenere 1.2
+
+21) Che cosa contiene il file checkstyle.xml?
+Il documento soluzione: 0.5303087655972863
+Documenti validi fino a: 0.7079200148582458
+Qua bastavano i primi tre. Il successivo è 0.9756346940994263
+Verrebbe voglia di mettere 0.25 per il max_gap, ma per il caso citato sopra non posso.
+
+22) Che cosa contiene il file NOTICE.txt?
+Il documento soluzione: 0.7392582893371582
+Documenti validi fino a: 0.8282777070999146
+Anche qua bastavano i primi tre. Però, il successivo ha 0.8982561826705933 (Creare la presentazione per il prossimo 
+diario di bordo di mercoledì 08/01/25), e qua proprio non si può fare niente!
+
+23) Chi deve creare il nuovo foglio google per preparare il preventivo e consuntivo?
+Il documento soluzione: 0.14126503467559814
+Documenti validi fino a: [unico, il max_gap è stato perfetto]
+
+24) Quali sono i requisiti per Ubuntu?
+Ha trovato 34 documenti, tutti invalidi.
+Il primo a 0.8911132216453552 (Stendere requisiti qualitativi)
+Vabbè, peccato.
+
+25) Quali sono, per il progetto informatico BuddyBot, i requisiti per Ubuntu?
+Ha trovato 16 documenti, tutti invalidi.
+Il primo a 0.9581909257624062 (Qualche cambiamento per aderire ai warnings. E adesso la GitHub Action deve funzionare!)
+Vabbè, peccato.
+Peccatissimo sopratutto perchè dà "La domanda è fuori contesto.". Peccato, dovrò usare altre domande allora!
+Adesso con "Quale versione di Docker bisogna studiare?"
+_
+Riprovo:
+Quali sono i requisiti per Ubuntu? Informazione non trovata.
+Quali sono, per il progetto informatico BuddyBot, i requisiti per Ubuntu? Informazione non trovata.
+Chi vince tra una tigre e un leone? La domanda è fuori contesto.
+GODO!
+
+26) Chi deve creare la presentazione per il prossimo diario di bordo di mercoledì 08/01/25 ?
+Unico a 0.09024052321910858
+Ora provo:
+Per che data deve essere creata la presentazione per il prossimo diario di bordo di mercoledì 08/01/25?
+Perfetto.
+Entro quando deve essere creata la presentazione per il prossimo diario di bordo di mercoledì 08/01/25?
+Perfetto.
+
+27) Chi deve creare il diario di bordo?
+Il documento soluzione: 0.5749495029449463
+Documenti validi fino a: Da 0.827472448348999 in poi ce ne sono altri 63!
+Ecco perchè bisogna fare domande precise!
+Comunque, il chatbot ha risposto:
+"
+ Nel contesto fornito, non c'è una menzione diretta su chi debba creare il diario di bordo. Tuttavia, è presente un'attività che richiede "creare la presentazione per il prossimo diario di bordo di mercoledì 08/01/25", che è assegnata a "Verz 8".
+
+Quindi, si può dedurre che:
+
+- **Chi deve creare il diario di bordo**: Non specificato direttamente, ma la creazione della presentazione per il diario di bordo è assegnata a **Verz 8**.
+
+Se si considera la creazione della presentazione come parte della preparazione del diario di bordo, si potrebbe ipotizzare che Verz 8 sia coinvolto anche nella creazione del diario stesso o nella sua presentazione.
+"
+Ci sta! Anche se la domanda è ambigua, comunque la risposta è corretta!
+
+28) In che data si è capito che il gioco non è interattivo?
+Il documento soluzione: 0.8131467204257712, al secondo posto a causa dell'elevata lunghezza! (Prima vera build funzionante, ma il gioco non è interattivo)
+"Adesso la mappa non si risorteggia quando clicchi Enter per iniziare il gioco" comunque dà l'idea di "non interattivo" dai! (0.7949817082157015). Qua il documento è veramente breve, ecco perchè è finito di poco prima.
+Dal successivo "Ora il player si può muovere solo se il gioco è attivo, e non può attivare il gioco" che è stato preso per "attivo", sono tutti no.
+Totale 25, quindi altri 23 purtroppo.
+
+29) Dove è scritto "// Direzione casuale di partenza della pallina\n-                double angle = rand.nextDouble() * Math.PI / 3 - Math.PI / 6; // Tra -30° e +30°\n" ?
+Il documento soluzione: 1.1835970743018926
+E poi un altro documento, così a caso.
+Vergognoso che si debba arrivare così in là. Comunque, il threshold è giusto!
+
+30) Cosa c'è de mettere il foglio google?
+Il documento soluzione: 0.5815768241882324 e 0.7249407768249512
+Documenti validi fino a: basta, il successivo è 0.8183230494457616, quindi il max_gap non si poteva applicare.
+
+31) JUnit e Mockito per cosa sono stati usati?
+Eh, in generale ce ne sono ben 48, quando la risposta ha bisogno di 2 file e basta.
+Eh, peccato, però non possiamo abbassare il threshold per i motivi sopra! Cioè per gestire anche i casi limite!
+
+32) Cosa bisogna fare con la tecnologia Docker?
+max_gap perfetto, ma l'LLM ha pensato che la domanda fosse su Docker, non su cosa deve fare il gruppo con Docker.
+La colpa è della domanda mal posta!
+
+33) Cosa è stato assegnato da fare per la tecnologia Docker?
+Found 1 relevant documents   as always!
+Ed è aumentata solo di 1 centesimo la similarità, godo!
+Risposta:
+"
+Per la tecnologia Docker è stato assegnato il seguente compito:
+
+- **Studiare la tecnologia Docker**
+
+Attualmente, il compito è segnalato con priorità media ed è ancora da completare.
+"
+Ah, ecco, visto!
+Bastava fare una domanda fatta bene

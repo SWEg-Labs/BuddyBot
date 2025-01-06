@@ -34,11 +34,10 @@ class ChatService:
                             dando una spiegazione dettagliata ed esaustiva della risposta data.
                             Se possibile rispondi con un elenco puntato o numerato.
                             Se la domanda ti chiede informazioni allora tu cercale nel contesto e forniscile.
-                            Se non sono presenti documenti di contesto, oppure se tu ritieni che l'utente sia uscito fuori dal contesto, 
-                            rispondi con "La domanda è fuori contesto".
-                            La domanda non può essere fuori contesto se almeno un sostantivo citato è presente nel contesto.
-                            Se ritieni che l'utente sia rimasto nel contesto, ma non riesci a trovare la risposta nei documenti forniti, 
-                            rispondi con "Informazione non trovata"."""
+                            Se non riesci a trovare la risposta nei documenti forniti, ma la domanda è comunque legata all'informatica,
+                            rispondi con "Informazione non trovata".
+                            Se l'utente è uscito dal contesto informatico, rispondi con "La domanda è fuori contesto".
+                            """
         except Exception as e:
             logger.error(f"Error initializing ChatService: {e}")
 
