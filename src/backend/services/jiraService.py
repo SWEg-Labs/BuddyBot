@@ -79,8 +79,8 @@ class JiraService:
         try:
             url = f"{self.base_url}/rest/api/3/search"
             params = {
-                "jql": f"project={self.project_key} AND status!=Done",
-                "maxResults": 50
+                "jql": f"project={self.project_key}",
+                "maxResults": 100
             }
             response = requests.get(url, headers=self.headers, params=params, timeout=self.timeout)
             response.raise_for_status()
