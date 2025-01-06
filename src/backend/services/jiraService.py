@@ -79,7 +79,7 @@ class JiraService:
         try:
             url = f"{self.base_url}/rest/api/3/search"
             params = {
-                "jql": f"project={self.project_key} AND status!=Done",
+                "jql": f"project={self.project_key}",
                 "maxResults": 50
             }
             response = requests.get(url, headers=self.headers, params=params, timeout=self.timeout)
