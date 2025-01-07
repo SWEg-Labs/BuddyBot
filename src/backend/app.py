@@ -95,7 +95,7 @@ async def load_from_jira():
         Dict[str, str]: Stato dell'operazione con un messaggio.
     """
     try:
-        UserController._load_jira(vector_store)
+        UserController._load_jira(vector_store, github_service, jira_service)
         return {"response": "File caricati con successo da Jira"}
     except Exception as e:
         logger.error(str(e))
@@ -111,7 +111,7 @@ async def load_from_confluence():
         Dict[str, str]: Stato dell'operazione con un messaggio.
     """
     try:
-        UserController._load_confluence(vector_store)
+        UserController._load_confluence(vector_store, github_service, jira_service, confluence_service)
         return {"response": "File caricati con successo da Confluence"}
     except Exception as e:
         logger.error(str(e))
