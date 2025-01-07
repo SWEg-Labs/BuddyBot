@@ -99,6 +99,7 @@ class UserController:
             logger.info(f"Added {len(repo_files)} files to the vector store.")
         except Exception as e:
             logger.error(f"Error getting GitHub files: {e}")
+            raise e
 
     @staticmethod
     def _load_github_commits(vector_store, github_service, *args):
@@ -112,6 +113,7 @@ class UserController:
             logger.info(f"Added {len(commits)} commits to the vector store.")
         except Exception as e:
             logger.error(f"Error getting GitHub commits: {e}")
+            raise e
 
     @staticmethod
     def _load_jira(vector_store, *args):
@@ -124,6 +126,7 @@ class UserController:
             logger.info(f"Added {len(issues)} issues to the vector store.")
         except Exception as e:
             logger.error(f"Error getting Jira issues: {e}")
+            raise e
 
     @staticmethod
     def _load_confluence(vector_store, *args):
@@ -136,6 +139,7 @@ class UserController:
             logger.info(f"Added {len(pages)} pages to the vector store.")
         except Exception as e:
             logger.error(f"Error getting Confluence pages: {e}")
+            raise e
 
     @staticmethod
     def _delete_and_recreate(vector_store, *args):
