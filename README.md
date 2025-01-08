@@ -1,6 +1,6 @@
 È necessario avere Docker installato
 
-Per evitare possibili problemi di transizione da un sistema operativo MS-DOS (windows) della macchina a sistema operativo Unix del container è consigliato prima di tutto spostarsi sulla directory del file crontab ed eseguire "dos2unix".
+Per evitare possibili problemi di transizione da un sistema operativo MS-DOS (windows) della macchina a sistema operativo Unix del container è consigliato prima di tutto spostarsi sulla directory del file crontab ed eseguire "dos2unix crontab".
 
 Per avviare il container eseguire il comando "docker compose up".
 Docker se necessario costruirà le immagini di chroma e dell'applicazione python.
