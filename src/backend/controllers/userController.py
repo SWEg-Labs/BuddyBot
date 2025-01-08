@@ -99,7 +99,7 @@ class UserController:
             logger.info(f"Added {len(repo_files)} files to the vector store.")
         except Exception as e:
             logger.error(f"Error getting GitHub files: {e}")
-            raise
+            raise e
 
     @staticmethod
     def _load_github_commits(vector_store, github_service, *args):
@@ -113,7 +113,7 @@ class UserController:
             logger.info(f"Added {len(commits)} commits to the vector store.")
         except Exception as e:
             logger.error(f"Error getting GitHub commits: {e}")
-            raise
+            raise e
 
     @staticmethod
     def _load_jira(vector_store, *args):
@@ -126,7 +126,7 @@ class UserController:
             logger.info(f"Added {len(issues)} issues to the vector store.")
         except Exception as e:
             logger.error(f"Error getting Jira issues: {e}")
-            raise
+            raise e
 
     @staticmethod
     def _load_confluence(vector_store, *args):
@@ -139,7 +139,7 @@ class UserController:
             logger.info(f"Added {len(pages)} pages to the vector store.")
         except Exception as e:
             logger.error(f"Error getting Confluence pages: {e}")
-            raise
+            raise e
 
     @staticmethod
     def _delete_and_recreate(vector_store, *args):
@@ -149,7 +149,7 @@ class UserController:
             logger.info("The collection has been deleted and recreated successfully.")
         except Exception as e:
             logger.error(f"Error removing documents: {e}")
-            raise
+            raise e
 
     @staticmethod
     def _view_documents(vector_store, *args):
@@ -158,7 +158,7 @@ class UserController:
             vector_store.view_all_documents()
         except Exception as e:
             logger.error(f"Error viewing documents: {e}")
-            raise
+            raise e
 
     @staticmethod
     def _process_chat(input_text, chat_service):
@@ -168,4 +168,4 @@ class UserController:
             print("\n\nAssistant:\n", response)
         except Exception as e:
             logger.error(f"Error fetching response: {e}")
-            raise
+            raise e
