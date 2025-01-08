@@ -149,6 +149,7 @@ class UserController:
             logger.info("The collection has been deleted and recreated successfully.")
         except Exception as e:
             logger.error(f"Error removing documents: {e}")
+            raise e
 
     @staticmethod
     def _view_documents(vector_store, *args):
@@ -157,6 +158,7 @@ class UserController:
             vector_store.view_all_documents()
         except Exception as e:
             logger.error(f"Error viewing documents: {e}")
+            raise e
 
     @staticmethod
     def _process_chat(input_text, chat_service):
@@ -166,3 +168,4 @@ class UserController:
             print("\n\nAssistant:\n", response)
         except Exception as e:
             logger.error(f"Error fetching response: {e}")
+            raise e
