@@ -12,9 +12,6 @@ RUN pip install -r backend/requirements.txt
 # Aggiorna repository apt e installa pacchetti necessari
 RUN apt-get update && apt-get install -y cron
 
-# Copia file cron.log
-COPY cron.log /var/log/cron.log
-
 # Copia file crontab
 COPY crontab /etc/cron.d/crontab
 
