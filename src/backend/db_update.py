@@ -40,12 +40,12 @@ try:
     # inizializza confluence service
     confluence_service = ConfluenceService()
     # set args vector
-    args = [vector_store, github_service, jira_service, confluence_service]
+    args = (vector_store, github_service, jira_service, confluence_service)
     # update database
-    UserController._load_github_files(args)
-    UserController._load_github_commits(args)
-    UserController._load_jira(args)
-    UserController._load_confluence(args)
+    UserController._load_github_files(*args)
+    UserController._load_github_commits(*args)
+    UserController._load_jira(*args)
+    UserController._load_confluence(*args)
 
     # Se siamo passati da stato di errore a stato di successo ripristina variabili e cron
     if os.getenv('DB_UPDATE_ERROR')=='1':
