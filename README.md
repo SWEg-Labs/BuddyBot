@@ -9,6 +9,11 @@ Per avviare il container eseguire il comando:
 docker compose up --build
 ```
 
+Al termine eseguire il comando:
+```
+docker compose down
+```
+
 ## Esecuzione dell'applicazione
 - Andare nel terminale del container
   - Tra i Containers di Docker Desktop, selezionare "backend"
