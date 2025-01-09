@@ -25,7 +25,8 @@ docker compose down
 - Se attendete 5 minuti dall'avvio del container ed inserite nel chatBot il comando "v" per vedere i documenti presenti nel database vedrete che il database non è vuoto.
 
 ## .env
-Tutte le variabili di sistema di configurazione sono nel dockerfile. Nel .env servono solo le sequenti voci:
+Tutte le variabili di sistema di configurazione sono nel dockerfile.
+Nel .env servono solo le sequenti voci:
 ```
 OPENAI_API_KEY = la_tua_chiave_openai
 OPENAI_MODEL_NAME = modello_llm_scelto
@@ -42,3 +43,4 @@ JIRA_PROJECT_KEY= jira_project_key
 CONFLUENCE_BASE_URL= confluence_base_key
 CONFLUENCE_SPACE_KEY= confluence_space_key
 ```
+Inserire il .env nella stessa directory del Dockerfile.
