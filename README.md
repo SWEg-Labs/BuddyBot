@@ -1,13 +1,46 @@
-È necessario avere Docker installato
+# README
 
-Per evitare possibili problemi di transizione da un sistema operativo MS-DOS (windows) della macchina a sistema operativo Unix del container è consigliato prima di tutto spostarsi sulla directory del file crontab ed eseguire "dos2unix crontab".
+## Prerequisiti
+- È necessario avere Docker installato
 
-Per avviare il container eseguire il comando "docker compose up".
-Docker se necessario costruirà le immagini di chroma e dell'applicazione python.
+## Avvio del container
+Per avviare il container eseguire il comando:
+```
+docker compose up --build
+```
 
-Per eseguire l'applicazione andare nel terminale del container (tra i Containers di Docker Desktop, selezionare "backend" e andare alla voce "Exec"), navigare alla directory dove c'è il file main.py ed eseguire "python main.py".
-In alternativa dal terminale della macchina si può fare "docker exec -it buddybot-backend /bin/bash" per accedere al terminale del container chiamato buddybot-backend.
+Al termine eseguire il comando:
+```
+docker compose down
+```
 
-Se attendete 5 minuti dall'avvio del container, poi avviate l'applicazione ed inserite il comando "v" per vedere i documenti presenti nel database vedrete che il database non è vuoto.
+## Esecuzione dell'applicazione
+- Andare nel terminale del container
+  - Tra i Containers di Docker Desktop, selezionare "backend"
+  - Una volta entrati nel container andare alla voce "Exec"
+- Eseguire:
+  ```
+  python backend/main.py
+  ```
+- Se attendete 5 minuti dall'avvio del container ed inserite nel chatBot il comando "v" per vedere i documenti presenti nel database vedrete che il database non è vuoto.
 
-Dopo aver fatto modifiche al codice eseguire "docker compose up --build" per far ricostruire le immagini con il codice aggiornato, altrimenti docker usa il codice vecchio per avviare i container.
+## .env
+Tutte le variabili di sistema di configurazione sono nel dockerfile.
+Nel .env servono solo le sequenti voci:
+```
+OPENAI_API_KEY = la_tua_chiave_openai
+OPENAI_MODEL_NAME = modello_llm_scelto
+OPENAI_EMBEDDING_MODEL_NAME = embedding_model_scelto
+CHROMA_HOST = host_database
+CHROMA_PORT = porta_database
+GITHUB_TOKEN = il_tuo_token_github
+OWNER = owner_repository
+REPO = nome_repository
+ATLASSIAN_TOKEN = il_tuo_token_atlassian
+ATLASSIAN_USER_EMAIL = la_tua_mail_atlassian
+JIRA_BASE_URL= url_base_jira
+JIRA_PROJECT_KEY= jira_project_key
+CONFLUENCE_BASE_URL= confluence_base_key
+CONFLUENCE_SPACE_KEY= confluence_space_key
+```
+Inserire il .env nella stessa directory del Dockerfile.
