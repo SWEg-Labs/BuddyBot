@@ -21,6 +21,7 @@ docker compose up --build
 
 ## .env
 Tutte le variabili di sistema di configurazione sono nel dockerfile. Nel .env servono solo le sequenti voci:
+```
 OPENAI_API_KEY = la_tua_chiave_openai
 OPENAI_MODEL_NAME = modello_llm_scelto
 OPENAI_EMBEDDING_MODEL_NAME = embedding_model_scelto
@@ -35,3 +36,4 @@ JIRA_BASE_URL= url_base_jira
 JIRA_PROJECT_KEY= jira_project_key
 CONFLUENCE_BASE_URL= confluence_base_key
 CONFLUENCE_SPACE_KEY= confluence_space_key
+```
