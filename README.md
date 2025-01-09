@@ -1,15 +1,15 @@
-#README
+# README
 
-##Prerequisiti
+## Prerequisiti
 - È necessario avere Docker installato
 
-##Avvio del container
+## Avvio del container
 Per avviare il container eseguire il comando:
 ```
 docker compose up --build
 ```
 
-##Esecuzione dell'applicazione
+## Esecuzione dell'applicazione
 - Andare nel terminale del container
   - Tra i Containers di Docker Desktop, selezionare "backend"
   - Entrati nel container andare alla voce "Exec"
@@ -19,7 +19,7 @@ docker compose up --build
   ```
 - Se attendete 5 minuti dall'avvio del container ed inserite nel chatBot il comando "v" per vedere i documenti presenti nel database vedrete che il database non è vuoto.
 
-##.env
+## .env
 Tutte le variabili di sistema di configurazione sono nel dockerfile. Nel .env servono solo le sequenti voci:
 OPENAI_API_KEY = la_tua_chiave_openai
 OPENAI_MODEL_NAME = modello_llm_scelto
