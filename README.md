@@ -17,10 +17,10 @@ docker compose down
 ## Esecuzione dell'applicazione
 - Andare nel terminale del container
   - Tra i Containers di Docker Desktop, selezionare "backend"
-  - Entrati nel container andare alla voce "Exec"
-- Navigare alla directory dove c'è il file main.py ed eseguire:
+  - Una volta entrati nel container andare alla voce "Exec"
+- Eseguire:
   ```
-  python main.py
+  python backend/main.py
   ```
 - Se attendete 5 minuti dall'avvio del container ed inserite nel chatBot il comando "v" per vedere i documenti presenti nel database vedrete che il database non è vuoto.
 
