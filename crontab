@@ -1,2 +1,0 @@
-*/5 * * * * root /usr/local/bin/python /app/backend/db_update.py >> /var/log/cron.log
-# Il docker container è il root user quindi c'è la keyword root
