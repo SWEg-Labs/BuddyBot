@@ -4,7 +4,7 @@ FROM python:latest
 ARG WORKDIR="/app"
 ARG SRC_DIRECTORY="src/"
 ENV REQUIREMENTS_PATH="${WORKDIR}/backend/requirements.txt"
-ENV DOTENV_PATH="${WORKDIR}/backend/.env"
+ENV DOTENV_PATH="${WORKDIR}/.env"
 
 ARG DB_UPDATE_PATH="${WORKDIR}/backend/db_update_controller.py"
 ARG CRON_LOG_PATH="/var/log/cron.log"
