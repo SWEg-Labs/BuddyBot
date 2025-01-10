@@ -30,7 +30,6 @@ Nel .env servono solo le sequenti voci:
 ```
 OPENAI_API_KEY = la_tua_chiave_openai
 OPENAI_MODEL_NAME = modello_llm_scelto
-OPENAI_EMBEDDING_MODEL_NAME = embedding_model_scelto
 CHROMA_HOST = host_database
 CHROMA_PORT = porta_database
 GITHUB_TOKEN = il_tuo_token_github
