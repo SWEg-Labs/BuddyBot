@@ -1,0 +1,23 @@
+<div class="actions">
+  <button
+    class="action-button jira"
+    (click)="onJiraClick()"
+    [disabled]="isLoading"
+  >
+    Aggiorna Jira
+  </button>
+  <button
+    class="action-button github"
+    (click)="onGithubClick()"
+    [disabled]="isLoading"
+  >
+    Aggiorna GitHub
+  </button>
+  <button
+    class="action-button confluence"
+    (click)="onConfluenceClick()"
+    [disabled]="isLoading"
+  >
+    Aggiorna Confluence
+  </button>
+</div>
