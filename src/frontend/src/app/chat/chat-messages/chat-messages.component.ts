@@ -26,7 +26,6 @@ export class ChatMessagesComponent implements AfterViewChecked {
     console.log('Scroll to bottom triggered');
     if (this.messagesContainer) {
       const element = this.messagesContainer.nativeElement;
-      console.log('Element found:', element);
       element.scrollTop = element.scrollHeight;
     } else {
       console.error('messagesContainer is not defined');
