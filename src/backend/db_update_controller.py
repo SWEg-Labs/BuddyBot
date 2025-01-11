@@ -105,8 +105,3 @@ except Exception as e:
 
 finally:
     print("--------------------------------------------------")
-
-
-
-if __name__ == "__main__":
-    update_database()

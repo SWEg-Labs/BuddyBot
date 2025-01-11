@@ -24,6 +24,12 @@ docker compose down
   ```
 - Se attendete 5 minuti dall'avvio del container ed inserite nel chatBot il comando "v" per vedere i documenti presenti nel database vedrete che il database non è vuoto.
 
+In alternativa dal terminale della macchina si può eseguire: 
+```
+docker exec -it buddybot-backend /bin/bash
+ ```
+Per accedere al terminale del container chiamato buddybot-backend.
+
 ## .env
 Tutte le variabili di sistema di configurazione sono nel dockerfile.
 Nel .env servono solo le sequenti voci:
