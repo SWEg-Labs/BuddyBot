@@ -4,12 +4,16 @@ load_dotenv()
 from crontab import CronTab
 from db_update import update_database
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 try:
     print("--------------------------------------------------")
     
-    # Stampa l'ora attuale
-    print(f"[{datetime.now().strftime('%H:%M:%S')}] Inizio aggiornamento")
+    # Stampa l'ora di inizio aggiornamento
+    italy_tz = ZoneInfo("Europe/Rome")
+    start_italian_time = datetime.now(italy_tz)
+    start_time_string = start_italian_time.strftime("%d/%m/%Y %H:%M:%S")
+    print(f"[{start_time_string}] Inizio aggiornamento")
 
     env_path = find_dotenv()
     crontab_path = os.environ.get('CRONTAB_PATH')
@@ -45,7 +49,10 @@ try:
             job.setall(db_update_frequency)
         cron.write()
 
-    print(f"[{datetime.now().strftime('%H:%M:%S')}] Aggiornamento completato")
+    # Stampa l'ora di fine aggiornamento
+    end_italian_time = datetime.now(italy_tz)
+    end_time_string = end_italian_time.strftime("%d/%m/%Y %H:%M:%S")
+    print(f"[{end_time_string}] Aggiornamento completato")
 
 except Exception as e:
     print(f"Error: {e}")
