@@ -6,7 +6,7 @@
 ## Avvio del container
 Per avviare il container eseguire il comando:
 ```
-docker compose up
+docker compose up --build
 ```
 
 Al termine eseguire il comando:
