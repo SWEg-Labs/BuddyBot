@@ -1,12 +1,12 @@
 FROM python:latest
 
 # Argomenti e variabili di configurazione
-ARG WORKDIR="/app"
-ARG SRC_DIRECTORY="src/"
-ENV REQUIREMENTS_PATH="${WORKDIR}/backend/requirements.txt"
-ENV DOTENV_PATH="${WORKDIR}/backend/.env"
+ARG WORKDIR="/backend"
+ARG SRC_DIRECTORY=".."
+ENV REQUIREMENTS_PATH="${WORKDIR}/requirements.txt"
+ENV DOTENV_PATH="${WORKDIR}/env"
 
-ARG DB_UPDATE_PATH="${WORKDIR}/backend/db_update_controller.py"
+ARG DB_UPDATE_PATH="${WORKDIR}/db_update_controller.py"
 ARG CRON_LOG_PATH="/var/log/cron.log"
 ARG PYTHON_INTERPRETER_PATH="/usr/local/bin/python"
 ENV CRONTAB_PATH="/etc/cron.d/crontab"
@@ -24,10 +24,7 @@ ENV DB_UPDATE_RETRY='0'
 WORKDIR ${WORKDIR}
 
 # Copia codice sorgente nella working directory
-COPY $SRC_DIRECTORY $WORKDIR
-
-# copia il dotenv nella working directory
-COPY .env $DOTENV_PATH
+COPY . .
 
 # Installa dipendenze
 RUN pip install -r $REQUIREMENTS_PATH && \

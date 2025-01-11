@@ -8,7 +8,9 @@ services:
       - buddybot-network
 
   backend:
-    build: .
+    build:
+      context: ./src/backend
+      dockerfile: Dockerfile
     container_name: buddybot-backend
     ports:
       - "8001:8000"
