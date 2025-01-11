@@ -5,7 +5,7 @@ from services.jiraService import JiraService
 from services.confluenceService import ConfluenceService
 
 def update_database():
-    print("chiamata funzione update_database")
+    print("Chiamata funzione update_database")
     try:
         # inizializza vector store
         vector_store = VectorStoreRepository()
