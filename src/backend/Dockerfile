@@ -2,7 +2,7 @@ FROM python:latest
 
 # Argomenti e variabili di configurazione
 ARG WORKDIR="/backend"
-ARG SRC_DIRECTORY=".."
+ARG SRC_DIRECTORY="."
 ENV REQUIREMENTS_PATH="${WORKDIR}/requirements.txt"
 ENV DOTENV_PATH="${WORKDIR}/env"
 
@@ -24,7 +24,7 @@ ENV DB_UPDATE_RETRY='0'
 WORKDIR ${WORKDIR}
 
 # Copia codice sorgente nella working directory
-COPY . .
+COPY ${SRC_DIRECTORY} ${WORKDIR}
 
 # Installa dipendenze
 RUN pip install -r $REQUIREMENTS_PATH && \
