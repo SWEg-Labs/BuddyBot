@@ -27,7 +27,7 @@ services:
       dockerfile: Dockerfile
     container_name: buddybot-frontend
     ports:
-      - "4201:4200"
+      - "4200:4200"
     networks:
       - buddybot-network
     depends_on:

@@ -46,6 +46,4 @@ RUN echo "" >> ${DOTENV_PATH} && \
 RUN echo "${DB_UPDATE_FREQUENCY} root ${CRONJOB_COMMAND}" > ${CRONTAB_PATH} && \
     chmod 0644 ${CRONTAB_PATH}
 
-EXPOSE 5000
-
 CMD ["python", "app.py"]
