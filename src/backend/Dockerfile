@@ -46,18 +46,6 @@ RUN echo "" >> ${DOTENV_PATH} && \
 RUN echo "${DB_UPDATE_FREQUENCY} root ${CRONJOB_COMMAND}" > ${CRONTAB_PATH} && \
     chmod 0644 ${CRONTAB_PATH}
 
-# Espone porta 8000
-EXPOSE 8000
+EXPOSE 5000
 
-# Script per far partire l'aggiornamento all'avvio del container
-#COPY start.sh /scripts/start.sh
-#RUN chmod +x /scripts/start.sh
-#COPY wait-for-it.sh /scripts/wait-for-it.sh
-#RUN chmod +x /scripts/wait-for-it.sh
-
-# Avvia container e mantieni in esecuzione
-ENTRYPOINT [ "cron", "-f" ]
-#ENTRYPOINT [ "tail", "-f", "/dev/null" ]
-
-# Avvia cron e aggiorna database
-#CMD ["/scripts/start.sh"]
+CMD ["python", "app.py"]
