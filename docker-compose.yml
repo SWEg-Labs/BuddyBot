@@ -21,6 +21,21 @@ services:
     tty: true
     stdin_open: true
 
+  frontend:
+    build:
+      context: ./src/frontend
+      dockerfile: Dockerfile
+    container_name: buddybot-frontend
+    ports:
+      - "4000:4000"
+    networks:
+      - buddybot-network
+    depends_on:
+      - backend
+    stdin_open: true
+    tty: true
+
+
 networks:
   buddybot-network:
     driver: bridge

@@ -4,16 +4,14 @@ import { provideHttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
-import { ChatComponent } from './chat/chat.component';
+import { ChatContainerComponent } from './chat/chat-container/chat-container.component';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    ChatComponent,
-  ],
   imports: [
     BrowserModule,
     FormsModule,
+    ChatContainerComponent,
+    AppComponent,
   ],
   providers: [
     provideHttpClient(),

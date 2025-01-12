@@ -12,15 +12,23 @@ const indexHtml = join(serverDistFolder, 'index.server.html');
 const app = express();
 const commonEngine = new CommonEngine();
 
-app.get('**',
+console.log('Initializing server...'); // LOG Aggiuntivo
+console.log('Server dist folder:', serverDistFolder);
+console.log('Browser dist folder:', browserDistFolder);
+console.log('Index HTML:', indexHtml);
+
+app.get(
+  '**',
   express.static(browserDistFolder, {
     maxAge: '1y',
-    index: 'index.html'
-  })
+    index: 'index.html',
+  }),
 );
 
 app.get('**', (req, res, next) => {
   const { protocol, originalUrl, baseUrl, headers } = req;
+
+  console.log('Incoming request:', req.url); // LOG Aggiuntivo
 
   commonEngine
     .render({
@@ -28,17 +36,22 @@ app.get('**', (req, res, next) => {
       documentFilePath: indexHtml,
       url: `${protocol}://${headers.host}${originalUrl}`,
       publicPath: browserDistFolder,
-      providers: [
-        { provide: APP_BASE_HREF, useValue: baseUrl },
-      ],
+      providers: [{ provide: APP_BASE_HREF, useValue: baseUrl }],
     })
     .then((html) => res.send(html))
-    .catch((err) => next(err));
+    .catch((err) => {
+      console.error('SSR rendering error:', err); // LOG Aggiuntivo
+      next(err);
+    });
 });
 
 if (isMainModule(import.meta.url)) {
   const port = process.env['PORT'] || 4000;
+  console.log(`Server will start on port ${port}...`); // LOG Aggiuntivo
+
   app.listen(port, () => {
     console.log(`Node Express server listening on http://localhost:${port}`);
   });
+} else {
+  console.log('Server is not running as main module'); // LOG Aggiuntivo
 }
