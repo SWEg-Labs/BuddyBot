@@ -1,0 +1,45 @@
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+app-chat-header {
+  background-color: #2a2a2a;
+  color: white;
+  padding: 10px;
+}
+
+
+app-chat-messages {
+  flex: 1 1 auto;
+  overflow-y: auto;
+}
+
+app-chat-input {
+  flex: 0 0 auto;
+}
+
+app-chat-actions {
+  flex: 0 0 auto;
+}
+
+.scroll-to-bottom {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  z-index: 1000;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  padding: 10px;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.scroll-to-bottom:hover {
+  background-color: #0056b3;
+}

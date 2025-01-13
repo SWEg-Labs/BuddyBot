@@ -1,0 +1,15 @@
+<div class="input-area">
+  <input
+    [(ngModel)]="userInput"
+    (keyup.enter)="onSend()"
+    placeholder="Scrivi un messaggio..."
+    [disabled]="isLoading"
+  />
+  <button
+    class="primary"
+    (click)="onSend()"
+    [disabled]="isLoading"
+  >
+    Invia
+  </button>
+</div>

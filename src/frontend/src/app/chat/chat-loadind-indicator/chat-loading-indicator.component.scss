@@ -1,0 +1,16 @@
+.loading-indicator {
+  display: flex;
+  align-items: center;
+
+  .rotating-logo {
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}

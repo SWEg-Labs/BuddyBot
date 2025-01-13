@@ -8,15 +8,16 @@ from zoneinfo import ZoneInfo
 
 try:
     print("--------------------------------------------------")
-    
+
     # Stampa l'ora di inizio aggiornamento
     italy_tz = ZoneInfo("Europe/Rome")
     start_italian_time = datetime.now(italy_tz)
     start_time_string = start_italian_time.strftime("%d/%m/%Y %H:%M:%S")
     print(f"[{start_time_string}] Inizio aggiornamento")
 
+    # Carica variabili d'ambiente
     env_path = find_dotenv()
-    crontab_path = os.environ.get('CRONTAB_PATH')
+    crontab_path = os.getenv('CRONTAB_PATH')
     cron_command = os.getenv('CRONJOB_COMMAND')
     db_update_frequency = os.getenv('DB_UPDATE_FREQUENCY')
     db_update_error_frequency = os.getenv('DB_UPDATE_ERROR_FREQUENCY')

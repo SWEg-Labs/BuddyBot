@@ -14,7 +14,7 @@ Al termine eseguire il comando:
 docker compose down
 ```
 
-## Esecuzione dell'applicazione
+## Esecuzione dell'applicazione da terminale
 - Andare nel terminale del container
   - Tra i Containers di Docker Desktop, selezionare "backend"
   - Una volta entrati nel container andare alla voce "Exec"
@@ -29,6 +29,21 @@ In alternativa dal terminale della macchina si può eseguire:
 docker exec -it buddybot-backend /bin/bash
  ```
 Per accedere al terminale del container chiamato buddybot-backend.
+
+
+## Esecuzione dell'applicazione da browser
+
+E' sufficiente aprire un browser e digitare:
+```
+localhost:4200
+```
+Per accedere all'interfaccia grafica di BuddyBot.
+
+Una volta lì, è possibile o caricare i file nel database vettoriale utilizzando i pulsanti appositi,
+oppure aspettare 10 minuti e lasciare che vengano caricati in automatico.
+
+Una volta caricati, sarà dunque possibile porre domande nell'apposita barra e ricevere risposte nel riquadro sovrastante.
+
 
 ## .env
 Tutte le variabili di sistema di configurazione sono nel dockerfile.
