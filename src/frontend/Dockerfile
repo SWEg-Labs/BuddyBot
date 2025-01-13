@@ -2,7 +2,7 @@ FROM node:18-alpine
 
 WORKDIR /frontend
 
-COPY . /frontend/
+COPY . /frontend
 
 RUN npm install -g @angular/cli && npm install
 

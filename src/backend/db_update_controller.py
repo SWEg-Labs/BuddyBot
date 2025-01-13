@@ -15,10 +15,6 @@ try:
     start_time_string = start_italian_time.strftime("%d/%m/%Y %H:%M:%S")
     print(f"[{start_time_string}] Inizio aggiornamento")
 
-    print(os.getenv('OPENAI_MODEL_NAME'))
-    print(os.getenv('DB_UPDATE_ERROR'))
-    print(os.getenv('DB_UPDATE_RETRY'))
-
     # Carica variabili d'ambiente
     env_path = find_dotenv()
     crontab_path = os.getenv('CRONTAB_PATH')
