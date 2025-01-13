@@ -1,7 +1,7 @@
 import os
 
 # Ottiene la configurazione LOGGING_ENABLED dalle variabili di ambiente
-LOGGING_ENABLED = os.getenv("LOGGING_ENABLED", "false").lower() == "true"
+LOGGING_ENABLED = os.getenv("LOGGING_ENABLED", "true").lower() == "true"
 
 class Logger:
     """

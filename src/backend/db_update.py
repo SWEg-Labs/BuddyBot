@@ -19,10 +19,10 @@ def update_database():
         args = (vector_store, github_service, jira_service, confluence_service)
         
         # update database
-        UserController._load_github_files(*args)
-        UserController._load_github_commits(*args)
-        UserController._load_jira(*args)
-        UserController._load_confluence(*args)
+        UserController.load_github_files(*args)
+        UserController.load_github_commits(*args)
+        UserController.load_jira(*args)
+        UserController.load_confluence(*args)
     except Exception as e:
         raise e
 

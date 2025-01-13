@@ -51,10 +51,10 @@ class UserController:
         command_handlers = {
             "exit": UserController._exit_application,
             "help": UserController._show_help,
-            "lgf": UserController._load_github_files,
-            "lgc": UserController._load_github_commits,
-            "lj": UserController._load_jira,
-            "lc": UserController._load_confluence,
+            "lgf": UserController.load_github_files,
+            "lgc": UserController.load_github_commits,
+            "lj": UserController.load_jira,
+            "lc": UserController.load_confluence,
             "dr": UserController._delete_and_recreate,
             "v": UserController._view_documents,
         }
@@ -89,7 +89,7 @@ class UserController:
                     '- Write "v" to view all Chroma documents')
 
     @staticmethod
-    def _load_github_files(vector_store, github_service, *args):
+    def load_github_files(vector_store, github_service, *args):
         """Loads files from GitHub into the vector store."""
         try:
             repo_files = github_service.get_repository_files(os.getenv("OWNER"), os.getenv("REPO"))
@@ -102,7 +102,7 @@ class UserController:
             raise e
 
     @staticmethod
-    def _load_github_commits(vector_store, github_service, *args):
+    def load_github_commits(vector_store, github_service, *args):
         """Loads commits from GitHub into the vector store."""
         try:
             commits = github_service.get_repository_commits(os.getenv("OWNER"), os.getenv("REPO"))
@@ -116,7 +116,7 @@ class UserController:
             raise e
 
     @staticmethod
-    def _load_jira(vector_store, *args):
+    def load_jira(vector_store, *args):
         """Loads issues from Jira into the vector store."""
         try:
             issues = args[1].get_issues()
@@ -129,7 +129,7 @@ class UserController:
             raise e
 
     @staticmethod
-    def _load_confluence(vector_store, *args):
+    def load_confluence(vector_store, *args):
         """Loads pages from Confluence into the vector store."""
         try:
             pages = args[2].get_pages()

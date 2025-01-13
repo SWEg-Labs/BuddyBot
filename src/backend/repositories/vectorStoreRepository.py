@@ -40,6 +40,26 @@ class VectorStoreRepository:
             logger.error(f"Error initializing Chroma vector store: {e}")
             raise
 
+    def _delete_existing_document(self, doc_id):
+        """ 
+        Deletes an existing document from the collection if it exists.
+        
+        Args: 
+            doc_id (str): The ID of the document to delete.
+            
+        Raises: 
+            Exception: If an error occurs while deleting the document.
+        """
+        try:
+            existing_docs = self.collection.get(ids=[doc_id])
+            if existing_docs["ids"]:
+                # Delete the existing document
+                self.collection.delete(ids=[doc_id])
+                logger.info(f"Deleted existing document with ID: {doc_id}")
+        except Exception as e:
+            logger.error(f"Error deleting existing document with ID {doc_id}: {e}")
+            raise
+
     def _split_github_files(self, files):
         """ 
         Splits GitHub files into chunks of a maximum size of self.max_chunk_size characters. 
@@ -82,10 +102,16 @@ class VectorStoreRepository:
         try:
             split_files = self._split_github_files(files)
             for file in split_files:
+                doc_id = file.metadata["id"] + f"_{file.metadata['chunk_index']}"
+
+                # Check if the document ID already exists in the collection
+                self._delete_existing_document(doc_id)
+
+                # Add the new document
                 self.collection.add(
                     documents=[file.page_content],
                     metadatas=[file.metadata],
-                    ids=[file.metadata["id"] + f"_{file.metadata['chunk_index']}"],
+                    ids=[doc_id],
                 )
             logger.info("GitHub files added successfully to vector store.")
         except Exception as e:
@@ -146,10 +172,16 @@ class VectorStoreRepository:
         try:
             split_commits = self._split_github_commits(commits)
             for commit in split_commits:
+                doc_id = commit["metadata"]["commit_hash"] + f"_{commit['metadata']['chunk_index']}"
+
+                # Check if the document ID already exists in the collection
+                self._delete_existing_document(doc_id)
+
+                # Add the new document
                 self.collection.add(
                     documents=[commit["page_content"]],
                     metadatas=[commit["metadata"]],
-                    ids=[commit["metadata"]["commit_hash"] + f"_{commit['metadata']['chunk_index']}"]
+                    ids=[doc_id]
                 )
             logger.info("GitHub commits added successfully to vector store.")
         except Exception as e:
@@ -212,10 +244,16 @@ class VectorStoreRepository:
         try:
             split_issues = self._split_jira_issues(issues)
             for issue in split_issues:
+                doc_id = issue["metadata"]["id"] + f"_{issue['metadata']['chunk_index']}"
+
+                # Check if the document ID already exists in the collection
+                self._delete_existing_document(doc_id)
+
+                # Add the new document
                 self.collection.add(
                     documents=[issue["page_content"]],
                     metadatas=[issue["metadata"]],
-                    ids=[issue["metadata"]["id"] + f"_{issue['metadata']['chunk_index']}"],
+                    ids=[doc_id],
                 )
             logger.info("Jira issues added successfully to Chroma database.")
         except Exception as e:
@@ -274,10 +312,16 @@ class VectorStoreRepository:
         try:
             split_pages = self._split_confluence_pages(pages)
             for page in split_pages:
+                doc_id = page["metadata"]["page_id"] + f"_{page['metadata']['chunk_index']}"
+
+                # Check if the document ID already exists in the collection
+                self._delete_existing_document(doc_id)
+
+                # Add the new document
                 self.collection.add(
                     documents=[page["page_content"]],
                     metadatas=[page["metadata"]],
-                    ids=[page["metadata"]["page_id"] + f"_{page['metadata']['chunk_index']}"],
+                    ids=[doc_id],
                 )
             logger.info("Confluence pages added successfully to vector store.")
         except Exception as e:

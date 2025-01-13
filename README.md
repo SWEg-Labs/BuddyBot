@@ -22,7 +22,13 @@ docker compose down
   ```
   python backend/main.py
   ```
-- Se attendete 5 minuti dall'avvio del container ed inserite nel chatBot il comando "v" per vedere i documenti presenti nel database vedrete che il database non è vuoto.
+- Se attendete da 2 a 5 minuti dall'inizio di un minuto che finisce per 0 (es.: 10:40, 16:30, 14:10) ed inserite nel chatBot il comando "v" per vedere i documenti presenti nel database, vedrete che il database non è vuoto.
+- E' possibile visionare i log dell'aggiornamento uscendo dall'app con "exit" e digitando nel container:
+  ```
+  cat /var/log/cron.log
+  ```
+- L'aggiornamento verrà effettuato ogni 10 minuti, cioè inizierà in ogni minuto che finisce per 0, per avere il database vettoriale sempre aggiornato!
+Piccola nota: dovesse essere eliminato un documento in una delle piattaforme collegate, nel database vettoriale esso non verrebbe eliminato.
 
 In alternativa dal terminale della macchina si può eseguire: 
 ```
