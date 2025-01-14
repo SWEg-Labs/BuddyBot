@@ -3,6 +3,7 @@ from repositories.vectorStoreRepository import VectorStoreRepository
 from services.githubService import GithubService
 from services.jiraService import JiraService
 from services.confluenceService import ConfluenceService
+from utils.logger import logger
 
 def update_database():
     """
@@ -30,6 +31,7 @@ def update_database():
         UserController.load_jira(*args)
         UserController.load_confluence(*args)
     except Exception as e:
+        logger.error(f"Failed to update the database: {e}")
         raise e
 
 if __name__ == "__main__":

@@ -14,7 +14,7 @@ export class ChatMessagesComponent implements AfterViewChecked {
   @Input() messages: IMessage[] = [];
   @Input() isLoading = false;
 
-  @ViewChild('scrollMe') private messagesContainer!: ElementRef;
+  @ViewChild('scrollMe') private readonly messagesContainer!: ElementRef;
 
   @Output() isScrolledUp = new EventEmitter<boolean>();
 
@@ -22,7 +22,7 @@ export class ChatMessagesComponent implements AfterViewChecked {
     this.scrollToBottom();
   }  
 
-  public scrollToBottom(force: boolean = false): void {
+  public scrollToBottom(): void {
     console.log('Scroll to bottom triggered');
     if (this.messagesContainer) {
       const element = this.messagesContainer.nativeElement;
