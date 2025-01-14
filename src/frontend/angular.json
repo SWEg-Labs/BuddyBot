@@ -20,13 +20,13 @@
               "zone.js"
             ],
             "tsConfig": "tsconfig.app.json",
-              "assets": [
-                {
-                  "glob": "**/*",
-                  "input": "src/app/assets",
-                  "output": "assets"
-                }
-              ],
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "src/app/assets",
+                "output": "assets"
+              }
+            ],
             "styles": [
               "src/styles.css"
             ],
@@ -84,20 +84,20 @@
               "zone.js/testing"
             ],
             "tsConfig": "tsconfig.spec.json",
-              "assets": [
-                {
-                  "glob": "**/*",
-                  "input": "src/app/assets",
-                  "output": "assets"
-                }
-              ],
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "src/app/assets",
+                "output": "assets"
+              }
+            ],
             "styles": [
               "src/styles.css"
             ],
             "scripts": []
           }
         },
-          "server": {
+        "server": {
           "builder": "@angular-devkit/build-angular:server",
           "options": {
             "outputPath": "dist/my-chat-frontend/server",
@@ -109,11 +109,23 @@
               "outputPath": "dist/my-chat-frontend/server"
             }
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
         }
-    }
+      }
     }
   },
   "cli": {
-    "analytics": "7f12c983-06ac-4aad-90f8-9dbf2e149518"
+    "analytics": "7f12c983-06ac-4aad-90f8-9dbf2e149518",
+    "schematicCollections": [
+      "angular-eslint"
+    ]
   }
 }
