@@ -1,24 +1,24 @@
-# src/backend/app.py
+from typing import Dict
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from typing import Dict
 
 from dotenv import load_dotenv
 
-from services.chatService import ChatService
 from repositories.vectorStoreRepository import VectorStoreRepository
+from services.chatService import ChatService
 from services.githubService import GithubService
 from services.jiraService import JiraService
 from services.confluenceService import ConfluenceService
 from controllers.userController import UserController
-from utils.llm import initialize_llm
+from utils.inizialize_llm import initialize_llm
 from utils.logger import logger
 
 # Inizializzazione dell'app FastAPI
 app = FastAPI(
     title="BuddyBot API",
-    description="Un'API per interagire con un chatbot che utilizza dati da GitHub, Jira e Confluence.",
+    description="Un'API per interagire con un chatbot che utilizza dati da GitHub, Jira e "\
+    "Confluence.",
     version="1.0.0"
 )
 
@@ -102,7 +102,8 @@ async def load_from_jira():
         return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
 
 
-@app.get("/api/confluence/load", summary="Carica le pagine da Confluence", response_model=Dict[str, str])
+@app.get("/api/confluence/load", summary="Carica le pagine da Confluence",
+         response_model=Dict[str, str])
 async def load_from_confluence():
     """
     Endpoint per caricare le pagine da Confluence nel database Chroma.
@@ -111,7 +112,8 @@ async def load_from_confluence():
         Dict[str, str]: Stato dell'operazione con un messaggio.
     """
     try:
-        UserController.load_confluence(vector_store, github_service, jira_service, confluence_service)
+        UserController.load_confluence(vector_store, github_service, jira_service,
+                                       confluence_service)
         return {"response": "File caricati con successo da Confluence"}
     except Exception as e:
         logger.error(str(e))

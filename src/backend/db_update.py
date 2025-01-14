@@ -5,6 +5,12 @@ from services.jiraService import JiraService
 from services.confluenceService import ConfluenceService
 
 def update_database():
+    """
+    Funzione per aggiornare il database con i dati da GitHub, Jira e Confluence.
+
+    Raises:
+        Exception: Se si verifica un errore durante l'aggiornamento del database.
+    """
     print("Chiamata funzione update_database")
     try:
         # inizializza vector store
@@ -17,7 +23,7 @@ def update_database():
         confluence_service = ConfluenceService()
         # set args vector
         args = (vector_store, github_service, jira_service, confluence_service)
-        
+
         # update database
         UserController.load_github_files(*args)
         UserController.load_github_commits(*args)

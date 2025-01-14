@@ -1,4 +1,3 @@
-import os
 from dotenv import load_dotenv
 
 # Carica le variabili d'ambiente dal file .env
@@ -8,7 +7,7 @@ from services.githubService import GithubService
 from services.jiraService import JiraService
 from services.confluenceService import ConfluenceService
 from repositories.vectorStoreRepository import VectorStoreRepository
-from utils.llm import initialize_llm
+from utils.inizialize_llm import initialize_llm
 from services.chatService import ChatService
 from utils.logger import logger
 from controllers.userController import UserController
@@ -53,7 +52,8 @@ def main():
                     '- Write "dr" to delete and recreate the Chroma collection \n' \
                     '- Write "v" to view all Chroma documents')
 
-        UserController.ask_question(vector_store, chat_service, github_service, jira_service, confluence_service)
+        UserController.ask_question(vector_store, chat_service, github_service, jira_service,
+                                    confluence_service)
     except Exception as e:
         logger.error(f"Failed to start the chat: {e}")
 
