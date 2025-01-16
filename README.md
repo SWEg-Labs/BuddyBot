@@ -69,4 +69,4 @@ JIRA_PROJECT_KEY= jira_project_key
 CONFLUENCE_BASE_URL= confluence_base_key
 CONFLUENCE_SPACE_KEY= confluence_space_key
 ```
-Inserire il .env nella stessa directory del Dockerfile.
+Inserire il .env nella directory src/backend.
