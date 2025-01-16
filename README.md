@@ -1,4 +1,4 @@
-# README
+<h1 align="center">BuddyBot</h1>
 
 ## Prerequisiti
 - È necessario avere Docker installato
