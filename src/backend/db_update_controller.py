@@ -94,7 +94,8 @@ except Exception as e:
                 job.setall(db_update_frequency)
             cron.write()
 
-        # Altrimenti (eravamo già in stato di errore e non siamo ancora al terzo retry) incrementa contatore dei retry
+        # Altrimenti (eravamo già in stato di errore e non siamo ancora al terzo retry) incrementa
+        # contatore dei retry
         else:
             '''
             print(f"db_update_error prima: {os.getenv('DB_UPDATE_ERROR')}")
@@ -104,7 +105,8 @@ except Exception as e:
             retry = os.getenv('DB_UPDATE_RETRY')
             set_key(env_path, 'DB_UPDATE_RETRY', str(int(retry)+1))
 
-        # Se siamo oltre il terzo retry il cron è già stato portato alla normalità e sta riprovando ogni 5 minuti. Non fare nulla
+        # Se siamo oltre il terzo retry il cron è già stato portato alla normalità e sta riprovando
+        # ogni 5 minuti. Non fare nulla
 
     except Exception as e2:
         print(f"Errore durante gestione errore: {e2}")
