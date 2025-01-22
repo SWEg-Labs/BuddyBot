@@ -55,6 +55,11 @@ try:
     end_time_string = end_italian_time.strftime("%d/%m/%Y %H:%M:%S")
     print(f"[{end_time_string}] Aggiornamento completato")
 
+    # Calcola e stampa il tempo di aggiornamento
+    time_difference = end_italian_time - start_italian_time
+    minutes, seconds = divmod(time_difference.total_seconds(), 60)
+    print(f"Tempo di aggiornamento: {int(minutes)} minuti e {int(seconds)} secondi")
+
 except Exception as e:
     print(f"Error: {e}")
 
