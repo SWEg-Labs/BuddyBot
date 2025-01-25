@@ -1,4 +1,4 @@
-FROM python:latest
+FROM python:3.13.1
 
 # Argomenti e variabili di configurazione
 ARG WORKDIR="/backend"
