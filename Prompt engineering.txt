@@ -1,0 +1,1069 @@
+1)
+Gli ho chiesto:
+"Quando è che è stato scelto Postgres come database relazionale?"
+
+E mi ha trovato:
+- Il glossario nel posto dove si trova la voce "Database relazionale"
+- Il documento di candidatura dove è scritta una data: 22/04/2025
+
+Quindi in realtà si può dire che la similarità è andata bene, facendo una ricerca a singoli pezzi, però considerando tutta la frase in realtà la risposta non è soddisfacente.
+
+E' evidente che bisogna dare all'utente delle istruzioni più precise a riguardo di come porre una domanda.
+
+
+2)
+Gli ho chiesto:
+In quale verbale è stato deciso di utilizzare Postgres come database relazionale?
+
+Mi trova sempre  'candidatura.tex'   e     'src/RTB/Documentazione esterna/Glossario/contenuti/DEF.tex'
+Per gli stessi motivi di cui sopra.
+
+E l'assistente giustamente mi risponde:
+Non è possibile trovare informazioni specifiche riguardanti il verbale in cui è stata presa la decisione di utilizzare Postgres come database relazionale nel contenuto fornito.
+
+Quindi, aggiungere la parola 'verbale' è inutile, perché nel singolo documento 'diario.tex' la parola 'verbale' non è ovviamente presente.
+
+Però, non si può mica chiedere all'utente di scrivere 'cercami in diario.tex' oppure 'cercami in decisioni.tex' ahaah.
+
+
+
+
+Giovedì 26/12/24 :
+
+
+3)
+Gli ho chiesto:
+Chi deve redigere la sezione "Valutazioni per il miglioramento" del piano di qualifica?
+
+Mi ha trovato:
+La issue giusta con distance: 0.03957073913065037
+La issue del cruscotto di valutazione della qualità: 0.7241383791087452
+
+Poi ho introdotto la funzione similarity_search_by_threshold con threshold=1.5, 
+e mi ha trovato altri 16 risultati, tra 1.0936877952732282 e 1.4810937646072475.
+Che sia 1.0 il threshold giusto?
+
+
+4)
+Gli ho chiesto:
+Come si chiama il progetto a cui sta lavorando il team?
+
+Con threshold=1.5 trovato 20 documenti, di cui solo i primi 2 sono sotto l'1.0, e ha risposto giusto.
+
+Domanda inadatta, qui il nome del progetto è in un metadato, quindi basta anche un nome solo.
+
+
+5)
+Gli ho chiesto:
+Quali tecnologie devono essere studiate per il progetto?
+
+I primi 2 documenti hanno preso solo la parola "progetto". Quindi con k=2 non avrei avuto risultati
+Il primo documento realmente utile, cioè "Studiare le tecnologie selezionate, con particolare focus su Angular"
+ha similarità = 0.9129092352621573
+
+"Studiare e approfondire Postgres per il database relazionale" purtroppo ha similarità solo 1.0524195594607086.
+
+Giustamente il chatbot mi ha risposto "Angular" e "PostgreSQL", e questo vuol dire che sul chatbot possiamo fare per bene affidamento.
+Però, non avrebbe rilevato PostgreSQL se avessi messo 1.0 come soglia.
+
+Come incombent allora adesso mettiamo 1.1 ?
+
+
+6)
+Gli ho chiesto:
+Quali requisiti o tipi di requisiti sono da scrivere?
+
+C'è un "stendere tracciamento fonte-requisito" che ha fatto 1.0154040701727296.
+"Stendere requisiti implementativi" ha 1.0253274871704787
+"stendere requisiti funzionali" ha 1.0625918189593717
+"stendere requisiti prestazionali" ha 1.1076133703782485 mannaggia!!!
+
+Dal successivo 1.1481803063712028 iniziano ad andare a campi, ma fino a 1.107 c'era roba!
+
+Non posso rischiare di escludere, purtroppo, quindi mi tocca alzare l'incombent o a 1.11 o a 1.2.
+
+
+7)
+Gli ho chiesto:
+Dimmi cosa c'è da fare durante le vacanze di Natale
+
+"Incontrarsi, divisi per gruppi, durante le vacanze di Natale, per discutere dei propri casi d'uso" ha 0.5003709322282297.
+Però, "Stendere requisiti di vincolo" ha 0.8284832512704778. Diciamo che l'ha vista come una "cosa da fare".
+
+Ho capito che non posso fermare a 1.11 perchè mi perderei ben quattro cose da fare.
+1.2 mi sembra invece azzeccato, perchè le risposte iniziano a perdere un po' il focus da lì in poi.
+
+Quindi, con solo Jira adesso so che il threshold di similarità adatto è 1.2.
+
+Ho provato, ed in effetti, ok, niente prompt engineering o piano di qualifica, ma comunque ottengo una risposta bella organizzata.
+
+_
+
+Ho riprovato, stavolta usando la funzione "similarity_search_by_threshold_with_gap", e
+Mi ha giustamente trovato solo "Incontrarsi, divisi per gruppi, durante le vacanze di Natale, per discutere dei propri casi d'uso",
+con il valore di 0.5003709322282297.
+Da solo! (Found 1 relevant documents)
+
+E secondo è giusto così, io terrei questa funzione, con max_gap = 0.25 di default.
+
+
+Ora,
+DEFINIZIONI:
+1) Definizione di cos'è "fuori contesto" -> 0 documenti trovati
+2) Definizione di cos'è "informazione non trovata" -> il primo documento trovato ha similarità > 1.0
+
+Gliele ho scritte nell'header
+
+
+
+8)
+Chi vince tra un leone e una tigre?
+
+Mi ha trovato "Stendere requisiti di vincolo" (perchè c'è "vinc") a 1.0180100370585363.
+
+Giustamente il chatbot risponde "Informazione non trovata.".
+Ma, io vorrei rispondesse "domanda fuori contesto".
+
+Allora, ho dovuto rinunciare alla indicazioni oggettive, adesso ho scritto all'LLM di capire da solo
+se la domanda è fuori contesto o meno, quindi mi affido totalmente a lui, sperando ne valga la pena.
+
+
+
+9)
+Dimmi cosa c'è da fare durante le vacanze di Pasqua
+
+Uno schifo, purtroppo il primo documento è "Stendere requisiti di vincolo" a 0.8303134493805799.
+L'LLM vorrebbe scrivere "informazione non trovata", ma non può perchè gli ho scritto di scriverlo
+solamente quando il primo documento ha similarità > 1.0. 
+Dunque adesso, beh, per colpa dell'orribile confronto di similarità, sono costretto a delegare tutto
+il giudizio all'LLM, ed è un po' un peccato, ma me la metto via.
+
+Mi dà ancora che la domanda è fuori contesto. Provo allora a farla entrare meglio nel contesto:
+
+
+10)
+Dimmi cosa c'è da fare per il progetto BuddyBot durante le vacanze di Pasqua
+
+E mi dà l'elenco delle attività, anche se non c'è scritto da nessuna parte "Pasqua"! Mannaggia!
+Abbiamo idee diverse io e l'LLM, e questo è esattamente ciò che temevo!
+
+
+11)
+Dimmi cosa, per il progetto BuddyBot, c'è scritto espressamente che è da fare durante le vacanze di Pasqua?
+
+Mi dà "La domanda è fuori contesto.", mannaggia!
+
+
+12)
+Dimmi cosa, per il progetto BuddyBot, c'è scritto espressamente che è da fare durante le vacanze di Natale?
+
+Risposta perfetta, un unico documento, ed è quello giusto
+
+
+13)
+Cosa è previsto che faccia Giacomo Loat a riguardo di Angular?
+
+Adesso dice che deve approfondire anche Angular. Si fa facilmente persuadere l'LLM.
+La issue di Angular, per tutti, ha ottenuto "0.9394691898848317".
+
+
+14)
+Per caso Giacomo Loat ha assegnato a suo nome (assignee) qualche compito che riguarda Angular?
+
+Risposta corretta, e fin qui ok, fin lì c'eravamo.
+
+
+
+Ripeto la 11, stavolta dico che se viene citato almeno un termine di contesto, la domanda non può essere fuori contesto
+
+11)
+Dimmi cosa, per il progetto BuddyBot, c'è scritto espressamente che è da fare durante le vacanze di Pasqua?
+
+La domanda è fuori contesto
+
+
+
+15)
+Dimmi cosa, per il progetto informatico BuddyBot, c'è scritto espressamente che è da fare durante le vacanze di Pasqua?
+
+Informazione non trovata.
+
+Godo, alleluia ce l'abbiamo fatta!
+
+🏆🏆Bisognerà dire all'utente di descrivere sempre un minimo di contesto della domanda, puntando sulle due parole 
+"progetto informatico", così almeno GPT4o-mini non ti risponderà mai "domanda fuori contesto"!🏆🏆
+
+Per oggi ho finito con il trattamento dell'header!
+
+
+
+Adesso, introduco GitHub, e vediamo che valori di similarità ci troverò.
+
+16)
+Chi è l'autore del progetto BrickBreaker?
+
+Mi ha trovato "Terminare il documento di Norme di Progetto" a 1.0324760491732514, dunque
+il resto era distante 0.25.
+Maledetto Jira!
+
+Riprovo allora solamente con GitHub.
+
+[INFO] Found 0 relevant documents
+relevant_docs: []
+Assistant: La domanda è fuori contesto.
+
+Vabbè, per GitHub serve allora porre domande più specifiche.
+
+
+17)
+Che licenza ha il progetto?
+
+Ancora fuori contesto.
+
+
+18)
+Mi mostri un documento dove è stato utilizzato il framework di test JUnit?
+
+Fuori contesto.
+
+Per GitHub è tutto più difficile, il threshold di 1.2 mi sa che non funziona più.
+
+Provo con la funzione vecchia "similarity_search_with_k_results" :
+
+Il file notice è a 1.25712027786884, mentre BrickBreakerTest.java (il documento risposta giusta) è a 1.552585526195122.
+
+Fintanto che i file sono così lunghi non credo che la similarità verrà mai più lunga di così, perchè ovviamente se anche
+un pezzo di frase è molto simile poi comunque ci sono centinaia di altre righe a "distanziare", mentre le issue di Jira sono
+così corte che per forza di cose la similarità viene bassa, perchè ci sono meno "righe distanzianti".
+Molte issues Jira che non c'entrano niente finiscono davanti ai lunghi documenti GitHub che sono invece rilevanti.
+
+🍇Possibilità:
+1) Imponiamo sempre uno alla volta, o solo GitHub e Jira. E' INAMMISSIBILE, CI E' STATO CHIARAMENTE DETTO CHE IL DATABASE VETTORIALE
+DEVE CONTENERE ENTRAMBI.
+2) Dividiamo i documenti GitHub in documentini lunghi come le issue Jira. EH, MA SPEZZANDO TROPPO SI PERDE LA VISIONE D'INSIEME 
+DEL DOCUMENTO, E ALLORA NON CI TRAI PIU' INFORMAZIONI.
+3) Diamo un peso alla similarità di GitHub perchè sia più pesante della similarità di Jira. NO, PERCHE' UNA VOLTA CHE SONO NEL 
+DATABASE VETTORIALE NON E' PIU' POSSIBILE DISTINGUERE L'ORIGINE DEI DOCUMENTI. IN REALTA', USANDO I METADATI SI PUO', PERO'
+ESISTONO ANCHE DOCUMENTI PROVENIENTI DA GITHUB CHE SONO CORTI, E QUINDI LORO USCIREBBERO FUORI SEMPRE!
+4) Togliere i tag a Confluence, così accorcio il suo testo. OK, MA, C'E', MITIGA UN PO' IL PROBLEMA MA NON LO RISOLVE IN SENSO GENERALE
+
+
+19)
+Qual è la data dell'ultimo commit di BrickBreaker?
+
+BrickBreakerTest.java : 1.6413434730712964
+README.md : 1.6453533610747808
+
+"Informazione non trovata."
+Godo, ho istruito il chatbot bene, ho fatto un buon lavoro!
+
+Usando il threshold invece ovviamente (visto che non trova documenti) mi dà:
+
+[INFO] Found 0 relevant documents
+relevant_docs: []
+Assistant: La domanda è fuori contesto.
+
+E' il solito discorso, la similarità dei documenti di GitHub è molto più alta, e quel threshold non è più adatto.
+Confermo dunque quanto già scritto.
+
+
+
+Passo a Confluence per vedere su che valori si aggira la similarità sulle sue pagine.
+In teoria, siccome contengono tanto testo, purtroppo anche da loro mi aspetto di incontrare una similarità alta, purtroppo!
+
+20) Come si chiama il progetto a cui sta lavorando il team?
+
+Found 1 relevant documents
+'title': 'Sprint Retrospettiva: Il Progetto "Connettività per Tutti"', 'distance': 1.0568217419342338
+
+Ha funzionato perfettamente! Sono contento di essere rimasto dentro al threshold, però sono perfettamente
+consapevole che Jira avrebbe fatto meglio e avrebbe battuto questo documento.
+Provo ad aggiungere Jira:
+Confermo, come immaginavo.
+_
+Found 7 relevant documents
+Studiare e approfondire Postgres per il database relazionale : 0.9797200954101462
+Terminare il documento di Norme di Progetto : 0.9896156543847999
+'title': 'Sprint Retrospettiva: Il Progetto "Connettività per Tutti"', 'distance': 1.0568217419342338
+_
+Confluence è arrivato terzo, per carità, buon risultato, ma l'LLM ha risposto solo con BuddyBot, il che vuol dire che
+Confluence è stato oscurato pur essendo terzo!
+
+
+21) 
+Per quale progetto è stata svolta di recente la Retrospettiva di una sprint?
+_
+Found 14 relevant documents
+'distance': 0.9797555929844596}\nContent: Terminare il documento di Norme di Progetto"
+'distance': 0.9977851255568352}\nContent: Stendere requisiti di vincolo"
+'title': 'Sprint Retrospettiva: Il Progetto "Connettività per Tutti"', 'distance': 1.0090792822755426
+_
+Confluence aveva perso un'altra volta! Per fortuna l'LLM è intelligente e ha saputo leggere i dati e dare la risposta giusta.
+Però il discorso è che questa volta Confluence non avrebbe dovuto perdere.
+Non è nemmeno riuscita a scendere sotto l'1.0 !!
+E questa è la prova definitiva che più un documento è lungo peggio sta messa la sua similarità. Sad.
+Prima avevo azzeccato il problema, e niente, adesso devo pensare a quelle 4 possibilità🍇.
+_
+SONO RIUSCITO A RISOLVERE QUESTO PROBLEMA RIMUOVENDO I TAG A CONFLUENCE, SI PUO' VEDERE QUA SOTTO!
+
+
+
+
+
+Sabato 28/12/24
+
+
+Riscrivo le proposte e le mie considerazioni aggiornate:
+
+🍇Possibilità:
+1) Imponiamo sempre uno alla volta, o solo GitHub e Jira. E' INAMMISSIBILE, CI E' STATO CHIARAMENTE DETTO CHE IL DATABASE VETTORIALE
+DEVE CONTENERE ENTRAMBI CONTEMPORANEAMENTE.
+2) Dividiamo i documenti GitHub in documentini lunghi come le issue Jira. EH, MA SPEZZANDO TROPPO SI PERDE LA VISIONE D'INSIEME 
+DEL DOCUMENTO, E ALLORA NON CI TRAI PIU' INFORMAZIONI. La stessa similarità verrebbe falsata cos8.
+3) Diamo un peso alla similarità di GitHub perchè sia più pesante della similarità di Jira. ❌{NO, PERCHE' UNA VOLTA CHE SONO NEL 
+DATABASE VETTORIALE NON E' PIU' POSSIBILE DISTINGUERE L'ORIGINE DEI DOCUMENTI. [IN REALTA', USANDO I METADATI SI PUO']}❌, PERO'
+ESISTONO ANCHE DOCUMENTI PROVENIENTI DA GITHUB CHE SONO CORTI, E QUINDI LORO USCIREBBERO FUORI SEMPRE perché hanno la similarità che sarebbe già bassa di suo e poi se gli dai pure maggior peso anche allora viene veramente troppo bassa!
+4) Togliere i tag a Confluence, così accorcio il suo testo. OK, MA, C'E', QUESTO MITIGA UN PO' IL PROBLEMA MA NON LO RISOLVE IN SENSO GENERALE.
+5) Dovremo accettare che le issues Jira siano più simili. E allora, bisogna alzare il threshold perché vengano mostrati all'LLM anche documenti provenienti da GitHub, poco da fare. MA COSÌ ALLORA OGNI VOLTA VERREBBERO FORNITE AL CHATBOT TUTTE LE ISSUES (perché tutte o quasi tutte entrerebbero nel range), CHE VUOL DIRE UTILIZZARE TANTISSIMI TOKEN!
+
+
+L'unica soluzione effettivamente realizzabile è la 4, cioè rimuovere i tag HTML da Confluence, che può mitigare un po'.
+Le altre hanno tutte troppi punti deboli.
+
+Come threshold, io terrei 1.2 per il momento, perché comunque è importante fare risparmio di token, è l'obiettivo primario della similarità.
+
+
+Ok, ho fatto le funzioni di strip dei tag di Confluence.
+
+
+
+E adesso riprovo la domanda 21 già provata sopra quando c'erano i tag:
+
+21) 
+Per quale progetto è stata svolta di recente la Retrospettiva di una sprint?
+
+You: Per quale progetto è stata svolta di recente la Retrospettiva di una sprint?
+[INFO] Found 1 relevant documents
+\'title\': \'Sprint Retrospettiva: Il Progetto "Connettività per Tutti"\', \'distance\': 0.8602511921421436
+
+Ho migliorato di 0,1966, in pratica 0,2, cioè di 2 decimi di unità!
+Un eccellente miglioramento, tale per cui sono contento di aver tolto i tag.
+
+(ottimo anche il fatto che abbia funzionato il max_gap di 0.3).
+
+Adesso riprovo dopo aver caricato anche Jira:
+
+[INFO] Found 14 relevant documents
+Mannaggia!
+
+'title': 'Sprint Retrospettiva: Il Progetto "Connettività per Tutti"', 'distance': 0.8602511921421436
+Per fortuna ha vinto Confluence!
+
+Poi:
+'distance': 0.9797555929844596}\nContent: Terminare il documento di Norme di Progetto"
+'distance': 0.9977851255568352}\nContent: Stendere requisiti di vincolo"
+[e le altre]
+
+(Il chatbot per fortuna ha risposto correttamente)
+
+Adesso è stato risolto il problema della domanda 21, sono contento!
+
+
+
+
+
+
+
+29/12/24
+
+AzzurroDigitale ci aveva chiesto di implementare le seguenti funzionalità da GitHub:
+
+1) Sia il codice
+2) Sia quando è stato scritto
+3) Sia chi l'ha scritto
+
+Di conseguenza, la prima cosa da fare è implementare una funzione get_commits(self, owner, repo_name).
+
+Successivamente, devo anche aggiungere una funzione alla classe VectorStoreRepository perchè vada ad 
+aggiungere i commit allo store. C'è però un design smell, non è accettabile che ogni volta si debba
+creare una nuova funzione per poter aggiungere un nuovo elemento GitHub. Sarà da risolvere in fase
+di design, servirà inserire un middleware di conversione dati, per poter ottenere delle classi più
+piccole, non il blob di codice che è diventato VectorStoreRepository! Questo middleware si chiama Adapter!
+Ecco un nuovo design pattern che possiamo utilizzare, oltre allo Strategy!
+_
+Comunque, al momento aggiungo i due metodi add_github_commits(self, commits) e _split_github_commits(self, commits), 
+perchè non siamo ancora nella PB, non è ancora tempo di design.
+
+E, ovviamente, c'è da modificare correttamente la gestione dell'input.
+
+Ok, implementato il tutto, adesso, qualche domanda:
+
+
+22) 
+In che data Riccardo Stefani ha inserito il token a Coveralls?
+
+Found 1 relevant documents
+'distance': 0.5261122566888996}\nContent: Ho inserito il token a Coveralls")
+
+E il chatbot ha azzeccato.
+GODO!
+
+
+23)
+Chi è l'autore che è tornato alla versione originale del gioco?
+
+Found 19 relevant documents
+'distance': 0.6619325448500666}\nContent: Sono tornato alla versione originale del gioco, poichè infatti questo è il gioco puro: la possibilità di controllare la pallina aveva reso il gioco troppo facile")
+'distance': 0.7750848948392448}\nContent: Prima vera build funzionante, ma il gioco non è interattivo")
+'distance': 0.8559951123414155}\nContent: Sono finalmente giunto alla prima build funzionante")
+_
+Il primo l'ha azzeccato, gli altri anche, secondo me, perchè è stato collegato "versione" con "build", il che è una grande cosa.
+Se i documenti fossero stati più lunghi non mi sarei mai accorto di quelli collegamenti, perchè lo stesso modello di embedding se
+li perde, perchè quando c'è troppo testo i collegamenti sottili perdono peso.
+Confermo che il meglio del meglio per la similarità è avere documenti piccoli e corti, come questi qua, infatti i
+valori di similarità sono belli bassi e si riescono a cogliere degli intelligenti collegamenti semantici.
+
+Ovviamente GPT4o-mini è intelligente e quindi ha risposto giusto.
+
+
+24) 
+E' stato corretto prima il problema del game over oppure è stato prima introdotto 
+il modulo Header a sostituzione del modulo RegexpHeader?
+
+Found 19 relevant documents
+'distance': 0.596783378066887}\nContent: Introduzione del modulo Header a sostituzione del modulo RegexpHeader, cosicchè il controllo d'ora in poi avvenga riga per riga e non utilizzi espressioni regolari, che impedivano l'utilizzo di () e *."
+'distance': 0.7129539399233067}\nContent: Introduzione di un file Header coincidente con la licenza, ma senza parentesi, siccome il module RegexpHeader purtroppo non riconosce le parentesi"
+'distance': 0.87259294551703}\nContent: Corretto il problema del game over, ma adesso è tornato il problema che la pallina non parte dalla posizione iniziale fissata"
+_
+Non mi aspettavo che il game over lo rilevasse con similarità così alta. Per fortuna che si è messo un altro file con "Header" in mezzo,
+sennò il max_gap l'avrebbe tagliato fuori, seppur di poco. Si deve risolvere la cosa!
+In conseguenza di ciò, alzo il max_gap a 0.3.
+Così adesso posso fare una domanda di confronto tra un commit lungo e un commit corto avendo più fiducia che come contesto non apparirà
+solo quello lungo (che fa maggiore match), ma bensì tutti e due.
+
+Comunque, risposta DIVINA.
+E similarità molto basse, appunto perchè i commit sono corti come le issues Jira.
+
+
+25) 
+Chi ha generato i badges?
+
+Found 13 relevant documents
+'distance': 0.8427063580326658}\nContent: Generated badges"
+E tutti quanti sotto hanno similarity uguale, sempre 0.8427063580326658.
+Tutti e 13! Anche l'ultimo:
+'distance': 0.8427063580326658}\nContent: Generated badges")]
+Assistant: I badges sono stati generati da **GitHub Actions**. Questo è confermato dal fatto che tutti i commit che contengono il messaggio "Generated badges" sono stati effettuati dall'autore identificato come `github-actions`, un bot di GitHub che gestisce l'automazione dei workflow nei progetti.
+
+Beh, un altro ottimo risultato!
+
+La similarità è salita, ma ci sta! In media essa è 0.8, e ci sta, è la stessa delle issues Jira più o meno.
+Sono contento che le issues Jira abbiano trovato nei commits di GitHub dei degni rivali!
+
+Adesso attendo di avere il repo della Documentazione di SWEg Labs pieno di commits con linkate le issues di Jira, così
+da poter fare domande incrociate di confronto commit-issue, con sia commits sia issues nel database vettoriale!
+
+
+Ho aggiunto un paio di commit al repo, e poi li ho inseriti su Chroma, piccola nota:
+Succede che quando vai a inserire un gruppo di documenti, l'ultimo viene inserito per primo, ma ovviamente
+successivamente ai documenti già presenti:
+3 2 1  5 4  8 7 6
+_
+Ma, se li inserisci tutti assieme:
+8 7 6 5 4 3 2 1
+
+
+Per quanto riguarda il codice modificato nella singola commit, ci sono un botto di possibili campi, e non so
+quali inserire, secondo me è da chiedere ad AzzurroDigitale la prossima volta.
+Sono molto curioso del campo 'patch', sarà da provare!
+La chat ChatGPT dedicata:
+https://chatgpt.com/c/6771c958-5a00-8010-88bf-9f875e3a17a6
+
+
+Per un po' ho finito, serve ora fare delle domande ad AzzurroDigitale, quindi faccio il merge!
+
+
+
+
+30/12/24
+
+Ho introdotto i commits in un ramo a parte, in attesa dell'approvazione di AzzurroDigitale
+
+
+26) 
+Quali file sono stati modificati (e in quali righe) quando è stato corretto il problema del game over?
+
+Found 25 relevant documents
+'distance': 0.7496161544680473} Content: Corretto il problema del game over, ma adesso è tornato il problema che la pallina non parte dalla posizione iniziale fissata
+'distance': 0.8676455772586552} Content: Sistemazione dei test, la variabile play deve essere true, perchè funzionino
+
+Tutto funziona perfettamente, ma adesso è un casino muoversi nel terminale e visualizzare i file.
+La similarità comunque mi sembra buona, anzi, addirittura è così bassa che ha trovato un botto di file!
+
+
+27) 
+Quali file sono stati modificati (e in quali righe) quando è stato introdotto il modulo Header a sostituzione del modulo RegexpHeader?
+
+Found 2 relevant documents
+'distance': 0.6296385184431952} Content: Introduzione di un file Header coincidente con la licenza, ma senza parentesi, siccome il module RegexpHeader purtroppo non riconosce le parentesi
+'distance': 0.6353571089346104} Content: Introduzione del modulo Header a sostituzione del modulo RegexpHeader, cosicchè il controllo d'ora in poi avvenga riga per riga e non utilizzi espressioni regolari, che impedivano l'utilizzo di () e *.
+
+Strano, mi aspettavo questi due a ordine invertito.
+Comunque, bene che la similarità sia bassa!
+0.596783378066887 vs 0.6353571089346104
+Non si per niente abbassata di tanto!
+GODO!
+
+
+
+
+Se il trend continua così allora posso praticamente mergeare subito, ma prima rifaccio il test sulle 4 domande di ieri,
+in cui avevo interrogato il chatbot sui metadati semplici:
+
+22)
+In che data Riccardo Stefani ha inserito il token a Coveralls?
+
+[INFO] Found 1 relevant documents
+'distance': 0.5261122566888996}
+Content: Ho inserito il token a Coveralls
+Assistant: Riccardo Stefani ha inserito il token a Coveralls in data **14 settembre 2024**.
+_
+Vittoria!
+Identica similarità: 0.5261122566888996
+
+
+23)
+Chi è l'autore che è tornato alla versione originale del gioco?
+
+Found 20 relevant documents
+'author': 'Riccardo Stefani'
+'distance': 0.6619325448500666}
+Content: Sono tornato alla versione originale del gioco, poichè infatti questo è il gioco puro: la possibilità di controllare la pallina aveva reso il gioco troppo facile
+_
+L'autore che è tornato alla versione originale del gioco è **Riccardo Stefani**. Ha dichiarato di aver fatto questo ritorno perché la possibilità di controllare la pallina aveva reso il gioco troppo facile.
+_
+Vittoria!
+Identica similarità: 0.6619325448500666
+
+
+24)
+E' stato corretto prima il problema del game over oppure è stato prima introdotto 
+il modulo Header a sostituzione del modulo RegexpHeader?
+
+[INFO] Found 19 relevant documents
+'distance': 0.596783378066887}
+Content: Introduzione del modulo Header a sostituzione del modulo RegexpHeader, cosicchè il controllo d'ora in poi avvenga riga per riga e non utilizzi espressioni regolari, che impedivano l'utilizzo di () e *.
+'distance': 0.7129539399233067}
+Content: Introduzione di un file Header coincidente con la licenza, ma senza parentesi, siccome il module RegexpHeader purtroppo non riconosce le parentesi
+'distance': 0.87259294551703}
+Content: Corretto il problema del game over, ma adesso è tornato il problema che la pallina non parte dalla posizione iniziale fissata
+_
+Ok, la similarità è identica nei 3 documenti davanti.
+'date': '2024-09-14 12:05:48 UTC' per il game over
+'date': '2024-09-18 08:04:58 UTC' per il RegexpHeader
+_
+Ma il chatbot ha dato la risposta sbagliata!
+- **Il modulo Header è stato introdotto prima della correzione definitiva del problema del game over**. La sequenza delle modifiche suggerisce che l'implementazione del nuovo modulo è stata una priorità, seguita dalle correzioni relative al gioco.
+NON E' VERO!
+Probabilmente il troppo testo lo ha confuso!
+
+E' stato corretto prima il problema del game over oppure è stato prima introdotto 
+il modulo Header a sostituzione del modulo RegexpHeader? Guarda bene la data di esecuzione dei rispettivi commits.
+
+Found 2 relevant documents
+Che sono i due di RegexpHeader. Il successivo era sopra i 0.3 allora. Perchè la domanda è stata troppo lunga!
+
+E' stato prima corretto il problema del game over oppure è stato prima introdotto 
+il modulo Header a sostituzione del modulo RegexpHeader? Guarda bene la data di esecuzione dei rispettivi commits.
+
+Cosa è avvenuto prima?
+Corretto il problema del game over
+oppure
+Introdotto il modulo Header a sostituzione del modulo RegexpHeader?
+
+[INFO] Found 16 relevant documents
+'distance': 0.5867446827616661}
+Content: Introduzione del modulo Header a sostituzione del modulo RegexpHeader, cosicchè il controllo d'ora in poi avvenga riga per riga e non utilizzi espressioni regolari, che impedivano l'utilizzo di () e *.
+'distance': 0.7159637137738014}
+Content: Introduzione di un file Header coincidente con la licenza, ma senza parentesi, siccome il module RegexpHeader purtroppo non riconosce le parentesi
+'distance': 0.9252032896316474}
+Content: Corretto il problema del game over, ma adesso è tornato il problema che la pallina non parte dalla posizione iniziale fissata
+_
+Dunque, l'ordine cronologico degli eventi è il seguente:
+
+- **Correzione del problema del game over (14 settembre 2024)**
+- **Introduzione del modulo Header (17 settembre 2024)**
+
+In conclusione, prima è stato corretto il problema del game over, seguito dall'introduzione del modulo Header.
+_
+Ok, quindi, se gli fai la domanda coincisa lui riesce a rispondere!
+Cose tipo "Guarda bene la data di esecuzione dei rispettivi commits." sono assolutamente da evitare!
+CAPITO!
+Domanda coincisa e diretta, senza giri di parole, e stando attenti a mettere in risalto le parole chiave!
+
+NELLE DOMANDE LUNGHE VA UN PO' IN DIFFICOLTA', PERCHE' C'E' UN PEZZO DI DOMANDA A CUI VIENE DATO PIU' risalto
+rispetto all'altro. Ma non è un problema risolvibile purtroppo.
+
+
+25)
+Chi ha generato i badges?
+
+Found 16 relevant documents
+'distance': 0.8427063580326658}
+Content: Generated badges
+_
+Stessa similarità: 0.8427063580326658
+_
+IDENTICA!
+
+E qua i primi 14 documenti sono uguali (perchè si è aggiunto anche quello di ieri sera).
+
+Sono contesto perchè aver introdotto i file ha fatto sì di rilevare anche:
+'distance': 1.110598530430815}
+Content: Ho inserito build.yml
+'distance': 1.178655953210149}
+Content: Update README.md - Inserimento del badge di Quality Gate di SonarCloud
+
+Sopratutto "Ho inserito build.yml", che ha nel contenuto anche un "git commit -m "Generated badges"", ecco,
+non sarebbe MAI stato rilevato senza avere le patch sui file modificati!
+Neanche "- .github/workflows/build.yml (Status: added, Changes: 57, Additions: 57, Deletions: 0)\n" sarebbe stato
+sufficiente, neanche il nome del file, qua serviva proprio la patch! E sono stracontento dunque di aver introdotto
+la patch!!
+GODO!!
+
+Assistant: I badge sono stati generati da **GitHub Actions**. Questo è indicato dai metadati associati alle modifiche nei file, dove l'autore è specificato come `github-actions`. Ecco un riepilogo delle informazioni relative alla generazione dei badge:
+
+1. **Autore**: github-actions
+2. **Funzione**: La generazione dei badge è parte di un workflow di automazione in cui viene utilizzato GitHub Actions per gestire le build e il monitoraggio della qualità del codice.
+3. **Commit**: I badge sono stati generati in diversi commit, come evidenziato dai messaggi di commit che indicano "Generated badges".
+
+In particolare, si fa riferimento a diversi commit in cui i badge sono stati aggiornati, come ad esempio:
+- Commit `63f437f8222344c142e9b2c59686111ea7347159` - Generazione di badge.
+- Commit `449e2505b5dea1f185d812f7c62cabcc04cfa395` - Generazione di badge.
+- Commit `3441a125b5962a5f2d02c7f3e2d268742530353c` - Aggiunta di un file di workflow che include la generazione di badge.
+
+In sintesi, i badge sono stati generati automaticamente attraverso un processo di Continuous Integration/Continuous Deployment (CI/CD) utilizzando GitHub Actions.
+_
+"Aggiunta di un file di workflow che include la generazione di badge."
+GODO!
+
+
+Tutto sommato, ok, 
+Bisogna fare domande coincise e che non abbiano due contesti in cui uno dei due è troppo più rilevante dell'altro!
+_
+Ma, per il resto l'introduzione dei file ha dato un grande valore aggiunto!
+Quindi faccio il merge!
+
+
+
+
+
+
+05/01/2025
+Issue:
+BUD-177: Provare a pesare la similarità basandosi sulla lunghezza dei documenti, in modo da dare più importanza alla similarità 
+con documenti lunghi rispetto a quella con documenti corti.
+
+Lo scheduling di attività:
+1) Mi procuro domande di test, e le testo allo stato attuale
+2) Definisco Lunghezza di un documento = numero di caratteri
+3) Tra linea 453 e 454, lì devo fare la divisione "similarità/lunghezza".
+4) Adesso l'ordinamento è imposto da Chroma, che ti fa arrivare i documenti già ordinati. Cambiare la similarità significa anche 
+cambiare l'ordinamento degli oggetti Document. Al pratico, questo vuol dire prendere la lista degli oggetti Document "langchain_docs" 
+e ordinare la lista basandosi sul campo dato della distanza di similarità. Tra riga 461 e 463 lo devo fare.
+5) Testo le domande di test
+
+
+1) Mi procuro domande di test, e le testo allo stato attuale
+Me ne procuro 3.
+
+1💣 Chi è l'autore del repo BrickBreaker?
+2💣 Per quale progetto è stata svolta di recente la Retrospettiva di una Sprint?
+3💣 Che cosa contiene il file checkstyle.xml?
+
+Template di valutazione dei test:
+• Input noto 
+• Procedura nota
+• Stato noto
+• Attese note
+• Esiti verificabili da un automa
+
+1💣 Chi è l'autore del repo BrickBreaker?
+• Input noto : Caricati GitHub files e issues Jira, e immessa la domanda 1💣
+• Procedura nota : Il normale flusso di domanda e risposta di BuddyBot
+• Stato noto : Con threshold 1.2 appaiono solamente due issues Jira. Caricando solo GitHub e togliendo il threshold, si ottiene che
+il primo documento GitHub (NOTICE) ha similarità 1.4483149625447065, mentre il secondo (BrickBreakerTest.java) ha similarità
+1.499595069854887.
+• Attese note : Almeno un GitHub file deve essere visualizzabile dentro il threshold. L'obiettivo sarebbe abbassare entrambe le
+similarità, in particolare BrickBreakerTest.java che è un documento molto lungo.
+• Esiti verificabili da un automa : I miei occhi sono l'automa, speriamo che non sbaglino
+
+2💣 Per quale progetto è stata svolta di recente la Retrospettiva di una Sprint?
+• Input noto : Caricate pagine Confluence e issues Jira, e immessa la domanda 2💣
+• Procedura nota : Il normale flusso di domanda e risposta di BuddyBot
+• Stato noto : Il documento "Connettività per tutti" appare al secondo posto con 0.8602511921421436, mentre al primo posto c'è
+"Stendere punto 3.5 norme di progetto" con distanza 0.8530536237112848.
+• Attese note : Il documento "Connettività per tutti" deve apparire al primo posto, battendo le issues di Jira
+• Esiti verificabili da un automa : I miei occhi sono l'automa, speriamo che non sbaglino
+
+3💣 Che cosa contiene il file checkstyle.xml?
+• Input noto : Caricati GitHub files e GitHub commits, e immessa la domanda 3💣
+• Procedura nota : Il normale flusso di domanda e risposta di BuddyBot
+• Stato noto : Appaiono solamente 19 commit (lunghissimi, il primo è lungo 10507 caratteri, e gli altri sono tutti sugli 8000), e nessun GitHub file. Caricando solo GitHub e togliendo il threshold, 
+si ottiene che il primo documento GitHub (checkstyle.xml, lunghezza: 1592 caratteri) ha similarità 1.332253571922304, mentre il secondo (BrickBreaker.java, 12632 caratteri) ha
+distanza 1.3942717969004808 (probabilmente la parola "contiene" è inserita in più di un commento, nel codice).
+• Attese note : Il documento checkstyle.xml deve apparire prima dei commit appositi che sono serviti a modificarlo
+• Esiti verificabili da un automa : I miei occhi sono l'automa, speriamo che non sbaglino
+_
+IL PUNTO DELLA QUESTIONE:
+In questo caso i commit di GitHub sono più lunghi del documento GitHub stesso, siccome contengono anche la patch a tanti file.
+Il punto è che appaiono prima perchè la parola checkstyle.xml nel file GitHub "checkstyle.xml" appare solo nei metadati, cioè solo 
+nel titolo, mentre invece nei commit essa appariva sia nel messaggio sia nei file modificati (in cui anche altri file riferivano 
+checkstyle.xml). Per questo dico che in realtà non c'è nessun problema di similarità, perchè anche se un documento è lungo, comunque 
+se la parola appare più volte allora appare in cima. Il che vuol dire che nella similarità il controllo della lunghezza del documento 
+è già implementato, sono solo i documenti/dati che abbiamo che sono uno schifo. 
+Principio GIGO: Garbage In, Garbage Out (Dati orrendi -> Risposta orrenda).
+Poi, la similarità che c'è non è perfetta, bisogna ammetterlo, perchè tra i commit prima dei file ce n'erano anche di commit che non 
+c'entravano nulla, ma il punto è che il problema non è lunghezza, è qualcos'altro che, non essendo esperti, noi non possiamo sapere.
+Probabilmente chi ha creato l'algoritmo di similarità lo ha testato su dati migliori dei nostri, e comunque ci sta che un'AI non 
+arrivi a fare dei collegamenti che riescono solo alla mente umana, sennò avrebbero già conquistato il mondo!
+_
+ESITO DELLA QUESTIONE:
+Manomettere la similarità pesando la lunghezza aiuterebbe a risolvere alcuni casi, ma ne peggiorebbe molti altri. Quindi, 
+io non manometterei, quantomeno non basandosi su questo specifico criterio della lunghezza dei documenti, perchè ne possiamo avere 
+più svantaggi che vantaggi. 
+Quei casi limite per cui succede ciò che succede funzionano male o perchè i nostri dati fanno schifo, oppure perchè la similarità è 
+sbagliata per altri motivi, ma non perchè i documenti lunghi sono penalizzati. 
+Comunque, le domande "allucinate" sono dei casi limite, secondo me per gli scopi del progetto si possono ignorare. Nelle due demo di 
+PoC e MVP staremo attenti noi a porre delle domande per cui sappiamo che abbiamo dei dati puliti e adatti per generare la risposta, 
+evitando dati sporchi che mettono in difficoltà l'algoritmo di similarità, che è per noi una grande black box!
+_
+Proposta strana: dare maggior peso alle keyword dei metadati invece che del page_content (così si darebbe più peso ai titoli dei file).
+Proposta assolutamente impossibile visto che il documento è unico e Chroma ti calcola la similarità solamente sul pacchetto completo,
+senza distinguere tra metadati e page_content.
+
+
+Ultimissimo test:
+4💣 Che cosa contiene il file NOTICE.txt?
+
+Al primo posto viene "Update NOTICE.txt - Aggiunto il mio nome", con 0.7392583427035805 e 713 caratteri.
+E vabbè questo è finito primo perchè era corto.
+
+Però al secondo posto "Introduzione del file di licence e del file di notice", con 0.7954619961168048 e 6657 caratteri.
+Ecco, questo documento qua, pur essendo lungo, ha comunque ottenuto una similarità straordinaria!
+E questo è il documento su cui il chatbot si è basato per ottenere la risposta corretta!
+
+Gli altri 24 sono tutti commit, alcuni anche molto lunghi!
+
+Riprovo con solo file GitHub e senza threshold:
+Il primo documento GitHub ha 1.4587852431034662
+
+Nessuno dei due documenti è NOTICE.
+Perchè la parola appare solo nel titolo, che è una volta sola che è poco.
+_
+NOTICE.txt si trova ad essere il Documento 6, con 'distance': 1.8291790920270086.
+Nonostante possieda solamente 1654 caratteri.
+
+Quindi, una cosa da mettere nel manuale utente è:
+"
+Non fare domande sul contenuto di un file GitHub basandosi sul suo nome, perchè il nome appare solo una volta all'inizio,
+bensì sempre e solo puntare sul contenuto direttamente se si vuole puntare un contenuto! Sennò, chiedendo con il nome 
+apparirà solamente i commit di modifica, dove il nome del file è citato più volte tra "messaggio", "lista file" e 
+"file che che lo citano". E' come, in una mappa hash, non poter accedere al valore usando la chiave, ma bensì potendo usare
+solamente il valore. # Usare il valore per accedere al valore.
+"
+
+Comunque, la lunghezza non è assolutamente il problema, abbiamo messo in chiaro che il problema è altro!
+
+Anche nel caso 2💣, "Connettività per tutti" comunque appariva al 2° posto su 19, e le altre issues a parte la prima
+erano tutte dietro, appunto perchè il documento Confluence, pur essendo lungo, comunque aveva il sufficiente numero 
+di keywords per cavarsela comunque bene, perchè la similarità già le pesa le keywords in base alla lunghezza!
+
+
+
+
+Ho introdotto i commit del progetto BuddyBot:
+
+26)
+Quando sono state introdotte le funzioni di split dei documenti?
+
+Found 1 relevant documents
+'date': '2024-12-15 16:22:15 UTC'
+'distance': 0.33857485174414576
+Content: Introdotte le funzioni di split dei documenti per gestire la questione del massimo numero di documenti che è 41666
+
+Assistant:
+ Le funzioni di split dei documenti sono state introdotte per gestire la questione del massimo numero di caratteri consentiti, che è di 41666. Queste funzioni permettono di suddividere i documenti provenienti da GitHub, Jira e Confluence in parti più piccole, facilitando l'elaborazione e la gestione dei dati.
+
+Ecco alcuni dettagli importanti sulle funzioni di split:
+
+1. **Obiettivo**: Le funzioni sono progettate per dividere
+
+Non ha capito "quando".
+
+
+27) In quale data sono state introdotte le funzioni di split dei documenti?
+
+Lo stesso documento ma con 'distance': 0.4018341083018156
+(E' diminuita perchè la query è più lunga, e diminuisce di tanto con la lunghezza della query, ma veramente di tanto!)
+
+Assistant:
+ Le funzioni di split dei documenti sono state introdotte il **15 dicembre 2024**. Questa modifica è stata effettuata nel contesto di gestire la questione del massimo numero di documenti, che è di **41666** caratteri.
+
+In sintesi:
+- **Data di introduzione**: 15 dicembre 2024
+- **Funzione**: Gestione del massimo numero di caratteri per i documenti, fissato a 41666.
+
+Oh, quantomeno se gli fai la domanda precisa ti risponde giusto!
+Bisogna fare attenzione che ogni tanto anche l'LLM ha delle allucinazioni!
+
+
+
+Carico i commit del repo della Documentazione.
+
+06m 14s per aggiungere 485 commits (il numero di commit del main, vengono messi solo quelli del ramo principale).
+Andremo verso i 10-15 minuti per la fine della PB allora.
+
+
+28) Quando è stata creata la repo della documentazione di SWEg Labs?
+
+Ha trovato 115 commit:
+[ERROR] Error processing user input: Error code: 429 - {'error': {'message': 'Request too large for gpt-4o-mini in organization org-1JCYsbOuFtZ3TeJx8arpPWwF on tokens per min (TPM): Limit 200000, Requested 329868. The input or output tokens must be reduced in order to run successfully. Visit https://platform.openai.com/account/rate-limits to learn more.', 'type': 'tokens', 'param': None, 'code': 'rate_limit_exceeded'}}
+[ERROR] Error fetching response: Error code: 429 - {'error': {'message': 'Request too large for gpt-4o-mini in organization org-1JCYsbOuFtZ3TeJx8arpPWwF on tokens per min (TPM): Limit 200000, Requested 329868. The input or output tokens must be reduced in order to run successfully. Visit https://platform.openai.com/account/rate-limits to learn more.', 'type': 'tokens', 'param': None, 'code': 'rate_limit_exceeded'}}
+
+Mi sa che le dimensioni di questo repo sono abbastanza ingestibili.
+
+
+
+
+
+
+06/01/25
+
+Oggi, desidero valutare un po' meglio il threshold
+
+Come dataset scelgo:
+1-- Jira
+2-- GitHub (file + commenti)
+3-- Confluence
+
+Scelgo 30 domande
+
+1) Chi deve scrivere la sezione "Strategie di test" del piano di qualifica?
+Il documento soluzione: 0.11517202854156494
+Documenti validi fino a: [Unico documento]
+
+2) Quali tecnologie sono selezionate da studiare?
+// 59 documenti con threshold 1.2
+// 43 documenti con threshold 1.1
+Il documento soluzione: 0.9705120325088501
+Documenti validi fino a: [Tutti invalidi]
+
+3) Quali documenti bisogna redigere?
+Il documento soluzione: 0.7988483309745789
+Documenti validi fino a: 1.0918388366699219 (Creare la presentazione da presentare ad Azzurro Digitale il 03/01/25.)
+                o anche: 1.1255497932434082 (stendere requisiti prestazionali)
+Possibile abbassamento del threshold a 1.1
+
+4) Quali requisiti o tipi di requisiti sono da scrivere?
+Il documento soluzione: a partire da 0.7391524314880371
+Documenti validi fino a: 1.1076133251190186 (stendere requisiti prestazionali)
+Incombent: 1.12
+
+5) Cosa è previsto che faccia Giacomo Loat a riguardo di Angular?
+Il documento soluzione: 1.0484997034072876 (michael Angular)
+Documenti validi fino a: 1.1997367143630981 (Giacomo Docker)
+E siamo tornati a 1.2, ecco. Succede che ogni tanto lo trovi un documento con confine 1.2.
+E questo documento è stato l'unico con Giacomo Loat, è stato fondamentale per la risposta.
+Incombent: 1.2
+
+6) Cosa è previsto che faccia Michael Fantinato a riguardo di Angular?
+Il documento soluzione: 1.1075855493545532 (Implementare Angular in un ramo del PoC)(il 41° documento)
+Documenti validi fino a: Il primo documento valido ha 1.05952787399292, per Michael, che chiede di sistemare caso d'uso UC19.
+Perchè la domanda è lunga, e le domande lunghe danno risultati terribili.
+Mi ha dato 60 documenti! Significa che alzare sopra 1.2 significa consumare un fottio di token!
+Le domande lunghe BuddyBot le soffre tantissimo.
+
+7) Angular è di Michael Fantinato?
+0.9452953338623047
+Un po' meglio, ma comunque questo documento ha un bassissimo SEO, pur essendo cortissimo. 
+Non si sa bene cosa combini la similarità con questa domanda, è black box, ma di certo la colpa non è la lunghezza dato il documento 
+di soli 231 caratteri.
+Comunque, la domanda più corta ha fatto guadagnare 0,162. Importantissima la query corta!
+Purtroppo da "La domanda è fuori contesto.", mi sono già segnato di non fare mai domande colloquiali.
+
+8) Chi è l'autore del progetto BrickBreaker?
+Il documento soluzione: 1.0633978904475843
+Documenti validi fino a: Vabbè, di BrickBreaker ci sono documenti fino alla fine
+Comunqure, mettere 1.1 come threshold sarebbe troppo vicino alla risposta, non lo ritengo giusto.
+
+9) Chi ha scritto il README del progetto BrickBreaker?
+Il documento soluzione: 0.8916218280792236 (Sistemazione del README)
+Documenti validi fino a: 1.180303931236267 (Ultime sistemazioni a NOTICE e README)
+Si è parlato di README fino all'ultimo momento, e quasi sicuramente ce ne sarebbero stati altri anche dopo,
+però già mi ha trovato 29 documenti (tra cui molti che non c'entravano) così, non possono scatenare l'inferno
+dei token andando ad alzare il threshold, la scelta è solo se dimibuirli o no. Ed è evidente che diminuire
+non si può, perchè questa è una domanda perfetta per BuddyBot ed è evidente che si trovano risultati validi
+fino a 1.2 tranquillissimamente.
+
+10) Qual è la data dell'ultimo commit di BrickBreaker?
+Non era domanda facile.
+Il primo documento lo ha trovato a 1.0661883354187012, il primo di BrickBreaker a 1.0958337783813477.
+Poi, è stata trovata altra roba (fino a 10) di BrickBreaker fino a 1.2
+In questo caso per avere un tot di risultati era fondamentale giungere fino a 1.2
+
+11) Come si chiama il progetto a cui sta lavorando il team?
+Il documento soluzione: 0.9020334371191384 (Creazione progetto Maven)
+Documenti validi fino a: nessun altro valido
+
+12) Nome del progetto?
+Il documento soluzione: 0.7164918534610248 (Creazione progetto Maven)
+Documenti validi fino a: nessun altro
+Fondamentale porre query corte. Ha guadahnato 1.8 !!
+Ecco, in questo caso, gli altri 26 documenti erano inutili. Tuttavia, non si può cadere nella
+tentazione di abbassare il threshold, vedi domande precedenti, non si può pensare solo alla domanda
+perfetta!
+
+13) Per quale progetto è stata svolta di recente la Retrospettiva di una sprint?
+Il documento soluzione: 0.8602511921421436 (immagino sia come uno scorso test, dove era al secondo posto)
+Documenti validi fino a: nessun altro
+63 documenti cavolo, troppi!
+Il motivo che per cui avevo messo max_gap = 0.3 era
+"
+24) 
+E' stato corretto prima il problema del game over oppure è stato prima introdotto 
+il modulo Header a sostituzione del modulo RegexpHeader?
+"
+Cioè nei casi di confronto tra commit lungo e corto devono essere trovati tutti e due!
+"
+Così adesso posso fare una domanda di confronto tra un commit lungo e un commit corto avendo più fiducia che come contesto non apparirà
+solo quello lungo (che fa maggiore match), ma bensì tutti e due.
+"
+
+14) In che data Riccardo Stefani ha inserito il token a Coveralls?
+Il documento soluzione: 0.5261122566888996
+Documenti validi fino a: nessuno, max_gap ha funzionato perfettamente.
+
+15) Chi è l'autore che è tornato alla versione originale del gioco?
+Il documento soluzione: 0.6619325448500666 (Sono tornato alla versione originale del gioco, poichè infatti questo è il gioco puro: la possibilità di controllare la pallina aveva reso il gioco troppo facile)
+Il successivo ha 0.7750848948392448 (Prima vera build funzionante, ma il gioco non è interattivo), quindi qua il max_gap
+non era applicabile, perchè mettere 1.0 sarebbe inaccettabile.
+
+16) E' stato corretto prima il problema del game over oppure è stato prima introdotto 
+il modulo Header a sostituzione del modulo RegexpHeader?
+Gli stessi e identici 3 della volta scorsa il "24)" che mi aveva fatto scegliere max_gap = 0.3
+"Il problema del game over è stato corretto prima dell'introduzione del modulo Header a sostituzione del modulo RegexpHeader"
+game over ha 2024-09-14, mentre Header ha 2024-09-17 e 2024-09-18. Quindi, risposta corretta!
+
+17) Chi ha generato i badges?
+Il documento soluzione: 0.8427063580326658 (*14 volte)
+Documenti validi fino a: 1.110598530430815 e 1.178655862808227 centravano un poco, seppur poco.
+Viene la tentazione di mettere il threshold a 1.1, ma non si può per i motivi scritti sopra.
+
+18) Quali file sono stati modificati (e in quali righe) quando è stato corretto il problema del game over?
+Il documento soluzione: 0.7496161544680473
+Documenti validi fino a: Il successivo a 0.8544999513616444, il resto nessuno rilevante
+69 documenti sono troppi, peccato.
+
+19) Quali file sono stati modificati (e in quali righe) quando è stato introdotto il modulo Header a sostituzione del modulo RegexpHeader?
+Risposta perfetta, ha trovato i due commit che doveva trovare, e max_gap ha funzionato perfettamente.
+
+20) Chi è l'autore del repo BrickBreaker?
+Il documento soluzione: 1.1449483133671134 (Creazione progetto Maven)
+Documenti validi fino a: nessun altro.
+Fondamentale tenere 1.2
+
+21) Che cosa contiene il file checkstyle.xml?
+Il documento soluzione: 0.5303087655972863
+Documenti validi fino a: 0.7079200148582458
+Qua bastavano i primi tre. Il successivo è 0.9756346940994263
+Verrebbe voglia di mettere 0.25 per il max_gap, ma per il caso citato sopra non posso.
+
+22) Che cosa contiene il file NOTICE.txt?
+Il documento soluzione: 0.7392582893371582
+Documenti validi fino a: 0.8282777070999146
+Anche qua bastavano i primi tre. Però, il successivo ha 0.8982561826705933 (Creare la presentazione per il prossimo 
+diario di bordo di mercoledì 08/01/25), e qua proprio non si può fare niente!
+
+23) Chi deve creare il nuovo foglio google per preparare il preventivo e consuntivo?
+Il documento soluzione: 0.14126503467559814
+Documenti validi fino a: [unico, il max_gap è stato perfetto]
+
+24) Quali sono i requisiti per Ubuntu?
+Ha trovato 34 documenti, tutti invalidi.
+Il primo a 0.8911132216453552 (Stendere requisiti qualitativi)
+Vabbè, peccato.
+
+25) Quali sono, per il progetto informatico BuddyBot, i requisiti per Ubuntu?
+Ha trovato 16 documenti, tutti invalidi.
+Il primo a 0.9581909257624062 (Qualche cambiamento per aderire ai warnings. E adesso la GitHub Action deve funzionare!)
+Vabbè, peccato.
+Peccatissimo sopratutto perchè dà "La domanda è fuori contesto.". Peccato, dovrò usare altre domande allora!
+Adesso con "Quale versione di Docker bisogna studiare?"
+_
+Riprovo:
+Quali sono i requisiti per Ubuntu? Informazione non trovata.
+Quali sono, per il progetto informatico BuddyBot, i requisiti per Ubuntu? Informazione non trovata.
+Chi vince tra una tigre e un leone? La domanda è fuori contesto.
+GODO!
+
+26) Chi deve creare la presentazione per il prossimo diario di bordo di mercoledì 08/01/25 ?
+Unico a 0.09024052321910858
+Ora provo:
+Per che data deve essere creata la presentazione per il prossimo diario di bordo di mercoledì 08/01/25?
+Perfetto.
+Entro quando deve essere creata la presentazione per il prossimo diario di bordo di mercoledì 08/01/25?
+Perfetto.
+
+27) Chi deve creare il diario di bordo?
+Il documento soluzione: 0.5749495029449463
+Documenti validi fino a: Da 0.827472448348999 in poi ce ne sono altri 63!
+Ecco perchè bisogna fare domande precise!
+Comunque, il chatbot ha risposto:
+"
+ Nel contesto fornito, non c'è una menzione diretta su chi debba creare il diario di bordo. Tuttavia, è presente un'attività che richiede "creare la presentazione per il prossimo diario di bordo di mercoledì 08/01/25", che è assegnata a "Verz 8".
+
+Quindi, si può dedurre che:
+
+- **Chi deve creare il diario di bordo**: Non specificato direttamente, ma la creazione della presentazione per il diario di bordo è assegnata a **Verz 8**.
+
+Se si considera la creazione della presentazione come parte della preparazione del diario di bordo, si potrebbe ipotizzare che Verz 8 sia coinvolto anche nella creazione del diario stesso o nella sua presentazione.
+"
+Ci sta! Anche se la domanda è ambigua, comunque la risposta è corretta!
+
+28) In che data si è capito che il gioco non è interattivo?
+Il documento soluzione: 0.8131467204257712, al secondo posto a causa dell'elevata lunghezza! (Prima vera build funzionante, ma il gioco non è interattivo)
+"Adesso la mappa non si risorteggia quando clicchi Enter per iniziare il gioco" comunque dà l'idea di "non interattivo" dai! (0.7949817082157015). Qua il documento è veramente breve, ecco perchè è finito di poco prima.
+Dal successivo "Ora il player si può muovere solo se il gioco è attivo, e non può attivare il gioco" che è stato preso per "attivo", sono tutti no.
+Totale 25, quindi altri 23 purtroppo.
+
+29) Dove è scritto "// Direzione casuale di partenza della pallina\n-                double angle = rand.nextDouble() * Math.PI / 3 - Math.PI / 6; // Tra -30° e +30°\n" ?
+Il documento soluzione: 1.1835970743018926
+E poi un altro documento, così a caso.
+Vergognoso che si debba arrivare così in là. Comunque, il threshold è giusto!
+
+30) Cosa c'è de mettere il foglio google?
+Il documento soluzione: 0.5815768241882324 e 0.7249407768249512
+Documenti validi fino a: basta, il successivo è 0.8183230494457616, quindi il max_gap non si poteva applicare.
+
+31) JUnit e Mockito per cosa sono stati usati?
+Eh, in generale ce ne sono ben 48, quando la risposta ha bisogno di 2 file e basta.
+Eh, peccato, però non possiamo abbassare il threshold per i motivi sopra! Cioè per gestire anche i casi limite!
+
+32) Cosa bisogna fare con la tecnologia Docker?
+max_gap perfetto, ma l'LLM ha pensato che la domanda fosse su Docker, non su cosa deve fare il gruppo con Docker.
+La colpa è della domanda mal posta!
+
+33) Cosa è stato assegnato da fare per la tecnologia Docker?
+Found 1 relevant documents   as always!
+Ed è aumentata solo di 1 centesimo la similarità, godo!
+Risposta:
+"
+Per la tecnologia Docker è stato assegnato il seguente compito:
+
+- **Studiare la tecnologia Docker**
+
+Attualmente, il compito è segnalato con priorità media ed è ancora da completare.
+"
+Ah, ecco, visto!
+Bastava fare una domanda fatta bene

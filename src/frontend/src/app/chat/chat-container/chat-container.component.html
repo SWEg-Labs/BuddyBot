@@ -1,0 +1,26 @@
+<div class="chat-container">
+  <!-- Header -->
+  <app-chat-header></app-chat-header>
+
+  <!-- Area messaggi -->
+  <app-chat-messages
+    #messagesComponent
+    [messages]="messages"
+    [isLoading]="isLoading"
+    (isScrolledUp)="onScrollChange($event)"
+  ></app-chat-messages>
+
+  <!-- Barra di input -->
+  <app-chat-input
+    (sendMessage)="onSendMessage($event)"
+    [isLoading]="isLoading"
+  ></app-chat-input>
+
+  <!-- Azioni -->
+  <app-chat-actions
+    [isLoading]="isLoading"
+    (jira)="updateJira()"
+    (github)="updateGithub()"
+    (confluence)="updateConfluence()"
+  ></app-chat-actions>
+</div>

@@ -1,0 +1,41 @@
+services:
+  chroma-db:
+    image: chromadb/chroma
+    container_name: chroma-db
+    ports:
+      - "8000:8000"
+    networks:
+      - buddybot-network
+
+  backend:
+    build:
+      context: ./src/backend
+      dockerfile: Dockerfile
+    container_name: buddybot-backend
+    ports:
+      - "5000:5000"
+    networks:
+      - buddybot-network
+    depends_on:
+      - chroma-db
+    tty: true
+    stdin_open: true
+
+  frontend:
+    build:
+      context: ./src/frontend
+      dockerfile: Dockerfile
+    container_name: buddybot-frontend
+    ports:
+      - "4200:4200"
+    networks:
+      - buddybot-network
+    depends_on:
+      - backend
+    stdin_open: true
+    tty: true
+
+
+networks:
+  buddybot-network:
+    driver: bridge

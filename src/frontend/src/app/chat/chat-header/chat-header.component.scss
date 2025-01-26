@@ -1,0 +1,22 @@
+.chat-header {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background-color: #343a40;
+    color: #fff;
+  
+    .logo-container {
+      margin-right: 1rem;
+  
+      .logo {
+        height: 40px;
+        width: auto;
+      }
+    }
+  
+    h1 {
+      font-size: 1.5rem;
+      margin: 0;
+    }
+  }
+  

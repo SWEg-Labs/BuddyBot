@@ -1,8 +1,17 @@
 import os
 from langchain_openai import ChatOpenAI
-from logger import logger  # Usa il logger che ti ho fornito in precedenza
+from utils.logger import logger  # Usa il logger che ti ho fornito in precedenza
 
 def initialize_llm():
+    """
+    Initializes the language model using the OpenAI API key and model name.
+
+    Returns:
+        ChatOpenAI: An instance of the ChatOpenAI language model.
+
+    Raises:
+        ValueError: If the OPENAI_API_KEY is not set in the environment variables.
+    """
     try:
         openai_api_key = os.getenv("OPENAI_API_KEY")
         model_name = os.getenv("OPENAI_MODEL_NAME", "gpt-4o-mini") # Valore di default per il modello LLM: gpt-4o-mini
