@@ -6,6 +6,9 @@ ARG SRC_DIRECTORY="."
 ENV REQUIREMENTS_PATH="${WORKDIR}/requirements.txt"
 ENV DOTENV_PATH="${WORKDIR}/.env"
 
+ARG CHROMA_HOST="chroma-db"
+ARG CHROMA_PORT="8000"
+
 ARG DB_UPDATE_PATH="${WORKDIR}/db_update_controller.py"
 ARG CRON_LOG_PATH="/var/log/cron.log"
 ARG PYTHON_INTERPRETER_PATH="/usr/local/bin/python"
@@ -34,13 +37,18 @@ RUN apt-get update && apt-get install -y cron supervisor && \
 
 # Copia le variabili necessarie nel .env (altrimenti lo script chiamato dal cronjob non le vede)
 RUN echo "" >> ${DOTENV_PATH} && \
+    echo "CHROMA_HOST=${CHROMA_HOST}" >> ${DOTENV_PATH} && \
+    echo "CHROMA_PORT=${CHROMA_PORT}" >> ${DOTENV_PATH} && \
+    echo "" >> ${DOTENV_PATH} && \
     echo "LOGGING_ENABLED=${LOGGING_ENABLED}" >> ${DOTENV_PATH} && \
     echo "TIMEOUT=${TIMEOUT}" >> ${DOTENV_PATH} && \
+    echo "" >> ${DOTENV_PATH} && \
     echo "DB_UPDATE_ERROR=${DB_UPDATE_ERROR}" >> ${DOTENV_PATH} && \
     echo "DB_UPDATE_RETRY=${DB_UPDATE_RETRY}" >> ${DOTENV_PATH} && \
     echo "DB_UPDATE_MAX_RETRIES=${DB_UPDATE_MAX_RETRIES}" >> ${DOTENV_PATH} && \
     echo "DB_UPDATE_FREQUENCY=${DB_UPDATE_FREQUENCY}" >> ${DOTENV_PATH} && \
     echo "DB_UPDATE_ERROR_FREQUENCY=${DB_UPDATE_ERROR_FREQUENCY}" >> ${DOTENV_PATH} && \
+    echo "" >> ${DOTENV_PATH} && \
     echo "CRONTAB_PATH=${CRONTAB_PATH}" >> ${DOTENV_PATH} && \
     echo "CRONJOB_COMMAND=${CRONJOB_COMMAND}" >> ${DOTENV_PATH}
 
