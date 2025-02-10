@@ -399,7 +399,7 @@ class VectorStoreRepository:
 
             # Converte i risultati in oggetti Document
             # Perchè funzioni correttamente, il database vettoriale deve contenere documenti che hanno il campo "metadatas" diverso da None
-            langchain_docs = []
+            relevant_docs = []
             for i in range(len(results['documents'])):
                 for j in range(len(results['documents'][i])):
                     document = results['documents'][i][j]
@@ -409,11 +409,11 @@ class VectorStoreRepository:
                     # Aggiungi la distanza come metadato
                     metadata["distance"] = distance
 
-                    langchain_docs.append(Document(page_content=document, metadata=metadata))
+                    relevant_docs.append(Document(page_content=document, metadata=metadata))
 
-            # logger.info(f"Converted documents: {langchain_docs}")     # DEBUG
+            # logger.info(f"Converted documents: {relevant_docs}")     # DEBUG
 
-            return langchain_docs
+            return relevant_docs
         except Exception as e:
             logger.error(f"Error performing similarity search with k results: {e}")
             raise
@@ -443,7 +443,7 @@ class VectorStoreRepository:
             # logger.info(f"Similarity search results: {results}")     # DEBUG
 
             # Filtra i risultati in base al punteggio di similarità
-            langchain_docs = []
+            relevant_docs = []
             for i in range(len(results['documents'])):
                 for j in range(len(results['documents'][i])):
                     document = results['documents'][i][j]
@@ -452,11 +452,11 @@ class VectorStoreRepository:
 
                     if distance <= similarity_threshold:
                         metadata["distance"] = distance
-                        langchain_docs.append(Document(page_content=document, metadata=metadata))
+                        relevant_docs.append(Document(page_content=document, metadata=metadata))
 
-            # logger.info(f"Filtered documents: {langchain_docs}")     # DEBUG
+            # logger.info(f"Filtered documents: {relevant_docs}")     # DEBUG
 
-            return langchain_docs
+            return relevant_docs
         except Exception as e:
             logger.error(f"Error performing similarity search by threshold: {e}")
             raise
@@ -487,10 +487,10 @@ class VectorStoreRepository:
             # logger.info(f"Similarity search results: {results}")     # DEBUG
 
             # Filtra i risultati in base al punteggio di similarità
-            langchain_docs = []
+            relevant_docs = []
             previous_distance = None
 
-            # Per scalabilità creo un for anche per le queries, nonostante sia sempre una sola
+            # Per scalabilità creo un for anche per le queries, nonostante sia sempre una sola, avente indice i=0
             for i in range(len(results['documents'])):           # Indice i: va da 0 a (numero di query - 1)
                 for j in range(len(results['documents'][i])):    # Indice j: va da 0 a (numero di risultati trovati in risposta alla query i-esima - 1)
                     document = results['documents'][i][j]
@@ -503,18 +503,18 @@ class VectorStoreRepository:
 
                     # Controlla il distacco massimo
                     if previous_distance is not None and abs(distance - previous_distance) > max_gap:
-                        return langchain_docs  # Termina e restituisce i documenti trovati finora
+                        return relevant_docs  # Termina e restituisce i documenti trovati finora
                     
                     # Aggiungi la distanza come metadato
                     metadata["distance"] = distance
 
                     # Aggiungi il documento alla lista dei risultati
-                    langchain_docs.append(Document(page_content=document, metadata=metadata))
+                    relevant_docs.append(Document(page_content=document, metadata=metadata))
                     
                     # Aggiorna la distanza precedente
                     previous_distance = distance
 
-            return langchain_docs
+            return relevant_docs
         except Exception as e:
             logger.error(f"Error performing similarity search by threshold with gap: {e}")
             raise

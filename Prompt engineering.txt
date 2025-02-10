@@ -669,7 +669,7 @@ Lo scheduling di attività:
 2) Definisco Lunghezza di un documento = numero di caratteri
 3) Tra linea 453 e 454, lì devo fare la divisione "similarità/lunghezza".
 4) Adesso l'ordinamento è imposto da Chroma, che ti fa arrivare i documenti già ordinati. Cambiare la similarità significa anche 
-cambiare l'ordinamento degli oggetti Document. Al pratico, questo vuol dire prendere la lista degli oggetti Document "langchain_docs" 
+cambiare l'ordinamento degli oggetti Document. Al pratico, questo vuol dire prendere la lista degli oggetti Document "relevant_docs" 
 e ordinare la lista basandosi sul campo dato della distanza di similarità. Tra riga 461 e 463 lo devo fare.
 5) Testo le domande di test
 
