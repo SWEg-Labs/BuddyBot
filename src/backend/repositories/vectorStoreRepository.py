@@ -480,8 +480,8 @@ class VectorStoreRepository:
         try:
             # Esegui una ricerca di similarità con un alto valore di n_results
             results = self.collection.query(
-                query_texts=[query],
-                n_results=10000,  # Assumendo che non ci siano più di 10000 documenti nel database vettoriale
+                query_texts=[query],    # Viene passata una lista di queries, che nel nostro caso contiene una sola query
+                n_results=10000,        # Assumendo che non ci siano più di 10000 documenti nel database vettoriale
             )
 
             # logger.info(f"Similarity search results: {results}")     # DEBUG
@@ -490,22 +490,25 @@ class VectorStoreRepository:
             langchain_docs = []
             previous_distance = None
 
-            for i in range(len(results['documents'])):
-                for j in range(len(results['documents'][i])):
+            # Per scalabilità creo un for anche per le queries, nonostante sia sempre una sola
+            for i in range(len(results['documents'])):           # Indice i: va da 0 a (numero di query - 1)
+                for j in range(len(results['documents'][i])):    # Indice j: va da 0 a (numero di risultati trovati in risposta alla query i-esima - 1)
                     document = results['documents'][i][j]
                     metadata = results['metadatas'][i][j]
                     distance = results['distances'][i][j]
 
                     # Controlla la soglia di similarità
                     if distance > similarity_threshold:
-                        continue
+                        continue  # Salta il documento se supera la soglia
 
                     # Controlla il distacco massimo
                     if previous_distance is not None and abs(distance - previous_distance) > max_gap:
                         return langchain_docs  # Termina e restituisce i documenti trovati finora
+                    
+                    # Aggiungi la distanza come metadato
+                    metadata["distance"] = distance
 
                     # Aggiungi il documento alla lista dei risultati
-                    metadata["distance"] = distance
                     langchain_docs.append(Document(page_content=document, metadata=metadata))
                     
                     # Aggiorna la distanza precedente
