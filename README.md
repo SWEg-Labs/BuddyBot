@@ -1,7 +1,7 @@
 <h1 align="center">BuddyBot</h1>
 
 ## Prerequisiti
-- È necessario avere Docker installato
+- È necessario avere Docker installato (versione 27.3.1 o successiva)
 
 ## Avvio del container
 Per avviare il container eseguire il comando:

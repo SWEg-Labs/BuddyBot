@@ -1,8 +1,9 @@
 langchain_openai
 langchain_community
 langchain_core
-langchain
+langchain==0.3.18
 chromadb
 python-dotenv
 PyGithub
 python-crontab
+pytest==8.3.4
