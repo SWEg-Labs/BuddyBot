@@ -6,6 +6,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
 from repositories.chromaVectorStoreRepository import ChromaVectorStoreRepository
+from adapters.chromaVectorStoreAdapter import ChromaVectorStoreAdapter
+from services.similaritySearchService import SimilaritySearchService
 from services.chatService import ChatService
 from services.githubService import GithubService
 from services.jiraService import JiraService
