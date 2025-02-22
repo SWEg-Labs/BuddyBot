@@ -34,12 +34,10 @@ app.add_middleware(
 # Inizializzazione dei servizi
 load_dotenv()
 llm = initialize_llm()
-vector_store_repository = ChromaVectorStoreRepository()
-vector_store_adapter = ChromaVectorStoreAdapter(vector_store_repository)
-# Non so come sfruttare l'interfaccia Port
+chroma_vector_store_repository = ChromaVectorStoreRepository()
+vector_store_adapter = ChromaVectorStoreAdapter(chroma_vector_store_repository)
 similarity_search_service = SimilaritySearchService(vector_store_adapter)
 chat_service = ChatService(llm, similarity_search_service)
-# Non so come sfruttare l'interfaccia Use Case
 github_service = GithubService()
 jira_service = JiraService()
 confluence_service = ConfluenceService()

@@ -1,8 +1,8 @@
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain.chains.combine_documents import create_stuff_documents_chain
-from repositories.similaritySearchService import SimilaritySearchService
-from usecases.chatUseCase import ChatUseCase
+from services.similaritySearchService import SimilaritySearchService
+from use_cases.chatUseCase import ChatUseCase
 from utils.logger import logger
 
 class ChatService(ChatUseCase):

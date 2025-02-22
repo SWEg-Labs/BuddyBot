@@ -12,3 +12,4 @@ class DocumentEntity:
 
     def __repr__(self):
         return f"DocumentEntity(page_content={self.page_content[:50]}..., metadata={self.metadata})"
+    
