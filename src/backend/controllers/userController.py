@@ -1,4 +1,5 @@
 import os
+from services.chatService import ChatUseCase
 from utils.logger import logger
 
 class UserController:
@@ -9,13 +10,13 @@ class UserController:
     """
 
     @staticmethod
-    def ask_question(vector_store, chat_service, github_service, jira_service, confluence_service):
+    def ask_question(vector_store, chat_use_case: ChatUseCase, github_service, jira_service, confluence_service):
         """
         Static method to ask the user for input and process it.
 
         Args:
-            vector_store (VectorStoreRepository): Instance of the vector store repository.
-            chat_service (ChatService): Instance of the chat service.
+            vector_store (ChromaVectorStoreRepository): Instance of the vector store repository.
+            chat_use_case (ChatUseCase): Instance of the chat use case, of type ChatService.
             github_service (GithubService): Instance of the GitHub service.
             jira_service (JiraService): Instance of the Jira service.
             confluence_service (ConfluenceService): Instance of the Confluence service.
@@ -26,23 +27,23 @@ class UserController:
         try:
             input_text = input("You: ")
             UserController._handle_command(
-                input_text, vector_store, chat_service,
+                input_text, vector_store, chat_use_case,
                 github_service, jira_service, confluence_service
             )
 
             # Continua a chiedere finché non viene digitato "exit"
-            UserController.ask_question(vector_store, chat_service, github_service, jira_service, confluence_service)
+            UserController.ask_question(vector_store, chat_use_case, github_service, jira_service, confluence_service)
         except KeyboardInterrupt:
             logger.error("\nExiting the chat application.")
 
     @staticmethod
-    def _handle_command(input_text, vector_store, chat_service, github_service, jira_service, confluence_service):
+    def _handle_command(input_text, vector_store, chat_use_case, github_service, jira_service, confluence_service):
         """
         Processes a user command.
 
         Args:
             input_text (str): The command input by the user.
-            vector_store (VectorStoreRepository): Instance of the vector store repository.
+            vector_store (ChromaVectorStoreRepository): Instance of the vector store repository.
             chat_service (ChatService): Instance of the chat service.
             github_service (GithubService): Instance of the GitHub service.
             jira_service (JiraService): Instance of the Jira service.
@@ -62,7 +63,7 @@ class UserController:
         if input_text.lower() in command_handlers:  # case insensitive
             command_handlers[input_text.lower()](vector_store, github_service, jira_service, confluence_service)
         else:
-            UserController._process_chat(input_text, chat_service)
+            UserController._process_chat(input_text, chat_use_case)
 
         if input_text.lower() != "help":
             print()   # Print a new line after each command
@@ -161,10 +162,10 @@ class UserController:
             raise e
 
     @staticmethod
-    def _process_chat(input_text, chat_service):
+    def _process_chat(input_text, chat_use_case):
         """Processes user input and fetches a response from the chat service."""
         try:
-            response = chat_service.process_user_input(input_text)
+            response = chat_use_case.process_user_input(input_text)
             print("\n\nAssistant:\n", response)
         except Exception as e:
             logger.error(f"Error fetching response: {e}")

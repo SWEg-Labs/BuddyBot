@@ -2,9 +2,10 @@ import os
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 import chromadb
 from langchain_core.documents import Document
+from entities.documentEntity import DocumentEntity
 from utils.logger import logger
 
-class VectorStoreRepository:
+class ChromaVectorStoreRepository:
     """
     A repository class for interacting with the Chroma vector store.
 
@@ -17,7 +18,7 @@ class VectorStoreRepository:
     """
     def __init__(self):
         """ 
-        Initializes the VectorStoreRepository by connecting to the ChromaDB server and setting up the collection.
+        Initializes the ChromaVectorStoreRepository by connecting to the ChromaDB server and setting up the collection.
 
         Raises: 
             Exception: If an error occurs during initialization. 
@@ -517,4 +518,46 @@ class VectorStoreRepository:
             return relevant_docs
         except Exception as e:
             logger.error(f"Error performing similarity search by threshold with gap: {e}")
+            raise
+
+    def similarity_search(self, query) -> list[DocumentEntity]:
+        """ 
+        Performs a similarity search in the collection and returns the most relevant documents. 
+        
+        Args: 
+            query (str): The query text to search for. 
+            
+        Returns: 
+            list[DocumentEntity]: A list of DocumentEntity objects representing the most relevant documents. 
+            
+        Raises: 
+            Exception: If an error occurs while performing the similarity search. 
+        """
+        try:
+            k=10.000
+
+            # Esegui una ricerca di similarità
+            results = self.collection.query(
+                query_texts=[query],
+                n_results=k,
+            )
+
+            relevant_docs = []
+
+            # Per scalabilità creo un for anche per le queries, nonostante sia sempre una sola, avente indice i=0
+            for i in range(len(results['documents'])):           # Indice i: va da 0 a (numero di query - 1)
+                for j in range(len(results['documents'][i])):    # Indice j: va da 0 a (numero di risultati trovati in risposta alla query i-esima - 1)
+                    document = results['documents'][i][j]
+                    metadata = results['metadatas'][i][j]
+                    distance = results['distances'][i][j]
+                    
+                    # Aggiungi la distanza come metadato
+                    metadata["distance"] = distance
+
+                    # Aggiungi il documento alla lista dei risultati
+                    relevant_docs.append(DocumentEntity(page_content=document, metadata=metadata))
+
+            return relevant_docs
+        except Exception as e:
+            logger.error(f"Error performing similarity search: {e}")
             raise

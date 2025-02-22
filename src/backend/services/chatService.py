@@ -1,32 +1,33 @@
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain.chains.combine_documents import create_stuff_documents_chain
-from repositories.vectorStoreRepository import VectorStoreRepository
+from repositories.similaritySearchService import SimilaritySearchService
+from usecases.chatUseCase import ChatUseCase
 from utils.logger import logger
 
-class ChatService:
+class ChatService(ChatUseCase):
     """
     A service class that processes user input and generates a response using a language model.
     
-    Requires an instance of the ChatOpenAI language model and a VectorStoreRepository instance
+    Requires an instance of the ChatOpenAI language model and a ChromaVectorStoreRepository instance
 
     Raises:
         Exception: If an error occurs during initialization.
     """
-    def __init__(self, llm: ChatOpenAI, vector_store: VectorStoreRepository):
+    def __init__(self, llm: ChatOpenAI, similarity_search_service: SimilaritySearchService):
         """
         Initializes the ChatService with a language model and a vector store repository.
 
         Args:
             llm (ChatOpenAI): An instance of the ChatOpenAI language model.
-            vector_store (VectorStoreRepository): An instance of the VectorStoreRepository.
+            similarity_search_service (ChromaVectorStoreRepository): An instance of the ChromaVectorStoreRepository.
 
         Raises:
             Exception: If an error occurs during initialization.
         """
         try:
             self.llm = llm
-            self.vector_store = vector_store
+            self.similarity_search_service = similarity_search_service
             self.header = """Sei un assistente virtuale esperto che risponde a domande in italiano.
                             Di seguito di verrà fornita una domanda dall'utente e un contesto, e riguarderanno 
                             codice, issues o documentazione di un'azienda informatica, provenienti rispettivamente da GitHub, Jira e Confluence.
@@ -56,7 +57,7 @@ class ChatService:
         """
         try:
             # Esegue una ricerca di similarità per ottenere documenti rilevanti
-            relevant_docs = self.vector_store.similarity_search_by_threshold_with_gap(user_input)
+            relevant_docs = self.similarity_search_service.similarity_search(user_input)
             logger.info(f"Found {len(relevant_docs)} relevant documents")
 
             # Aggiorna page_content di ogni documento con metadati e contenuto completo

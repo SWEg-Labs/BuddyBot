@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from dotenv import load_dotenv
 
-from repositories.vectorStoreRepository import VectorStoreRepository
+from repositories.chromaVectorStoreRepository import ChromaVectorStoreRepository
 from services.chatService import ChatService
 from services.githubService import GithubService
 from services.jiraService import JiraService
@@ -34,8 +34,12 @@ app.add_middleware(
 # Inizializzazione dei servizi
 load_dotenv()
 llm = initialize_llm()
-vector_store = VectorStoreRepository()
-chat_service = ChatService(llm, vector_store)
+vector_store_repository = ChromaVectorStoreRepository()
+vector_store_adapter = ChromaVectorStoreAdapter(vector_store_repository)
+# Non so come sfruttare l'interfaccia Port
+similarity_search_service = SimilaritySearchService(vector_store_adapter)
+chat_service = ChatService(llm, similarity_search_service)
+# Non so come sfruttare l'interfaccia Use Case
 github_service = GithubService()
 jira_service = JiraService()
 confluence_service = ConfluenceService()
