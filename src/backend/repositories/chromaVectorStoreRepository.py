@@ -534,7 +534,7 @@ class ChromaVectorStoreRepository:
             Exception: If an error occurs while performing the similarity search. 
         """
         try:
-            k=10.000
+            k = 10000
 
             # Esegui una ricerca di similarità
             results = self.collection.query(
