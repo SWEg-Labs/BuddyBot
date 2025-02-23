@@ -9,6 +9,7 @@ from repositories.chromaVectorStoreRepository import ChromaVectorStoreRepository
 from adapters.chromaVectorStoreAdapter import ChromaVectorStoreAdapter
 from services.similaritySearchService import SimilaritySearchService
 from services.chatService import ChatService
+from controllers.chatController import ChatController
 from services.githubService import GithubService
 from services.jiraService import JiraService
 from services.confluenceService import ConfluenceService
@@ -33,13 +34,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Inizializzazione dei servizi
+# Inizializzazione delle dipendenze
 load_dotenv()
 llm = initialize_llm()
 chroma_vector_store_repository = ChromaVectorStoreRepository()
 vector_store_adapter = ChromaVectorStoreAdapter(chroma_vector_store_repository)
 similarity_search_service = SimilaritySearchService(vector_store_adapter)
 chat_service = ChatService(llm, similarity_search_service)
+chat_controller = ChatController(chat_service)
 github_service = GithubService()
 jira_service = JiraService()
 confluence_service = ConfluenceService()
@@ -61,16 +63,7 @@ async def chat(request: Request):
             "message": "Ciao, chatbot!"
         }
     """
-    data = await request.json()
-    user_message = data.get("message", "")
-
-    if not user_message:
-        return JSONResponse(content={"error": "Messaggio vuoto"}, status_code=400)
-
-    # Usa il servizio ChatService per ottenere una risposta
-    response = chat_service.process_user_input(user_message)
-
-    return {"response": response}
+    return await chat_controller.process_chat(request)
 
 
 @app.get("/api/github/load", summary="Carica i file da GitHub", response_model=Dict[str, str])
@@ -82,8 +75,8 @@ async def load_from_github():
         Dict[str, str]: Stato dell'operazione con un messaggio.
     """
     try:
-        UserController.load_github_files(vector_store, github_service)
-        UserController.load_github_commits(vector_store, github_service)
+        UserController.load_github_files(chroma_vector_store_repository, github_service)
+        UserController.load_github_commits(chroma_vector_store_repository, github_service)
         return {"response": "File caricati con successo da GitHub"}
     except Exception as e:
         logger.error(str(e))
@@ -99,7 +92,7 @@ async def load_from_jira():
         Dict[str, str]: Stato dell'operazione con un messaggio.
     """
     try:
-        UserController.load_jira(vector_store, github_service, jira_service)
+        UserController.load_jira(chroma_vector_store_repository, github_service, jira_service)
         return {"response": "File caricati con successo da Jira"}
     except Exception as e:
         logger.error(str(e))
@@ -116,7 +109,7 @@ async def load_from_confluence():
         Dict[str, str]: Stato dell'operazione con un messaggio.
     """
     try:
-        UserController.load_confluence(vector_store, github_service, jira_service,
+        UserController.load_confluence(chroma_vector_store_repository, github_service, jira_service,
                                        confluence_service)
         return {"response": "File caricati con successo da Confluence"}
     except Exception as e:
