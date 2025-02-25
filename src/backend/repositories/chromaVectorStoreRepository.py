@@ -521,7 +521,7 @@ class ChromaVectorStoreRepository:
             logger.error(f"Error performing similarity search by threshold with gap: {e}")
             raise
 
-    def similarity_search(self, query) -> list[DocumentEntity]:
+    def similarity_search(self, query) -> QueryResultEntity:
         """ 
         Performs a similarity search in the collection and returns the most relevant documents. 
         
