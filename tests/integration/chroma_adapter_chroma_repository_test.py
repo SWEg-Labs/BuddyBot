@@ -3,12 +3,14 @@ from langchain_core.documents import Document
 from adapters.chromaVectorStoreAdapter import ChromaVectorStoreAdapter
 from repositories.chromaVectorStoreRepository import ChromaVectorStoreRepository
 
+# Verifica che il metodo similarity_search di ChromaVectorStoreAdapter chiami il metodo similarity_search di ChromaVectorStoreRepository
+
 def test_similarity_search_calls_repository():
     # Arrange
     mock_repository = MagicMock(spec=ChromaVectorStoreRepository)
     adapter = ChromaVectorStoreAdapter(mock_repository)
     user_input = "test query"
-    mock_documents = [
+    documents = [
         Document(page_content="doc1", metadata={"distance": 0.5}),
         Document(page_content="doc2", metadata={"distance": 0.75}),
     ]
@@ -23,4 +25,4 @@ def test_similarity_search_calls_repository():
 
     # Assert
     mock_repository.similarity_search.assert_called_once_with(user_input)
-    assert result == mock_documents
+    assert result == documents

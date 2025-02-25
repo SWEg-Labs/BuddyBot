@@ -1,7 +1,7 @@
-class DocumentEntity:
+class ChromaDocumentEntity:
     def __init__(self, page_content, metadata=None):
         """
-        Inizializza un nuovo oggetto DocumentEntity.
+        Inizializza un nuovo oggetto ChromaDocumentEntity.
 
         Args:
             page_content (str): Il contenuto del documento.
@@ -11,5 +11,5 @@ class DocumentEntity:
         self.metadata = metadata if metadata is not None else {}
 
     def __repr__(self):
-        return f"DocumentEntity(page_content={self.page_content[:50]}..., metadata={self.metadata})"
+        return f"ChromaDocumentEntity(page_content={self.page_content[:50]}..., metadata={self.metadata})"
     

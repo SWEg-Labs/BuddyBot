@@ -2,7 +2,7 @@ import os
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 import chromadb
 from langchain_core.documents import Document
-from entities.documentEntity import DocumentEntity
+from backend.entities.chromaDocumentEntity import ChromaDocumentEntity
 from entities.queryResultEntity import QueryResultEntity
 from utils.logger import logger
 
@@ -529,7 +529,7 @@ class ChromaVectorStoreRepository:
             query (str): The query text to search for. 
             
         Returns: 
-            list[DocumentEntity]: A list of DocumentEntity objects representing the most relevant documents. 
+            QueryResultEntity: An object containing the most relevant documents, their metadata, and distances. 
             
         Raises: 
             Exception: If an error occurs while performing the similarity search. 

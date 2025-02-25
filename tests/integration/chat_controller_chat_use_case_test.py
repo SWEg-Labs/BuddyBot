@@ -8,6 +8,9 @@ from controllers.chatController import ChatController
 
 pytestmark = pytest.mark.asyncio  # ✅ Imposta asyncio per tutti i test nel file
 
+
+# Verifica che il metodo process_chat di ChatController chiami correttamente il metodo process_user_input di ChatUseCase, in caso di messaggio non vuoto
+
 async def test_process_chat_calls_process_user_input():
     # Arrange
     mock_chat_use_case = MagicMock(spec=ChatUseCase)
@@ -21,6 +24,9 @@ async def test_process_chat_calls_process_user_input():
     # Assert
     mock_chat_use_case.process_user_input.assert_called_with("Hello")
     assert response == {"response": mock_chat_use_case.process_user_input.return_value}
+
+
+# Verifica che il metodo process_chat di ChatController chiami correttamente il metodo process_user_input di ChatUseCase, in caso di messaggio vuoto
 
 async def test_process_chat_empty_message():
     # Arrange
