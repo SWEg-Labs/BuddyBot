@@ -3,6 +3,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 import chromadb
 from langchain_core.documents import Document
 from entities.documentEntity import DocumentEntity
+from entities.queryResultEntity import QueryResultEntity
 from utils.logger import logger
 
 class ChromaVectorStoreRepository:
@@ -537,27 +538,18 @@ class ChromaVectorStoreRepository:
             k = 10000
 
             # Esegui una ricerca di similarità
-            results = self.collection.query(
+            query_result = self.collection.query(
                 query_texts=[query],
                 n_results=k,
             )
 
-            relevant_docs = []
+            query_result_entity = QueryResultEntity(
+                documents=query_result.get("documents", []),
+                metadatas=query_result.get("metadatas", []),
+                distances=query_result.get("distances", [])
+            )
 
-            # Per scalabilità creo un for anche per le queries, nonostante sia sempre una sola, avente indice i=0
-            for i in range(len(results['documents'])):           # Indice i: va da 0 a (numero di query - 1)
-                for j in range(len(results['documents'][i])):    # Indice j: va da 0 a (numero di risultati trovati in risposta alla query i-esima - 1)
-                    document = results['documents'][i][j]
-                    metadata = results['metadatas'][i][j]
-                    distance = results['distances'][i][j]
-                    
-                    # Aggiungi la distanza come metadato
-                    metadata["distance"] = distance
-
-                    # Aggiungi il documento alla lista dei risultati
-                    relevant_docs.append(DocumentEntity(page_content=document, metadata=metadata))
-
-            return relevant_docs
+            return query_result_entity
         except Exception as e:
             logger.error(f"Error performing similarity search: {e}")
             raise
