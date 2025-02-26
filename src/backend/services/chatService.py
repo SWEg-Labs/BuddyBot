@@ -79,7 +79,7 @@ class ChatService(ChatUseCase):
             Answer: The generated answer.
         """
         try:
-            return self.generate_answer_service.generate(user_input, relevant_docs)
+            return self.generate_answer_service.generate_answer(user_input, relevant_docs)
         except Exception as e:
             logger.error(f"Error in generate_answer: {e}")
             return None

@@ -14,7 +14,11 @@ def test_chat_service_calls_generate_answer_service():
     mock_generate_answer_service = MagicMock(spec=GenerateAnswerService)
     chat_service = ChatService(mock_similarity_search_service, mock_generate_answer_service)
     user_input = Question("test query")
-    mock_similarity_search_service.similarity_search.return_value = [Document(page_content="Test content", metadata={"distance": 0.5})]
+    relevant_docs = [
+        Document(page_content="doc1"),
+        Document(page_content="doc2"),
+    ]
+    mock_similarity_search_service.similarity_search.return_value = relevant_docs
     answer = Answer("Test answer")
     mock_generate_answer_service.generate_answer.return_value = answer
     
@@ -22,5 +26,5 @@ def test_chat_service_calls_generate_answer_service():
     result = chat_service.get_answer(user_input)
     
     # Assert
-    mock_generate_answer_service.generate_answer.assert_called_once_with([Document(page_content="Test content", metadata={"distance": 0.5})])
+    mock_generate_answer_service.generate_answer.assert_called_once_with(user_input, relevant_docs)
     assert result == answer
