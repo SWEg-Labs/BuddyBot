@@ -4,6 +4,9 @@ class QueryResultEntity:
         self.metadatas = metadatas if metadatas is not None else []
         self.distances = distances if distances is not None else []
 
+    def __getitem__(self, key):
+        return getattr(self, key)
+
     def to_dict(self):
         return {
             "documents": self.documents,

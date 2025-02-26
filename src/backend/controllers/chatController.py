@@ -26,8 +26,9 @@ class ChatController:
 
             # Ottieni la risposta dal chatbot
             response = self.chat_use_case.get_answer(user_message)
+            response = response.content
 
-            return {"response": response.content}
+            return {"response": response}
         except Exception as e:
             logger.error(f"Error fetching response: {e}")
             raise e

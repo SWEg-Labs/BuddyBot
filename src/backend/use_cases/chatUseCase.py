@@ -10,13 +10,13 @@ class ChatUseCase(ABC):
     @abstractmethod
     def get_answer(self, user_input: Question) -> Answer:
         """
-        Processes the user's input and generates a response.
+        Processes the user's input and generates an answer.
 
         Args:
             user_input (Question): The input provided by the user.
 
         Returns:
-            Answer: The generated response.
+            Answer: The generated answer.
         """
         pass
 
