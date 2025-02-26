@@ -5,9 +5,13 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from dotenv import load_dotenv
 
+from business_data_classes.header import Header
 from repositories.chromaVectorStoreRepository import ChromaVectorStoreRepository
 from adapters.chromaVectorStoreAdapter import ChromaVectorStoreAdapter
 from services.similaritySearchService import SimilaritySearchService
+from repositories.langChainRepository import LangChainRepository
+from adapters.langChainAdapter import LangChainAdapter
+from services.generateAnswerService import GenerateAnswerService
 from services.chatService import ChatService
 from controllers.chatController import ChatController
 from services.githubService import GithubService
@@ -34,14 +38,39 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Inizializzazione delle dipendenze
+# Caricamento delle variabili d'ambiente
 load_dotenv()
+
+# Tipi di supporto
 llm = initialize_llm()
+generate_answer_header = Header("""Sei un assistente virtuale esperto che risponde a domande in italiano.
+                Di seguito di verrà fornita una domanda dall'utente e un contesto, e riguarderanno 
+                codice, issues o documentazione di un'azienda informatica, provenienti rispettivamente da GitHub, Jira e Confluence.
+                Rispondi alla domanda basandoti esclusivamente sui dati forniti come contesto,
+                dando una spiegazione dettagliata ed esaustiva della risposta data.
+                Se possibile rispondi con un elenco puntato o numerato.
+                Se la domanda ti chiede informazioni allora tu cercale nel contesto e forniscile.
+                Se non riesci a trovare la risposta nei documenti forniti, ma la domanda è comunque legata all'informatica,
+                rispondi con "Informazione non trovata".
+                Se l'utente è uscito dal contesto informatico, rispondi con "La domanda è fuori contesto".
+                """)
+# generate_possible_questions_header =
+
+# Catena di similarity search
 chroma_vector_store_repository = ChromaVectorStoreRepository()
 vector_store_adapter = ChromaVectorStoreAdapter(chroma_vector_store_repository)
 similarity_search_service = SimilaritySearchService(vector_store_adapter)
-chat_service = ChatService(llm, similarity_search_service)
+
+# Catena di generate answer
+langchain_repository = LangChainRepository(llm)
+langchain_adapter = LangChainAdapter(langchain_repository)
+generate_answer_service = GenerateAnswerService(generate_answer_header, langchain_adapter)
+
+# Catena di chat
+chat_service = ChatService(similarity_search_service, generate_answer_service)
 chat_controller = ChatController(chat_service)
+
+# Piattaforme per l'accesso ai dati
 github_service = GithubService()
 jira_service = JiraService()
 confluence_service = ConfluenceService()
@@ -63,7 +92,7 @@ async def chat(request: Request):
             "message": "Ciao, chatbot!"
         }
     """
-    return await chat_controller.process_chat(request)
+    return await chat_controller.get_answer(request)
 
 
 @app.get("/api/github/load", summary="Carica i file da GitHub", response_model=Dict[str, str])

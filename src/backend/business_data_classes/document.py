@@ -1,6 +1,6 @@
 from typing import Optional
 
-class ChromaDocumentEntity:
+class Document:
     def __init__(self, content: str, metadata: Optional[dict] = None):
         self.content = content
         self.metadata = metadata if metadata is not None else {}

@@ -1,4 +1,3 @@
-from typing import List
 from langchain_core.documents import Document
 from ports.similaritySearchPort import SimilaritySearchPort
 
@@ -6,7 +5,7 @@ class SimilaritySearchService:
     def __init__(self, similarity_search_port: SimilaritySearchPort):
         self.similarity_search_port = similarity_search_port
 
-    def similarity_search(self, user_input: str) -> List[Document]:
+    def similarity_search(self, user_input: str) -> list[Document]:
         similarity_threshold = 1.2
         max_gap = 0.3
         relevant_docs = []
