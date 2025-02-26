@@ -1,6 +1,6 @@
 from typing import Optional
 
-class ChromaDocumentEntity:
+class Document:
     def __init__(self, page_content: str, metadata: Optional[dict] = None):
         self.page_content = page_content
         self.metadata = metadata if metadata is not None else {}
@@ -28,6 +28,6 @@ class ChromaDocumentEntity:
         return f"Document(page_content={self.page_content!r}, metadata={self.metadata!r})"
     
     def __eq__(self, other):
-        if not isinstance(other, ChromaDocumentEntity):
+        if not isinstance(other, Document):
             return False
         return self.page_content == other.page_content and self.metadata == other.metadata

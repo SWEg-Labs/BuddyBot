@@ -1,5 +1,6 @@
 from unittest.mock import MagicMock
-from langchain_core.documents import Document
+from models.document import Document
+from models.answer import Answer
 from adapters.chromaVectorStoreAdapter import ChromaVectorStoreAdapter
 from repositories.chromaVectorStoreRepository import ChromaVectorStoreRepository
 
@@ -9,7 +10,7 @@ def test_similarity_search_calls_repository():
     # Arrange
     mock_repository = MagicMock(spec=ChromaVectorStoreRepository)
     adapter = ChromaVectorStoreAdapter(mock_repository)
-    user_input = "test query"
+    user_input = Answer("test query")
     documents = [
         Document(page_content="doc1", metadata={"distance": 0.5}),
         Document(page_content="doc2", metadata={"distance": 0.75}),
@@ -24,5 +25,5 @@ def test_similarity_search_calls_repository():
     result = adapter.similarity_search(user_input)
 
     # Assert
-    mock_repository.similarity_search.assert_called_once_with(user_input)
+    mock_repository.similarity_search.assert_called_once_with(user_input.content)
     assert result == documents

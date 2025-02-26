@@ -1,11 +1,11 @@
 from unittest.mock import MagicMock
-from langchain_core.documents import Document
-from business_data_classes.question import Question
-from business_data_classes.header import Header
-from business_data_classes.answer import Answer
-from services.langchain_adapter import LangChainAdapter
-from repositories.langchain_repository import LangChainRepository
-from entities.langchain_document_entity import LangChainDocumentEntity
+from models.document import Document
+from models.question import Question
+from models.header import Header
+from models.answer import Answer
+from adapters.langChainAdapter import LangChainAdapter
+from repositories.langChainRepository import LangChainRepository
+from entities.langChainDocumentEntity import LangChainDocumentEntity
 
 # Verifica che il metodo generate_answer di LangChainAdapter chiami il metodo generate_answer di LangChainRepository
 

@@ -2,8 +2,9 @@ from unittest.mock import MagicMock
 from services.similaritySearchService import SimilaritySearchService
 from services.chatService import ChatService
 from services.generateAnswerService import GenerateAnswerService
-from business_data_classes.answer import Answer
-from langchain_core.documents import Document
+from models.question import Question
+from models.answer import Answer
+from models.document import Document
 
 # Verifica che il metodo similarity_search di ChatService chiami il metodo similarity_search di SimilaritySearchService
 
@@ -12,13 +13,13 @@ def test_chat_service_calls_similarity_search_service():
     mock_similarity_search_service = MagicMock(spec=SimilaritySearchService)
     mock_generate_answer_service = MagicMock(spec=GenerateAnswerService)
     chat_service = ChatService(mock_similarity_search_service, mock_generate_answer_service)
-    user_input = "test query"
+    user_input = Question("test query")
     documents = [Document(page_content="Test content", metadata={"distance": 0.5})]
     mock_similarity_search_service.similarity_search.return_value = documents
     mock_generate_answer_service.generate_answer.return_value = Answer("Test answer")
     
     # Act
-    chat_service.process_user_input(user_input)
+    chat_service.get_answer(user_input)
     
     # Assert
     mock_similarity_search_service.similarity_search.assert_called_once_with(user_input)

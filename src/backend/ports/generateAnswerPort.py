@@ -1,5 +1,8 @@
 from abc import ABC, abstractmethod
-from business_data_classes import Question, Answer, Header, Document
+from models.question import Question
+from models.answer import Answer
+from models.header import Header
+from models.document import Document
 
 class GenerateAnswerPort(ABC):
 

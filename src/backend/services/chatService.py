@@ -1,6 +1,7 @@
-from langchain_openai import ChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate
 from langchain.chains.combine_documents import create_stuff_documents_chain
+from models.question import Question
+from models.answer import Answer
+from models.document import Document
 from services.similaritySearchService import SimilaritySearchService
 from services.generateAnswerService import GenerateAnswerService
 from use_cases.chatUseCase import ChatUseCase
@@ -32,7 +33,7 @@ class ChatService(ChatUseCase):
         except Exception as e:
             logger.error(f"Error initializing ChatService: {e}")
 
-    def get_answer(self, user_input):
+    def get_answer(self, user_input: Question) -> Answer:
         """
         Processes the user input to generate an answer.
 
@@ -50,7 +51,7 @@ class ChatService(ChatUseCase):
             logger.error(f"Error in get_answer: {e}")
             return None
 
-    def similarity_search(self, user_input):
+    def similarity_search(self, user_input: Question) -> list[Document]:
         """
         Searches for relevant documents based on user input.
 
@@ -58,7 +59,7 @@ class ChatService(ChatUseCase):
             user_input (Question): The user's input question.
 
         Returns:
-            Document*: The relevant documents.
+            list[Document]: The relevant documents.
         """
         try:
             return self.similarity_search_service.similarity_search(user_input)
@@ -66,13 +67,13 @@ class ChatService(ChatUseCase):
             logger.error(f"Error in similarity_search: {e}")
             return None
 
-    def generate_answer(self, user_input, relevant_docs):
+    def generate_answer(self, user_input: Question, relevant_docs: list[Document]) -> Answer:
         """
         Generates an answer based on user input and relevant documents.
 
         Args:
             user_input (Question): The user's input question.
-            relevant_docs (Document*): The relevant documents.
+            relevant_docs (list[Document]): The relevant documents.
 
         Returns:
             Answer: The generated answer.

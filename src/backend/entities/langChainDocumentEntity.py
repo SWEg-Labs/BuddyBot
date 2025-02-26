@@ -1,18 +1,18 @@
 from typing import Optional
 
 class LangChainDocumentEntity:
-    def __init__(self, content: str, metadata: Optional[dict] = None):
-        self.content = content
+    def __init__(self, page_content: str, metadata: Optional[dict] = None):
+        self.page_content = page_content
         self.metadata = metadata if metadata is not None else {}
 
-    def get_content(self) -> str:
-        return self.content
+    def get_page_content(self) -> str:
+        return self.page_content
 
     def get_metadata(self) -> dict:
         return self.metadata
 
-    def set_content(self, content: str):
-        self.content = content
+    def set_page_content(self, page_content: str):
+        self.page_content = page_content
 
     def set_metadata(self, metadata: dict):
         self.metadata = metadata
@@ -25,4 +25,9 @@ class LangChainDocumentEntity:
             del self.metadata[key]
 
     def __repr__(self) -> str:
-        return f"Document(content={self.content!r}, metadata={self.metadata!r})"
+        return f"Document(page_content={self.page_content!r}, metadata={self.metadata!r})"
+    
+    def __eq__(self, other):
+        if not isinstance(other, LangChainDocumentEntity):
+            return False
+        return self.page_content == other.page_content and self.metadata == other.metadata

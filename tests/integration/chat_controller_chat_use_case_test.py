@@ -9,7 +9,7 @@ from controllers.chatController import ChatController
 pytestmark = pytest.mark.asyncio  # ✅ Imposta asyncio per tutti i test nel file
 
 
-# Verifica che il metodo process_chat di ChatController chiami correttamente il metodo process_user_input di ChatUseCase, in caso di messaggio non vuoto
+# Verifica che il metodo get_answer di ChatController chiami correttamente il metodo get_answer di ChatUseCase, in caso di messaggio non vuoto
 
 async def test_process_chat_calls_process_user_input():
     # Arrange
@@ -19,14 +19,14 @@ async def test_process_chat_calls_process_user_input():
     mock_request.json.return_value = {"message": "Hello"}
 
     # Act
-    response = await chat_controller.process_chat(mock_request)
+    response = await chat_controller.get_answer(mock_request)
 
     # Assert
     mock_chat_use_case.process_user_input.assert_called_with("Hello")
     assert response == {"response": mock_chat_use_case.process_user_input.return_value}
 
 
-# Verifica che il metodo process_chat di ChatController chiami correttamente il metodo process_user_input di ChatUseCase, in caso di messaggio vuoto
+# Verifica che il metodo get_answer di ChatController chiami correttamente il metodo get_answer di ChatUseCase, in caso di messaggio vuoto
 
 async def test_process_chat_empty_message():
     # Arrange
@@ -36,7 +36,7 @@ async def test_process_chat_empty_message():
     mock_request.json.return_value = {"message": ""}
 
     # Act
-    response = await chat_controller.process_chat(mock_request)
+    response = await chat_controller.get_answer(mock_request)
 
     # Assert
     assert isinstance(response, JSONResponse)

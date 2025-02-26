@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from langchain_core.documents import Document
+from models.document import Document
 
 class SimilaritySearchPort(ABC):
     @abstractmethod

@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock
-from langchain_core.documents import Document
 from services.generateAnswerService import GenerateAnswerService
 from ports.generateAnswerPort import GenerateAnswerPort
+from models.document import Document
 from models.header import Header
 from models.question import Question
 from models.answer import Answer
@@ -10,9 +10,9 @@ from models.answer import Answer
 
 def test_generate_answer_calls_port_method():
     # Arrange
+    header = Header(content="test_header")
     mock_generate_answer_port = MagicMock(spec=GenerateAnswerPort)
-    header = Header(attribute="test_header")
-    generate_answer_service = GenerateAnswerService(mock_generate_answer_port, header)
+    generate_answer_service = GenerateAnswerService(header, mock_generate_answer_port)
     user_input = Question(content="test question")
     relevant_docs = [
         Document(page_content="doc1"),

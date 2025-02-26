@@ -1,8 +1,8 @@
 import os
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 import chromadb
-from langchain_core.documents import Document
-from backend.entities.chromaDocumentEntity import ChromaDocumentEntity
+from models.document import Document
+from entities.chromaDocumentEntity import ChromaDocumentEntity
 from entities.queryResultEntity import QueryResultEntity
 from utils.logger import logger
 

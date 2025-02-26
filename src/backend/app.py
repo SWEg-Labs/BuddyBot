@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from dotenv import load_dotenv
 
-from business_data_classes.header import Header
+from models.header import Header
 from repositories.chromaVectorStoreRepository import ChromaVectorStoreRepository
 from adapters.chromaVectorStoreAdapter import ChromaVectorStoreAdapter
 from services.similaritySearchService import SimilaritySearchService

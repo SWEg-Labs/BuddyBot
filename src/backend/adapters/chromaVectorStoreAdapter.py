@@ -1,4 +1,5 @@
-from langchain_core.documents import Document
+from models.question import Question
+from models.document import Document
 from ports.similaritySearchPort import SimilaritySearchPort
 from repositories.chromaVectorStoreRepository import ChromaVectorStoreRepository
 
@@ -6,8 +7,8 @@ class ChromaVectorStoreAdapter(SimilaritySearchPort):
     def __init__(self, chroma_vector_store_repository: ChromaVectorStoreRepository):
         self.chroma_vector_store_repository = chroma_vector_store_repository
 
-    def similarity_search(self, user_input: str) -> list[Document]:
-        query_result_entity = self.chroma_vector_store_repository.similarity_search(user_input)
+    def similarity_search(self, user_input: Question) -> list[Document]:
+        query_result_entity = self.chroma_vector_store_repository.similarity_search(user_input.content)
 
         relevant_docs = []
         # Per scalabilità creo un for anche per le queries, nonostante sia sempre una sola, avente indice i=0

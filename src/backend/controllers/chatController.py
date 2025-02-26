@@ -1,6 +1,7 @@
 from fastapi import Request
 from fastapi.responses import JSONResponse
 
+from models.question import Question
 from services.chatService import ChatUseCase
 from utils.logger import logger
 
@@ -19,11 +20,14 @@ class ChatController:
 
             if not user_message:
                 return JSONResponse(content={"error": "Messaggio vuoto"}, status_code=400)
+            
+            # Converti il messaggio dell'utente in un oggetto Question
+            user_message = Question(content=user_message)
 
             # Ottieni la risposta dal chatbot
             response = self.chat_use_case.get_answer(user_message)
 
-            return {"response": response}
+            return {"response": response.content}
         except Exception as e:
             logger.error(f"Error fetching response: {e}")
             raise e

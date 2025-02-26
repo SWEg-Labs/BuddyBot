@@ -1,5 +1,5 @@
 from unittest.mock import MagicMock
-from langchain_core.documents import Document
+from models.document import Document
 from services.similaritySearchService import SimilaritySearchService
 from ports.similaritySearchPort import SimilaritySearchPort
 

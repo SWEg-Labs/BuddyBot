@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+from models.question import Question
+from models.answer import Answer
 
 class ChatUseCase(ABC):
     """
@@ -6,15 +8,15 @@ class ChatUseCase(ABC):
     """
 
     @abstractmethod
-    def process_user_input(self, user_input: str) -> str:
+    def get_answer(self, user_input: Question) -> Answer:
         """
         Processes the user's input and generates a response.
 
         Args:
-            user_input (str): The input provided by the user.
+            user_input (Question): The input provided by the user.
 
         Returns:
-            str: The generated response.
+            Answer: The generated response.
         """
         pass
 
