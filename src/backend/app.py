@@ -3,23 +3,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
-from dotenv import load_dotenv
-
-from models.header import Header
-from models.documentConstraints import DocumentConstraints
-from repositories.chromaVectorStoreRepository import ChromaVectorStoreRepository
-from adapters.chromaVectorStoreAdapter import ChromaVectorStoreAdapter
-from services.similaritySearchService import SimilaritySearchService
-from repositories.langChainRepository import LangChainRepository
-from adapters.langChainAdapter import LangChainAdapter
-from services.generateAnswerService import GenerateAnswerService
-from services.chatService import ChatService
-from controllers.chatController import ChatController
-from services.githubService import GithubService
-from services.jiraService import JiraService
-from services.confluenceService import ConfluenceService
-from controllers.userController import UserController
-from utils.inizialize_llm import initialize_llm
+from utils.dependency_injection import dependency_injection
 from utils.logger import logger
 
 # Inizializzazione dell'app FastAPI
@@ -39,43 +23,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Caricamento delle variabili d'ambiente
-load_dotenv()
-
-# Tipi di supporto
-document_constraints = DocumentConstraints(1.2, 0.3)
-llm = initialize_llm()
-generate_answer_header = Header("""Sei un assistente virtuale esperto che risponde a domande in italiano.
-                Di seguito di verrà fornita una domanda dall'utente e un contesto, e riguarderanno 
-                codice, issues o documentazione di un'azienda informatica, provenienti rispettivamente da GitHub, Jira e Confluence.
-                Rispondi alla domanda basandoti esclusivamente sui dati forniti come contesto,
-                dando una spiegazione dettagliata ed esaustiva della risposta data.
-                Se possibile rispondi con un elenco puntato o numerato.
-                Se la domanda ti chiede informazioni allora tu cercale nel contesto e forniscile.
-                Se non riesci a trovare la risposta nei documenti forniti, ma la domanda è comunque legata all'informatica,
-                rispondi con "Informazione non trovata".
-                Se l'utente è uscito dal contesto informatico, rispondi con "La domanda è fuori contesto".
-                """)
-# generate_possible_questions_header =
-
-# Catena di similarity search
-chroma_vector_store_repository = ChromaVectorStoreRepository()
-vector_store_adapter = ChromaVectorStoreAdapter(chroma_vector_store_repository)
-similarity_search_service = SimilaritySearchService(document_constraints, vector_store_adapter)
-
-# Catena di generate answer
-langchain_repository = LangChainRepository(llm)
-langchain_adapter = LangChainAdapter(langchain_repository)
-generate_answer_service = GenerateAnswerService(generate_answer_header, langchain_adapter)
-
-# Catena di chat
-chat_service = ChatService(similarity_search_service, generate_answer_service)
-chat_controller = ChatController(chat_service)
-
-# Piattaforme per l'accesso ai dati
-github_service = GithubService()
-jira_service = JiraService()
-confluence_service = ConfluenceService()
+dependencies = dependency_injection()
+chat_controller = dependencies["chat_controller"]
 
 
 @app.post("/api/chat", summary="Invia un messaggio al chatbot", response_model=Dict[str, str])
@@ -94,9 +43,14 @@ async def chat(request: Request):
             "message": "Ciao, chatbot!"
         }
     """
-    return await chat_controller.get_answer(request)
+    try:
+        return await chat_controller.get_answer(request)
+    except Exception as e:
+        logger.error(f"Error processing chat request: {e}")
+        return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
 
 
+'''
 @app.get("/api/github/load", summary="Carica i file da GitHub", response_model=Dict[str, str])
 async def load_from_github():
     """
@@ -146,6 +100,7 @@ async def load_from_confluence():
     except Exception as e:
         logger.error(str(e))
         return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
+'''
 
 
 if __name__ == "__main__":

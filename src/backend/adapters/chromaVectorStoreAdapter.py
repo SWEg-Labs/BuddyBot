@@ -5,7 +5,8 @@ from repositories.chromaVectorStoreRepository import ChromaVectorStoreRepository
 from utils.logger import logger
 
 class ChromaVectorStoreAdapter(SimilaritySearchPort):
-    def __init__(self, chroma_vector_store_repository: ChromaVectorStoreRepository):
+    def __init__(self, max_chunk_size: int, chroma_vector_store_repository: ChromaVectorStoreRepository):
+        self.max_chunk_size = max_chunk_size
         self.chroma_vector_store_repository = chroma_vector_store_repository
 
     def similarity_search(self, user_input: Question) -> list[Document]:

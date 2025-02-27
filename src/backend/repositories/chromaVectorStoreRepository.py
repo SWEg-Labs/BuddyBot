@@ -17,7 +17,7 @@ class ChromaVectorStoreRepository:
     Raises:
         Exception: If an error occurs during initialization or while interacting with the vector store.
     """
-    def __init__(self):
+    def __init__(self, chroma_client: chromadb.HttpClient, collection_name: str, collection: chromadb.Collection):
         """ 
         Initializes the ChromaVectorStoreRepository by connecting to the ChromaDB server and setting up the collection.
 
@@ -25,23 +25,15 @@ class ChromaVectorStoreRepository:
             Exception: If an error occurs during initialization. 
         """
         try:
-            # Connessione al server ChromaDB
-            self.client = chromadb.HttpClient(host=os.getenv("CHROMA_HOST", "localhost"),
-                                              port=int(os.getenv("CHROMA_PORT", "8000")))
-            self.client.heartbeat()  # Verifica connessione
-
-            self.collection_name = "buddybot-vector-store"
-            self.max_chunk_size = 41666  # 42KB
-
-            # Crea o ottieni una collezione esistente
-            self.collection = self.client.get_or_create_collection(
-                name=self.collection_name
-            )
+            self.client = chroma_client
+            self.collection_name = collection_name
+            self.collection = collection
             logger.info("Successfully connected to Chroma vector store.")
         except Exception as e:
             logger.error(f"Error initializing Chroma vector store: {e}")
             raise
 
+    '''
     def _delete_existing_document(self, doc_id):
         """ 
         Deletes an existing document from the collection if it exists.
@@ -520,6 +512,7 @@ class ChromaVectorStoreRepository:
         except Exception as e:
             logger.error(f"Error performing similarity search by threshold with gap: {e}")
             raise
+    '''
 
     def similarity_search(self, query) -> QueryResultEntity:
         """ 

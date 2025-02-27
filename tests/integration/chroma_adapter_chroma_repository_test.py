@@ -10,7 +10,8 @@ from repositories.chromaVectorStoreRepository import ChromaVectorStoreRepository
 def test_similarity_search_calls_repository():
     # Arrange
     mock_repository = MagicMock(spec=ChromaVectorStoreRepository)
-    adapter = ChromaVectorStoreAdapter(mock_repository)
+    max_chunk_size = 41666
+    adapter = ChromaVectorStoreAdapter(max_chunk_size, mock_repository)
     user_input = Question("test query")
     documents = [
         Document(page_content="doc1", metadata={"author": "Author1", "distance": 0.5}),
