@@ -1,10 +1,12 @@
 import os
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 import chromadb
-from langchain_core.documents import Document
+from models.document import Document
+from entities.chromaDocumentEntity import ChromaDocumentEntity
+from entities.queryResultEntity import QueryResultEntity
 from utils.logger import logger
 
-class VectorStoreRepository:
+class ChromaVectorStoreRepository:
     """
     A repository class for interacting with the Chroma vector store.
 
@@ -15,31 +17,23 @@ class VectorStoreRepository:
     Raises:
         Exception: If an error occurs during initialization or while interacting with the vector store.
     """
-    def __init__(self):
+    def __init__(self, chroma_client: chromadb.HttpClient, collection_name: str, collection: chromadb.Collection):
         """ 
-        Initializes the VectorStoreRepository by connecting to the ChromaDB server and setting up the collection.
+        Initializes the ChromaVectorStoreRepository by connecting to the ChromaDB server and setting up the collection.
 
         Raises: 
             Exception: If an error occurs during initialization. 
         """
         try:
-            # Connessione al server ChromaDB
-            self.client = chromadb.HttpClient(host=os.getenv("CHROMA_HOST", "localhost"),
-                                              port=int(os.getenv("CHROMA_PORT", "8000")))
-            self.client.heartbeat()  # Verifica connessione
-
-            self.collection_name = "buddybot-vector-store"
-            self.max_chunk_size = 41666  # 42KB
-
-            # Crea o ottieni una collezione esistente
-            self.collection = self.client.get_or_create_collection(
-                name=self.collection_name
-            )
+            self.client = chroma_client
+            self.collection_name = collection_name
+            self.collection = collection
             logger.info("Successfully connected to Chroma vector store.")
         except Exception as e:
             logger.error(f"Error initializing Chroma vector store: {e}")
             raise
 
+    '''
     def _delete_existing_document(self, doc_id):
         """ 
         Deletes an existing document from the collection if it exists.
@@ -517,4 +511,38 @@ class VectorStoreRepository:
             return relevant_docs
         except Exception as e:
             logger.error(f"Error performing similarity search by threshold with gap: {e}")
+            raise
+    '''
+
+    def similarity_search(self, query) -> QueryResultEntity:
+        """ 
+        Performs a similarity search in the collection and returns the most relevant documents. 
+        
+        Args: 
+            query (str): The query text to search for. 
+            
+        Returns: 
+            QueryResultEntity: An object containing the most relevant documents, their metadata, and distances. 
+            
+        Raises: 
+            Exception: If an error occurs while performing the similarity search. 
+        """
+        try:
+            k = 10000
+
+            # Esegui una ricerca di similarità
+            query_result = self.collection.query(
+                query_texts=[query],
+                n_results=k,
+            )
+
+            query_result_entity = QueryResultEntity(
+                documents=query_result.get("documents", []),
+                metadatas=query_result.get("metadatas", []),
+                distances=query_result.get("distances", [])
+            )
+
+            return query_result_entity
+        except Exception as e:
+            logger.error(f"Error performing similarity search: {e}")
             raise

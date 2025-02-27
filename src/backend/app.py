@@ -3,15 +3,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
-from dotenv import load_dotenv
-
-from repositories.vectorStoreRepository import VectorStoreRepository
-from services.chatService import ChatService
-from services.githubService import GithubService
-from services.jiraService import JiraService
-from services.confluenceService import ConfluenceService
-from controllers.userController import UserController
-from utils.inizialize_llm import initialize_llm
+from utils.dependency_injection import dependency_injection
 from utils.logger import logger
 
 # Inizializzazione dell'app FastAPI
@@ -31,14 +23,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Inizializzazione dei servizi
-load_dotenv()
-llm = initialize_llm()
-vector_store = VectorStoreRepository()
-chat_service = ChatService(llm, vector_store)
-github_service = GithubService()
-jira_service = JiraService()
-confluence_service = ConfluenceService()
+dependencies = dependency_injection()
+chat_controller = dependencies["chat_controller"]
 
 
 @app.post("/api/chat", summary="Invia un messaggio al chatbot", response_model=Dict[str, str])
@@ -57,18 +43,14 @@ async def chat(request: Request):
             "message": "Ciao, chatbot!"
         }
     """
-    data = await request.json()
-    user_message = data.get("message", "")
-
-    if not user_message:
-        return JSONResponse(content={"error": "Messaggio vuoto"}, status_code=400)
-
-    # Usa il servizio ChatService per ottenere una risposta
-    response = chat_service.process_user_input(user_message)
-
-    return {"response": response}
+    try:
+        return await chat_controller.get_answer(request)
+    except Exception as e:
+        logger.error(f"Error processing chat request: {e}")
+        return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
 
 
+'''
 @app.get("/api/github/load", summary="Carica i file da GitHub", response_model=Dict[str, str])
 async def load_from_github():
     """
@@ -78,8 +60,8 @@ async def load_from_github():
         Dict[str, str]: Stato dell'operazione con un messaggio.
     """
     try:
-        UserController.load_github_files(vector_store, github_service)
-        UserController.load_github_commits(vector_store, github_service)
+        UserController.load_github_files(chroma_vector_store_repository, github_service)
+        UserController.load_github_commits(chroma_vector_store_repository, github_service)
         return {"response": "File caricati con successo da GitHub"}
     except Exception as e:
         logger.error(str(e))
@@ -95,7 +77,7 @@ async def load_from_jira():
         Dict[str, str]: Stato dell'operazione con un messaggio.
     """
     try:
-        UserController.load_jira(vector_store, github_service, jira_service)
+        UserController.load_jira(chroma_vector_store_repository, github_service, jira_service)
         return {"response": "File caricati con successo da Jira"}
     except Exception as e:
         logger.error(str(e))
@@ -112,12 +94,13 @@ async def load_from_confluence():
         Dict[str, str]: Stato dell'operazione con un messaggio.
     """
     try:
-        UserController.load_confluence(vector_store, github_service, jira_service,
+        UserController.load_confluence(chroma_vector_store_repository, github_service, jira_service,
                                        confluence_service)
         return {"response": "File caricati con successo da Confluence"}
     except Exception as e:
         logger.error(str(e))
         return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
+'''
 
 
 if __name__ == "__main__":

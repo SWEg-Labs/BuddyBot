@@ -1,5 +1,5 @@
 from controllers.userController import UserController
-from repositories.vectorStoreRepository import VectorStoreRepository
+from repositories.chromaVectorStoreRepository import ChromaVectorStoreRepository
 from services.githubService import GithubService
 from services.jiraService import JiraService
 from services.confluenceService import ConfluenceService
@@ -15,7 +15,7 @@ def update_database():
     print("Chiamata funzione update_database")
     try:
         # inizializza vector store
-        vector_store = VectorStoreRepository()
+        vector_store = ChromaVectorStoreRepository()
         # inizializza github service
         github_service = GithubService()
         # inizializza jira service
