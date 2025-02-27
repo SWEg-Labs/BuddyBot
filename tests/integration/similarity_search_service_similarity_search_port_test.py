@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock
 from models.document import Document
 from models.question import Question
+from models.documentConstraints import DocumentConstraints
 from services.similaritySearchService import SimilaritySearchService
 from ports.similaritySearchPort import SimilaritySearchPort
 
@@ -8,8 +9,11 @@ from ports.similaritySearchPort import SimilaritySearchPort
 
 def test_similarity_search_calls_port_method():
     # Arrange
+    mock_document_constraints = MagicMock(spec=DocumentConstraints)
+    mock_document_constraints.similarity_threshold = 1.2
+    mock_document_constraints.max_gap = 0.3
     mock_similarity_search_port = MagicMock(spec=SimilaritySearchPort)
-    similarity_search_service = SimilaritySearchService(mock_similarity_search_port)
+    similarity_search_service = SimilaritySearchService(mock_document_constraints, mock_similarity_search_port)
     user_input = Question("test input")
     documents = [
         Document(page_content="doc1", metadata={"distance": 0.5}),

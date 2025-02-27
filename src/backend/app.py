@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
 from models.header import Header
+from models.documentConstraints import DocumentConstraints
 from repositories.chromaVectorStoreRepository import ChromaVectorStoreRepository
 from adapters.chromaVectorStoreAdapter import ChromaVectorStoreAdapter
 from services.similaritySearchService import SimilaritySearchService
@@ -42,6 +43,7 @@ app.add_middleware(
 load_dotenv()
 
 # Tipi di supporto
+document_constraints = DocumentConstraints(1.2, 0.3)
 llm = initialize_llm()
 generate_answer_header = Header("""Sei un assistente virtuale esperto che risponde a domande in italiano.
                 Di seguito di verrà fornita una domanda dall'utente e un contesto, e riguarderanno 
@@ -59,7 +61,7 @@ generate_answer_header = Header("""Sei un assistente virtuale esperto che rispon
 # Catena di similarity search
 chroma_vector_store_repository = ChromaVectorStoreRepository()
 vector_store_adapter = ChromaVectorStoreAdapter(chroma_vector_store_repository)
-similarity_search_service = SimilaritySearchService(vector_store_adapter)
+similarity_search_service = SimilaritySearchService(document_constraints, vector_store_adapter)
 
 # Catena di generate answer
 langchain_repository = LangChainRepository(llm)

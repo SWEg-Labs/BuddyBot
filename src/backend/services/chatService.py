@@ -11,7 +11,7 @@ class ChatService(ChatUseCase):
     """
     A service class that processes user input and generates a response using a language model.
     
-    Requires an instance of the ChatOpenAI language model and a ChromaVectorStoreRepository instance
+    Requires instances of SimilaritySearchService and GenerateAnswerService.
 
     Raises:
         Exception: If an error occurs during initialization.
