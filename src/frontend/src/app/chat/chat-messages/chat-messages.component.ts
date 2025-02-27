@@ -1,5 +1,7 @@
 import { Component, Input, AfterViewChecked, ElementRef, ViewChild, Output, EventEmitter  } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
+
 import { IMessage } from '../../models/message.model';
 import { ChatLoadingIndicatorComponent } from '../chat-loadind-indicator/chat-loading-indicator.component';
 
@@ -8,7 +10,7 @@ import { ChatLoadingIndicatorComponent } from '../chat-loadind-indicator/chat-lo
   selector: 'app-chat-messages',
   templateUrl: './chat-messages.component.html',
   styleUrls: ['./chat-messages.component.scss'],
-  imports: [CommonModule, ChatLoadingIndicatorComponent],
+  imports: [CommonModule, MatIconModule, ChatLoadingIndicatorComponent],
 })
 export class ChatMessagesComponent implements AfterViewChecked {
   @Input() messages: IMessage[] = [];
