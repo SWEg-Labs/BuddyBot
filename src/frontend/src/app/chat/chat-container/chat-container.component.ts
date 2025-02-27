@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild  } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
 
 import { ChatHeaderComponent } from '../chat-header/chat-header.component';
 import { ChatMessagesComponent } from '../chat-messages/chat-messages.component';
@@ -18,6 +19,7 @@ import { IMessage } from '../../models/message.model';
   imports: [
     CommonModule,
     FormsModule,
+    MatIconModule,
     ChatHeaderComponent,
     ChatMessagesComponent,
     ChatInputComponent,
