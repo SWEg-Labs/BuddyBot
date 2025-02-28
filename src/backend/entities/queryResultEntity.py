@@ -21,3 +21,10 @@ class QueryResultEntity:
             metadatas=data.get("metadatas", []),
             distances=data.get("distances", [])
         )
+    
+    def __eq__(self, other):
+        if not isinstance(other, QueryResultEntity):
+            return False
+        return (self.documents == other.documents and
+                self.metadatas == other.metadatas and
+                self.distances == other.distances)
