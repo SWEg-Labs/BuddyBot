@@ -37,11 +37,14 @@ class GitHubRepository:
         try:
             commits = self.github_repo.get_commits()
             commit_entities = []
+
             for commit in commits:
                 files = [CommitFileEntity(f.filename, f.status, f.changes, f.additions, f.deletions, f.patch) for f in commit.files]
                 commit_entity = CommitEntity(commit.sha, commit.commit.message, commit.commit.author.name, commit.commit.author.email, commit.commit.author.date, commit.html_url, files)
                 commit_entities.append(commit_entity)
+
             log = PlatformLog(LoadingItems.GitHubCommits, datetime.now(), True)
+
             return log, commit_entities
         except Exception as e:
             logger.error(f"Error fetching commits for repository {self.github_repo.full_name}: {e}")
@@ -59,6 +62,7 @@ class GitHubRepository:
         try:
             contents = self.github_repo.get_contents("")
             file_entities = []
+
             while contents:
                 file_content = contents.pop(0)
                 if file_content.type == "dir":
@@ -66,7 +70,9 @@ class GitHubRepository:
                 else:
                     file_entity = FileEntity(file_content.type, file_content.encoding, file_content.size, file_content.name, file_content.path, file_content.content, file_content.sha, file_content.url, file_content.html_url, file_content.download_url, file_content.git_url)
                     file_entities.append(file_entity)
+
             log = PlatformLog(LoadingItems.GitHubFiles, datetime.now(), True)
+
             return log, file_entities
         except Exception as e:
             logger.error(f"Error fetching files for repository {self.github_repo.full_name}: {e}")

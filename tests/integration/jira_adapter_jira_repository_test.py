@@ -1,7 +1,8 @@
 from unittest.mock import MagicMock
 from datetime import datetime
+
 from models.document import Document
-from models.platformLog import PlatformLog
+from models.loggingModels import PlatformLog, LoadingItems
 from adapters.jiraAdapter import JiraAdapter
 from repositories.jiraRepository import JiraRepository
 from entities.issueEntity import IssueEntity
@@ -12,6 +13,8 @@ def test_load_jira_issues_calls_repository_method():
     # Arrange
     mock_jira_repository = MagicMock(spec=JiraRepository)
     jira_adapter = JiraAdapter(mock_jira_repository)
+
+    mock_jira_repository.base_url = "https://jira.example.com"
 
     expected_result = (
         PlatformLog(
@@ -29,7 +32,7 @@ def test_load_jira_issues_calls_repository_method():
                     "priority": "High",
                     "type": "Bug",
                     "creation_date": "2025-02-28T12:34:56.000+0000",
-                    "url": "https://jira.example.com/browse/PROJ-1", # issue_url = f"{self.base_url}/browse/{issue['key']}"
+                    "url": "https://jira.example.com/browse/PROJ-1", # issue_url = f"{self.jira_repository.base_url}/browse/{issue.key}"
                     "id": "PROJ-1",
                 }
             )
