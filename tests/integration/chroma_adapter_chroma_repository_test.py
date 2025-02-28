@@ -45,14 +45,16 @@ def test_load_calls_repository():
     max_chunk_size = 41666
     adapter = ChromaVectorStoreAdapter(max_chunk_size, mock_repository)
     documents = [
-        Document(page_content="doc1", metadata={"author": "Author1"}),
-        Document(page_content="doc2", metadata={"author": "Author2"}),
+        Document(page_content="doc1", metadata={"author": "Author1", "id": "1"}),
+        Document(page_content="doc2", metadata={"author": "Author2", "id": "2"}),
     ]
     document_entities = [
-        DocumentEntity(page_content="doc1", metadata={"author": "Author1"}),
-        DocumentEntity(page_content="doc2", metadata={"author": "Author2"}),
+        DocumentEntity(page_content="doc1", 
+                       metadata={"author": "Author1", "id": "1", "chunk_index": 0, "doc_id": "1_0", "insertion_date": datetime.now().isoformat()}),
+        DocumentEntity(page_content="doc2", 
+                       metadata={"author": "Author2", "id": "2", "chunk_index": 0, "doc_id": "2_0", "insertion_date": datetime.now().isoformat()}),
     ]
-    
+
     vector_store_log = VectorStoreLog(
         timestamp=datetime.now(),
         outcome=True,

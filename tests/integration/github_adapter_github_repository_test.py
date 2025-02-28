@@ -31,14 +31,12 @@ def test_load_github_commits_calls_repository_method():
                     "author": "John Doe",
                     "email": "john.doe@example.com",
                     "date": "2025-02-28T12:34:56Z",
-                    "commit_hash": "abc123",
-                    "url": "https://github.com/owner/repo/commit/abc123",
                     "files": [
                         "- file1.txt (Status: modified, Changes: 10, Additions: 5, Deletions: 5)\n  Patch:\n@@ -1,2 +1,2 @@\n- old line\n+ new line\n",
                         "- file2.txt (Status: added, Changes: 20, Additions: 20, Deletions: 0)\n  Patch:\n@@ -0,0 +1,20 @@\n+ new content\n"
                     ],
-                    "chunk_index": 0,
-                    "doc_id": "abc123_0"
+                    "url": "https://github.com/owner/repo/commit/abc123",
+                    "id": "abc123",
                 }
             )
         ]
@@ -108,12 +106,10 @@ def test_load_github_files_calls_repository_method():
                 page_content="Hello world!\n",  # Contenuto decodificato dalla codifica base64
                 metadata={
                     "type": "file",
-                    "id": "abc123",
                     "name": "example.txt",
                     "path": "path/to/example.txt",
-                    "url": "https://github.com/owner/repo/blob/main/path/to/example.txt",
-                    "chunk_index": 0,
-                    "doc_id": "abc123_0"
+                    "url": "https://github.com/owner/repo/blob/main/path/to/example.txt", # html_url
+                    "id": "abc123",
                 }
             )
         ]

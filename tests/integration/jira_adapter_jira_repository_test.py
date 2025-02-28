@@ -29,9 +29,8 @@ def test_load_jira_issues_calls_repository_method():
                     "priority": "High",
                     "type": "Bug",
                     "creation_date": "2025-02-28T12:34:56.000+0000",
+                    "url": "https://jira.example.com/browse/PROJ-1", # issue_url = f"{self.base_url}/browse/{issue['key']}"
                     "id": "PROJ-1",
-                    "chunk_index": 0,
-                    "doc_id": "PROJ-1_0"
                 }
             )
         ]

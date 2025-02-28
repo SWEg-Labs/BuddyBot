@@ -22,11 +22,11 @@ def test_load_confluence_pages_calls_repository_method():
                 page_content="<p>This is an example page content.</p>",  # Contenuto del campo storage.value
                 metadata={
                     "title": "Example Page",
-                    "page_id": "12345",
+                    "space": "Space Name"
                     "created_by": "John Doe",
                     "created_date": "2025-02-28T12:34:56.000+0000",
-                    "chunk_index": 0,
-                    "doc_id": "12345_0"
+                    "url": "https://confluence.example.com/spaces/SPACEKEY/pages/12345/Example+Page", # Unione dei due campi dentro "links"
+                    "id": "12345",
                 }
             )
         ]
