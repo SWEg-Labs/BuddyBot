@@ -29,7 +29,7 @@ def test_load_github_commits_calls_port_method():
 
     expected_result = (
         PlatformLog(
-            platform=Platform.GitHub,
+            loading_items=LoadingItems.GitHubCommits,
             timestamp=datetime.now() - timedelta(minutes=5),
             outcome=True
         ),
@@ -62,7 +62,7 @@ def test_load_github_files_calls_port_method():
 
     expected_result = (
         PlatformLog(
-            platform=Platform.GitHub,
+            loading_items=LoadingItems.GitHubFiles,
             timestamp=datetime.now() - timedelta(minutes=4),
             outcome=True
         ),

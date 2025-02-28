@@ -28,7 +28,7 @@ def test_load_jira_issues_calls_port_method():
 
     expected_result = (
         PlatformLog(
-            platform=Platform.Jira,
+            loading_items=LoadingItems.JiraIssues,
             timestamp=datetime.now() - timedelta(minutes=3),
             outcome=True
         ),

@@ -28,7 +28,7 @@ def test_load_confluence_pages_calls_port_method():
 
     expected_result = (
         PlatformLog(
-            platform=Platform.Confluence,
+            loading_items=LoadingItems.ConfluencePages,
             timestamp=datetime.now() - timedelta(minutes=2),
             outcome=True
         ),

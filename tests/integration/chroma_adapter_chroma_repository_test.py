@@ -58,9 +58,9 @@ def test_load_calls_repository():
     vector_store_log = VectorStoreLog(
         timestamp=datetime.now(),
         outcome=True,
-        num_added_files=4,
-        num_modifed_files=0,
-        num_deleted_files=0,
+        num_added_items=4,
+        num_modifed_items=0,
+        num_deleted_items=0,
     )
     mock_repository.load.return_value = vector_store_log
 

@@ -13,7 +13,7 @@ def test_load_confluence_pages_calls_repository_method():
 
     expected_result = (
         PlatformLog(
-            platform="Confluence",
+            loading_items=LoadingItems.ConfluencePages,
             timestamp=datetime.now() - timedelta(minutes=5),
             outcome=True
         ),
@@ -34,7 +34,7 @@ def test_load_confluence_pages_calls_repository_method():
 
     repository_return_value = (
         PlatformLog(
-            platform="Confluence",
+            loading_items=LoadingItems.ConfluencePages,
             timestamp=datetime.now() - timedelta(minutes=5),
             outcome=True
         ),

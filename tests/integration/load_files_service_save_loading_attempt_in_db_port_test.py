@@ -28,17 +28,17 @@ def test_save_loading_attempt_in_db_calls_port_method():
         mock_save_loading_attempt_in_db_port,
     )
     platform_logs = [
-        PlatformLog(platform=Platform.GitHub, timestamp=datetime.now() - timedelta(minutes=5), outcome=True), # commits
-        PlatformLog(platform=Platform.GitHub, timestamp=datetime.now() - timedelta(minutes=4), outcome=True), # files
-        PlatformLog(platform=Platform.Jira, timestamp=datetime.now() - timedelta(minutes=3), outcome=True),
-        PlatformLog(platform=Platform.Confluence, timestamp=datetime.now() - timedelta(minutes=2), outcome=True),
+        PlatformLog(loading_items=LoadingItems.GitHubCommits, timestamp=datetime.now() - timedelta(minutes=5), outcome=True),
+        PlatformLog(loading_items=LoadingItems.GitHubFiles, timestamp=datetime.now() - timedelta(minutes=4), outcome=True),
+        PlatformLog(loading_items=LoadingItems.JiraIssues, timestamp=datetime.now() - timedelta(minutes=3), outcome=True),
+        PlatformLog(loading_items=LoadingItems.ConfluencePages, timestamp=datetime.now() - timedelta(minutes=2), outcome=True),
     ]
     vector_store_log = VectorStoreLog(
         timestamp=datetime.now(),
         outcome=True,
-        num_added_files=4,
-        num_modifed_files=0,
-        num_deleted_files=0,
+        num_added_items=4,
+        num_modifed_items=0,
+        num_deleted_items=0,
     )
     loading_attempt = LoadingAttempt(
         starting_timestamp=datetime.now() - timedelta(minutes=5),

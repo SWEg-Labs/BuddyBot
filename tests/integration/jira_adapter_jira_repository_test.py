@@ -15,7 +15,7 @@ def test_load_jira_issues_calls_repository_method():
 
     expected_result = (
         PlatformLog(
-            platform="Jira",
+            loading_items=LoadingItems.JiraIssues,
             timestamp=datetime.now(),
             outcome=True
         ),
@@ -38,7 +38,7 @@ def test_load_jira_issues_calls_repository_method():
 
     repository_return_value = (
         PlatformLog(
-            platform="Jira",
+            loading_items=LoadingItems.JiraIssues,
             timestamp=datetime.now(),
             outcome=True
         ),
