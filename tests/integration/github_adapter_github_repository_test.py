@@ -2,12 +2,13 @@ from unittest.mock import MagicMock
 from datetime import datetime, timedelta
 
 from models.document import Document
-from models.commit_entity import CommitEntity
-from models.file_entity import FileEntity
-from models.platform_log import PlatformLog
+from models.platformLog import PlatformLog
 from models.platform import Platform
-from adapters.github_adapter import GitHubAdapter
-from repositories.github_repository import GitHubRepository
+from entities.commitEntity import CommitEntity
+from entities.commitFileEntity import CommitFileEntity
+from entities.fileEntity import FileEntity
+from adapters.githubAdapter import GitHubAdapter
+from repositories.githubRepository import GitHubRepository
 
 
 # Verifica che il metodo load_github_commits di GitHubAdapter chiami il metodo load_github_commits di GitHubtRepository
@@ -58,7 +59,7 @@ def test_load_github_commits_calls_repository_method():
                 author_date="2025-02-28T12:34:56Z",
                 url="https://github.com/owner/repo/commit/abc123",
                 files=[
-                    FileEntity(
+                    CommitFileEntity(
                         filename="file1.txt",
                         status="modified",
                         changes=10,
@@ -66,7 +67,7 @@ def test_load_github_commits_calls_repository_method():
                         deletions=5,
                         patch="@@ -1,2 +1,2 @@\n- old line\n+ new line"
                     ),
-                    FileEntity(
+                    CommitFileEntity(
                         filename="file2.txt",
                         status="added",
                         changes=20,
@@ -95,14 +96,57 @@ def test_load_github_files_calls_repository_method():
     # Arrange
     mock_github_repository = MagicMock(spec=GitHubRepository)
     github_adapter = GitHubAdapter(mock_github_repository)
-    platform_log = MagicMock()
-    document = MagicMock(spec=Document)
-    file_entity = MagicMock(spec=FileEntity)
-    mock_github_repository.load_github_files.return_value = file_entity
+
+    expected_result = (
+        PlatformLog(
+            platform=Platform.GitHub,
+            timestamp=datetime.now() - timedelta(minutes=5),
+            outcome=True
+        ),
+        [
+            Document(
+                page_content="Hello world!\n",  # Contenuto decodificato dalla codifica base64
+                metadata={
+                    "type": "file",
+                    "id": "abc123",
+                    "name": "example.txt",
+                    "path": "path/to/example.txt",
+                    "url": "https://github.com/owner/repo/blob/main/path/to/example.txt",
+                    "chunk_index": 0,
+                    "doc_id": "abc123_0"
+                }
+            )
+        ]
+    )
+
+    repository_return_value = (
+        PlatformLog(
+            platform=Platform.GitHub,
+            timestamp=datetime.now() - timedelta(minutes=5),
+            outcome=True
+        ),
+        [
+            FileEntity(
+                type="file",
+                encoding="base64",
+                size=1234,
+                name="example.txt",
+                path="path/to/example.txt",
+                content="SGVsbG8gd29ybGQhCg==", # Contenuto codificato, decodificato è "Hello world!\n"
+                sha="abc123",
+                url="https://api.github.com/repos/owner/repo/contents/path/to/example.txt",
+                html_url="https://github.com/owner/repo/blob/main/path/to/example.txt",
+                download_url="https://raw.githubusercontent.com/owner/repo/main/path/to/example.txt",
+                git_url="https://api.github.com/repos/owner/repo/git/blobs/abc123"
+            )
+        ]
+    )
+
+    mock_github_repository.load_github_commits.return_value = repository_return_value
 
     # Act
-    result = github_adapter.load_github_files(platform_log, document)
+    result = github_adapter.load_github_files()
 
     # Assert
-    mock_github_repository.load_github_files.assert_called_once_with(platform_log, document)
-    assert result == file_entity
+    mock_github_repository.load_github_files.assert_called_once()
+    assert result == expected_result

@@ -1,5 +1,7 @@
+from entities.commitFileEntity import CommitFileEntity
+
 class CommitEntity:
-    def __init__(self, sha, message, author_name, author_email, author_date, url, files=None):
+    def __init__(self, sha: str, message: str, author_name: str, author_email: str, author_date: str, url: str, files: list[CommitFileEntity]):
         """
         Inizializza un nuovo oggetto CommitEntity, basato su un commit di GitHub.
 
@@ -10,7 +12,7 @@ class CommitEntity:
             author_email (str): L'email dell'autore del commit.
             author_date (str): La data del commit.
             url (str): L'URL HTML del commit su GitHub.
-            files (list, opzionale): Una lista di oggetti File che rappresentano i file modificati nel commit. Default è None.
+            files (list[CommitFileEntity]): Una lista di oggetti CommitFileEntity che rappresentano i file modificati nel commit.
         """
         self.sha = sha
         self.message = message
@@ -18,10 +20,10 @@ class CommitEntity:
         self.author_email = author_email
         self.author_date = author_date
         self.url = url
-        self.files = files if files is not None else []
+        self.files = files
 
     def __repr__(self):
-        return f"Commit(sha={self.sha}, message={self.message}, author_name={self.author_name}, author_email={self.author_email}, author_date={self.author_date}, url={self.url}, files={self.files})"
+        return f"CommitEntity(sha={self.sha}, message={self.message}, author_name={self.author_name}, author_email={self.author_email}, author_date={self.author_date}, url={self.url}, files={self.files})"
     
     def __eq__(self, other):
         if not isinstance(other, CommitEntity):

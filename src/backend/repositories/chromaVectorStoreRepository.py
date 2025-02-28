@@ -210,6 +210,8 @@ class ChromaVectorStoreRepository:
                     "status": issue["fields"]["status"]["name"],
                     "assignee": assignee_name,
                     "priority": issue["fields"]["priority"]["name"],
+                    "type": issue["fields"]["issuetype"]["name"],
+                    "creation_date": issue["fields"]["created"],
                     "id": issue["key"],
                 }
 
