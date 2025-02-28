@@ -29,7 +29,7 @@ def test_load_confluence_pages_calls_port_method():
     expected_result = (
         PlatformLog(
             loading_items=LoadingItems.ConfluencePages,
-            timestamp=datetime.now() - timedelta(minutes=2),
+            timestamp=datetime(2025, 2, 28, 12, 34, 56) - timedelta(minutes=2),
             outcome=True
         ),
         [Document(page_content="doc1", metadata={"type": "html"})]

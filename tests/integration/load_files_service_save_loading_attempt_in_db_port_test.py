@@ -28,21 +28,21 @@ def test_save_loading_attempt_in_db_calls_port_method():
         mock_save_loading_attempt_in_db_port,
     )
     platform_logs = [
-        PlatformLog(loading_items=LoadingItems.GitHubCommits, timestamp=datetime.now() - timedelta(minutes=5), outcome=True),
-        PlatformLog(loading_items=LoadingItems.GitHubFiles, timestamp=datetime.now() - timedelta(minutes=4), outcome=True),
-        PlatformLog(loading_items=LoadingItems.JiraIssues, timestamp=datetime.now() - timedelta(minutes=3), outcome=True),
-        PlatformLog(loading_items=LoadingItems.ConfluencePages, timestamp=datetime.now() - timedelta(minutes=2), outcome=True),
+        PlatformLog(loading_items=LoadingItems.GitHubCommits, timestamp=datetime(2025, 2, 28, 12, 34, 56) - timedelta(minutes=5), outcome=True),
+        PlatformLog(loading_items=LoadingItems.GitHubFiles, timestamp=datetime(2025, 2, 28, 12, 34, 56) - timedelta(minutes=4), outcome=True),
+        PlatformLog(loading_items=LoadingItems.JiraIssues, timestamp=datetime(2025, 2, 28, 12, 34, 56) - timedelta(minutes=3), outcome=True),
+        PlatformLog(loading_items=LoadingItems.ConfluencePages, timestamp=datetime(2025, 2, 28, 12, 34, 56) - timedelta(minutes=2), outcome=True),
     ]
     vector_store_log = VectorStoreLog(
-        timestamp=datetime.now(),
+        timestamp=datetime(2025, 2, 28, 12, 34, 56),
         outcome=True,
         num_added_items=4,
         num_modifed_items=0,
         num_deleted_items=0,
     )
     loading_attempt = LoadingAttempt(
-        starting_timestamp=datetime.now() - timedelta(minutes=5),
-        ending_timestamp=datetime.now(),
+        starting_timestamp=datetime(2025, 2, 28, 12, 34, 56) - timedelta(minutes=5),
+        ending_timestamp=datetime(2025, 2, 28, 12, 34, 56),
         outcome=True,
         platform_logs=platform_logs,
         vector_store_log=vector_store_log,

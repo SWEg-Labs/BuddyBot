@@ -2,13 +2,11 @@ from unittest.mock import MagicMock
 from datetime import datetime, timedelta
 
 from models.document import Document
-from models.platformLog import PlatformLog
-from models.platform import Platform
-from entities.commitEntity import CommitEntity
-from entities.commitFileEntity import CommitFileEntity
+from models.loggingModels import PlatformLog, LoadingItems
+from entities.commitEntity import CommitEntity, CommitFileEntity
 from entities.fileEntity import FileEntity
-from adapters.githubAdapter import GitHubAdapter
-from repositories.githubRepository import GitHubRepository
+from adapters.gitHubAdapter import GitHubAdapter
+from repositories.gitHubRepository import GitHubRepository
 
 
 # Verifica che il metodo load_github_commits di GitHubAdapter chiami il metodo load_github_commits di GitHubtRepository
@@ -21,7 +19,7 @@ def test_load_github_commits_calls_repository_method():
     expected_result = (
         PlatformLog(
             loading_items=LoadingItems.GitHubCommits,
-            timestamp=datetime.now() - timedelta(minutes=5),
+            timestamp=datetime(2025, 2, 28, 12, 34, 56) - timedelta(minutes=5),
             outcome=True
         ),
         [
@@ -32,8 +30,8 @@ def test_load_github_commits_calls_repository_method():
                     "email": "john.doe@example.com",
                     "date": "2025-02-28T12:34:56Z",
                     "files": [
-                        "- file1.txt (Status: modified, Changes: 10, Additions: 5, Deletions: 5)\n  Patch:\n@@ -1,2 +1,2 @@\n- old line\n+ new line\n",
-                        "- file2.txt (Status: added, Changes: 20, Additions: 20, Deletions: 0)\n  Patch:\n@@ -0,0 +1,20 @@\n+ new content\n"
+                        "- file1.txt (Status: modified, Changes: 10, Additions: 5, Deletions: 5)\n  Patch:\n@@ -1,2 +1,2 @@\n- old line\n+ new line",
+                        "- file2.txt (Status: added, Changes: 20, Additions: 20, Deletions: 0)\n  Patch:\n@@ -0,0 +1,20 @@\n+ new content"
                     ],
                     "url": "https://github.com/owner/repo/commit/abc123",
                     "id": "abc123",
@@ -45,7 +43,7 @@ def test_load_github_commits_calls_repository_method():
     repository_return_value = (
         PlatformLog(
             loading_items=LoadingItems.GitHubCommits,
-            timestamp=datetime.now() - timedelta(minutes=5),
+            timestamp=datetime(2025, 2, 28, 12, 34, 56) - timedelta(minutes=5),
             outcome=True
         ),
         [
@@ -98,7 +96,7 @@ def test_load_github_files_calls_repository_method():
     expected_result = (
         PlatformLog(
             loading_items=LoadingItems.GitHubFiles,
-            timestamp=datetime.now() - timedelta(minutes=5),
+            timestamp=datetime(2025, 2, 28, 12, 34, 56) - timedelta(minutes=5),
             outcome=True
         ),
         [
@@ -118,7 +116,7 @@ def test_load_github_files_calls_repository_method():
     repository_return_value = (
         PlatformLog(
             loading_items=LoadingItems.GitHubFiles,
-            timestamp=datetime.now() - timedelta(minutes=5),
+            timestamp=datetime(2025, 2, 28, 12, 34, 56) - timedelta(minutes=5),
             outcome=True
         ),
         [
@@ -138,7 +136,7 @@ def test_load_github_files_calls_repository_method():
         ]
     )
 
-    mock_github_repository.load_github_commits.return_value = repository_return_value
+    mock_github_repository.load_github_files.return_value = repository_return_value
 
     # Act
     result = github_adapter.load_github_files()

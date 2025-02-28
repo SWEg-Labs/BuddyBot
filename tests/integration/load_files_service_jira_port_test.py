@@ -29,7 +29,7 @@ def test_load_jira_issues_calls_port_method():
     expected_result = (
         PlatformLog(
             loading_items=LoadingItems.JiraIssues,
-            timestamp=datetime.now() - timedelta(minutes=3),
+            timestamp=datetime(2025, 2, 28, 12, 34, 56) - timedelta(minutes=3),
             outcome=True
         ),
         [Document(page_content="doc1", metadata={"type": "text"})]

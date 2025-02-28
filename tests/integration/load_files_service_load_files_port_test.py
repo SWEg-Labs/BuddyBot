@@ -31,7 +31,7 @@ def test_load_calls_port_method():
         Document(page_content="doc4", metadata={"type": "html"}),
     ]
     vector_store_log = VectorStoreLog(
-        timestamp=datetime.now(),
+        timestamp=datetime(2025, 2, 28, 12, 34, 56),
         outcome=True,
         num_added_items=4,
         num_modifed_items=0,

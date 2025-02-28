@@ -50,13 +50,13 @@ def test_load_calls_repository():
     ]
     document_entities = [
         DocumentEntity(page_content="doc1", 
-                       metadata={"author": "Author1", "id": "1", "chunk_index": 0, "doc_id": "1_0", "insertion_date": datetime.now().isoformat()}),
+                       metadata={"author": "Author1", "id": "1", "chunk_index": 0, "doc_id": "1_0", "insertion_date": datetime(2025, 2, 28, 12, 34, 56).isoformat()}),
         DocumentEntity(page_content="doc2", 
-                       metadata={"author": "Author2", "id": "2", "chunk_index": 0, "doc_id": "2_0", "insertion_date": datetime.now().isoformat()}),
+                       metadata={"author": "Author2", "id": "2", "chunk_index": 0, "doc_id": "2_0", "insertion_date": datetime(2025, 2, 28, 12, 34, 56).isoformat()}),
     ]
 
     vector_store_log = VectorStoreLog(
-        timestamp=datetime.now(),
+        timestamp=datetime(2025, 2, 28, 12, 34, 56),
         outcome=True,
         num_added_items=4,
         num_modifed_items=0,
