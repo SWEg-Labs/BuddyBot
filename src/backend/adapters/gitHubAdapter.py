@@ -13,6 +13,7 @@ class GitHubAdapter(GitHubPort):
     This class provides methods to load commits and files from a GitHub repository
     and convert them into a document format.
     """
+
     def __init__(self, github_repository: GitHubRepository):
         """
         Initialize the GitHubAdapter with a GitHubRepository instance.
@@ -25,6 +26,7 @@ class GitHubAdapter(GitHubPort):
             self.github_repository = github_repository
         except Exception as e:
             logger.error(f"Error initializing GitHubAdapter: {e}")
+            raise
 
     def load_github_commits(self) -> Tuple[PlatformLog, List[Document]]:
         """
@@ -56,6 +58,7 @@ class GitHubAdapter(GitHubPort):
             return log, documents
         except Exception as e:
             logger.error(f"Error while adapting GitHub commits: {e}")
+            return None, []
 
     def load_github_files(self) -> Tuple[PlatformLog, List[Document]]:
         """

@@ -2,15 +2,17 @@ from typing import List, Tuple
 
 from models.document import Document
 from models.loggingModels import PlatformLog
+from ports.jiraPort import JiraPort
 from repositories.jiraRepository import JiraRepository
 from utils.logger import logger
 
-class JiraAdapter:
+class JiraAdapter(JiraPort):
     """
     Adapter class for interacting with Jira issues.
     Attributes:
         jira_repository (JiraRepository): The repository instance for Jira operations.
     """
+
     def __init__(self, jira_repository: JiraRepository):
         """
         Initializes the JiraAdapter with a JiraRepository instance.

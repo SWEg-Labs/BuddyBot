@@ -15,6 +15,7 @@ class JiraRepository:
         timeout (int): The timeout for API requests.
         headers (dict[str, str]): The headers to include in API requests.
     """
+
     def __init__(self, base_url: str, project_key: str, timeout: int, headers: dict[str, str]):
         """
         Initializes the JiraRepository with the given parameters.
@@ -45,11 +46,12 @@ class JiraRepository:
         """
         try:
             url = f"{self.base_url}/rest/api/2/search"
-            query = {
-                'jql': f'project={self.project_key}'
+            params = {
+                'jql': f'project={self.project_key}',
+                "maxResults": 50
             }
 
-            response = requests.get(url, headers=self.headers, params=query, timeout=self.timeout)
+            response = requests.get(url, headers=self.headers, params=params, timeout=self.timeout)
             response.raise_for_status()
             issues_data = response.json().get('issues', [])
 

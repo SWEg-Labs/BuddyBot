@@ -7,7 +7,7 @@ from models.loggingModels import PlatformLog
 class GitHubPort(ABC):
     """
     Interface for GitHub operations.
-    This interface defines methods to load commits and files from a GitHub repository.
+    This interface defines methods to load commits and files from a GitHub repository and adapt them into documents.
     """
     
     @abstractmethod

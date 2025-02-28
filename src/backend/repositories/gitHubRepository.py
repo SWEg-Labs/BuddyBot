@@ -13,6 +13,7 @@ class GitHubRepository:
     Attributes:
         github_repo (Repository): The GitHub repository object.
     """
+
     def __init__(self, github_repo: Repository):
         """
         Initializes the GitHubRepository with a given GitHub repository object.
@@ -26,6 +27,7 @@ class GitHubRepository:
         except Exception as e:
             logger.error(f"Error initializing GitHubRepository: {e}")
             raise
+
     def load_github_commits(self) -> Tuple[PlatformLog, List[CommitEntity]]:
         """
         Loads the commits from the GitHub repository.
