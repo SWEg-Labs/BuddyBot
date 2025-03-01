@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock
-from controllers.load_files_controller import LoadFilesController
-from use_cases.load_files_use_case import LoadFilesUseCase
+from controllers.loadFilesController import LoadFilesController
+from use_cases.loadFilesUseCase import LoadFilesUseCase
 
 # Verifica che il metodo load di LoadFilesController chiami il metodo load di LoadFilesUseCase
 

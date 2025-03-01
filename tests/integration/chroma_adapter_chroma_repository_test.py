@@ -13,7 +13,6 @@ from repositories.chromaVectorStoreRepository import ChromaVectorStoreRepository
 
 # Verifica che il metodo similarity_search di ChromaVectorStoreAdapter chiami il metodo similarity_search di ChromaVectorStoreRepository
 
-@freeze_time("2025-03-01 12:00:00")  # Freeze time to avoid issues with datetime.now()
 def test_similarity_search_calls_repository():
     # Arrange
     mock_repository = MagicMock(spec=ChromaVectorStoreRepository)
@@ -41,6 +40,7 @@ def test_similarity_search_calls_repository():
 
 # Verifica che il metodo load di ChromaVectorStoreAdapter chiami il metodo load di ChromaVectorStoreRepository
 
+@freeze_time("2025-03-01 12:00:00")  # Freeze time to avoid issues with datetime.now()
 def test_load_calls_repository():
     # Arrange
     mock_repository = MagicMock(spec=ChromaVectorStoreRepository)

@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from models.document import Document
 from models.loggingModels import VectorStoreLog
 
-class LoadFilesPort(ABC):
+class LoadFilesInVectorStorePort(ABC):
     """
     Abstract base class that defines the interface for loading files into a vector store.
 

@@ -1,8 +1,5 @@
 from unittest.mock import MagicMock
-from datetime import datetime, timedelta
-
 from models.document import Document
-from models.loggingModels import PlatformLog, LoadingItems
 from services.loadFilesService import LoadFilesService
 from services.confluenceCleanerService import ConfluenceCleanerService
 from ports.gitHubPort import GitHubPort
@@ -11,9 +8,9 @@ from ports.confluencePort import ConfluencePort
 from ports.loadFilesInVectorStorePort import LoadFilesInVectorStorePort
 from ports.saveLoadingAttemptInDbPort import SaveLoadingAttemptInDbPort
 
-# Verifica che il metodo load_jira_issues di LoadFilesService chiami il metodo load_jira_issues di JiraPort
+# Verifica che il metodo clean_confluence_pages di LoadFilesService chiami il metodo clean_confluence_pages di ConfluenceCleanerService
 
-def test_load_jira_issues_calls_port_method():
+def test_clean_confluence_pages_calls_cleaner_service_method():
     # Arrange
     mock_github_port = MagicMock(spec=GitHubPort)
     mock_jira_port = MagicMock(spec=JiraPort)
@@ -26,20 +23,19 @@ def test_load_jira_issues_calls_port_method():
         mock_confluence_port, mock_load_files_in_vector_store_port,
         mock_save_loading_attempt_in_db_port, mock_confluence_cleaner_service
     )
-
-    expected_result = (
-        PlatformLog(
-            loading_items=LoadingItems.JiraIssues,
-            timestamp=datetime(2025, 2, 28, 12, 34, 56) - timedelta(minutes=3),
-            outcome=True
-        ),
-        [Document(page_content="doc1", metadata={"type": "text"})]
-    )
-    mock_jira_port.load_jira_issues.return_value = expected_result
+    pages = [
+        Document(page_content="<html>doc1 &agrave; &egrave; &igrave; &ograve; &ugrave; &quot; &Egrave;</html>", metadata={"id": 1}),
+        Document(page_content="<html>doc2 &agrave; &egrave; &igrave; &ograve; &ugrave; &quot; &Egrave;</html>", metadata={"id": 2}),
+    ]
+    cleaned_pages = [
+        Document(page_content="doc1 à è ì ò ù \" È", metadata={"id": 1}),
+        Document(page_content="doc2 à è ì ò ù \" È", metadata={"id": 2}),
+    ]
+    mock_confluence_cleaner_service.clean_confluence_pages.return_value = cleaned_pages
 
     # Act
-    result = load_files_service.load_jira_issues()
+    result = load_files_service.clean_confluence_pages(pages)
 
     # Assert
-    mock_jira_port.load_jira_issues.assert_called_once()
-    assert result == expected_result
+    mock_confluence_cleaner_service.clean_confluence_pages.assert_called_once_with(pages)
+    assert result == cleaned_pages

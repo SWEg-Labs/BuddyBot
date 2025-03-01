@@ -3,12 +3,12 @@ from models.document import Document
 from models.loggingModels import VectorStoreLog
 from entities.chromaDocumentEntity import ChromaDocumentEntity
 from ports.similaritySearchPort import SimilaritySearchPort
-from ports.loadFilesPort import LoadFilesPort
+from ports.loadFilesInVectorStorePort import LoadFilesInVectorStorePort
 from repositories.chromaVectorStoreRepository import ChromaVectorStoreRepository
 from utils.logger import logger
 from datetime import datetime
 
-class ChromaVectorStoreAdapter(SimilaritySearchPort, LoadFilesPort):
+class ChromaVectorStoreAdapter(SimilaritySearchPort, LoadFilesInVectorStorePort):
     """
     Adapter class for interacting with a Chroma vector store repository.
     This class provides methods to load documents into the vector store,
