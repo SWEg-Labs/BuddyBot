@@ -1,5 +1,6 @@
 from unittest.mock import MagicMock
 from datetime import datetime
+from freezegun import freeze_time
 
 from models.document import Document
 from models.question import Question
@@ -12,6 +13,7 @@ from repositories.chromaVectorStoreRepository import ChromaVectorStoreRepository
 
 # Verifica che il metodo similarity_search di ChromaVectorStoreAdapter chiami il metodo similarity_search di ChromaVectorStoreRepository
 
+@freeze_time("2025-03-01 12:00:00")  # Freeze time to avoid issues with datetime.now()
 def test_similarity_search_calls_repository():
     # Arrange
     mock_repository = MagicMock(spec=ChromaVectorStoreRepository)
@@ -50,9 +52,9 @@ def test_load_calls_repository():
     ]
     document_entities = [
         ChromaDocumentEntity(page_content="doc1", 
-                       metadata={"author": "Author1", "id": "1", "chunk_index": 0, "doc_id": "1_0", "insertion_date": datetime.now().isoformat()}),
+                       metadata={"author": "Author1", "id": "1", "chunk_index": 0, "doc_id": "1_0", "vector_store_insertion_date": datetime.now().isoformat()}),
         ChromaDocumentEntity(page_content="doc2", 
-                       metadata={"author": "Author2", "id": "2", "chunk_index": 0, "doc_id": "2_0", "insertion_date": datetime.now().isoformat()}),
+                       metadata={"author": "Author2", "id": "2", "chunk_index": 0, "doc_id": "2_0", "vector_store_insertion_date": datetime.now().isoformat()}),
     ]
 
     vector_store_log = VectorStoreLog(

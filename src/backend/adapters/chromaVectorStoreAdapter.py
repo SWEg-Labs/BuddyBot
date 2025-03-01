@@ -70,7 +70,7 @@ class ChromaVectorStoreAdapter(SimilaritySearchPort, LoadFilesPort):
                     chunk_metadata = metadata.copy()
                     chunk_metadata["chunk_index"] = chunk_index
                     chunk_metadata["doc_id"] = f"{doc_id}_{chunk_index}"
-                    chunk_metadata["insertion_date"] = datetime.now().isoformat()
+                    chunk_metadata["vector_store_insertion_date"] = datetime.now().isoformat()
                     chroma_documents.append(ChromaDocumentEntity(page_content=chunk, metadata=chunk_metadata))
 
             return chroma_documents
