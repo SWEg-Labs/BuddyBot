@@ -10,7 +10,7 @@ class ConfluenceCleanerService:
     """
     def clean_confluence_pages(self, pages: List[Document]) -> List[Document]:
         """
-        Cleans the content of a list of Confluence pages by removing HTML tags.
+        Cleans the content of a list of Confluence pages by removing HTML tags and replacing HTML entities.
         Args:
             pages (List[Document]): List of Document objects representing Confluence pages.
         Returns:
@@ -20,36 +20,37 @@ class ConfluenceCleanerService:
         """
         try:
             for page in pages:
-                page.page_content = self._remove_html_tags(page.page_content)
+                page = self._remove_html_tags(page)
+                page = self._replace_html_entities(page)
             return pages
         except Exception as e:
             logger.error(f"Error cleaning confluence pages: {e}")
             raise e
 
-    def _remove_html_tags(self, text: str) -> str:
+    def _remove_html_tags(self, document: Document) -> Document:
         """
-        Removes HTML tags from the given text.
+        Removes HTML tags from the content of the given Document.
         Args:
-            text (str): The text from which HTML tags need to be removed.
+            document (Document): The Document from which HTML tags need to be removed.
         Returns:
-            str: The text with HTML tags removed.
+            Document: The Document with HTML tags removed from its content.
         Raises:
             Exception: If an error occurs during the removal of HTML tags.
         """
         try:
-            clean = re.sub(r'<[^>]+>', ' ', text)
-            return self._replace_html_entities(clean)
+            document.page_content = re.sub(r'<[^>]+>', ' ', document.page_content)
+            return document
         except Exception as e:
             logger.error(f"Error removing HTML tags: {e}")
             raise e
 
-    def _replace_html_entities(self, text: str) -> str:
+    def _replace_html_entities(self, document: Document) -> Document:
         """
-        Replaces HTML entities in the given text with their corresponding characters.
+        Replaces HTML entities in the content of the given Document with their corresponding characters.
         Args:
-            text (str): The text in which HTML entities need to be replaced.
+            document (Document): The Document in which HTML entities need to be replaced.
         Returns:
-            str: The text with HTML entities replaced by their corresponding characters.
+            Document: The Document with HTML entities replaced by their corresponding characters.
         Raises:
             Exception: If an error occurs during the replacement of HTML entities.
         """
@@ -64,8 +65,8 @@ class ConfluenceCleanerService:
                 '&Egrave;' : 'È',
             }
             for entity, char in replacements.items():
-                text = text.replace(entity, char)
-            return text
+                document.page_content = document.page_content.replace(entity, char)
+            return document
         except Exception as e:
             logger.error(f"Error replacing HTML entities: {e}")
             raise e
