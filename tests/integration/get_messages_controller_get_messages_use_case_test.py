@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock
 from controllers.getMessagesController import GetMessagesController
 from use_cases.getMessagesUseCase import GetMessagesUseCase
-from models.message import MessageBaseModel, MessageSenderBaseModel
+from models.messageBaseModel import MessageBaseModel, MessageSenderBaseModel
 
 def test_get_messages_calls_use_case_method():
     # Arrange

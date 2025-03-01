@@ -12,7 +12,7 @@ def test_get_messages_calls_port_method():
     get_messages_service = GetMessagesService(mock_get_messages_port)
 
     quantity = 5
-    expected_result = [Message(content=f"Message {i}", timestamp=f"2021-10-10T10:10:0{i}", sender=MessageSender.User) for i in range(quantity)]
+    expected_result = [Message(content=f"Message {i}", timestamp=f"2021-10-10T10:10:0{i}", sender=MessageSender.USER) for i in range(quantity)]
     mock_get_messages_port.get_messages.return_value = expected_result
 
     # Act

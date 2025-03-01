@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 from controllers.saveMessageController import SaveMessageController
 from use_cases.saveMessageService import SaveMessageService
 from models.messageBaseModel import MessageBaseModel
-from dto.dbSaveOperationResponse import DbSaveOperationResponse
+from models.dbSaveOperationResponse import DbSaveOperationResponse
 from dto.messageDtos import Message
 from models.messageBaseModel import MesssageSenderBaseModel
 from dto.messageDtos import MessageSender
@@ -26,5 +26,5 @@ def test_save_calls_use_case_method():
     response = save_message_controller.save(message)
 
     # Assert
-    mock_save_message_use_case.save.assert_called_once_with(Message(content,timestamp,MessageSender.User))
+    mock_save_message_use_case.save.assert_called_once_with(Message(content,timestamp,MessageSender.USER))
     assert response == expected_response

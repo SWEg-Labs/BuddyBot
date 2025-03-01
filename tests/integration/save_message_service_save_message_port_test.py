@@ -14,7 +14,7 @@ def test_save_calls_port_method():
 
     content = "test message"
     timestamp = "2021-10-10T10:10:10"
-    message = Message(content, timestamp, MessageSender.User)
+    message = Message(content, timestamp, MessageSender.USER)
 
     mock_save_message_port.save_message.return_value = DbSaveOperationResponse(success=True, message="Message saved successfully")
     expected_response = DbSaveOperationResponse(success=True, message="Message saved successfully")

@@ -71,7 +71,7 @@ def test_save_message_calls_repository_method():
 
     content = "test message"
     timestamp = "2021-10-10T10:10:10"
-    message = Message(content, timestamp, MesssageSender.User)
+    message = Message(content, timestamp, MesssageSender.USER)
 
     mock_postgres_repository.save_message.return_value = PostgresSaveOperationResponse(True, "Message saved successfully")
     expected_response = DbSaveOperationResponse(True, "Message saved successfully")
@@ -91,7 +91,7 @@ def test_get_messages_calls_repository_method():
     quantity = 5
 
     expected_response = [
-        PostgresMessage(content=f"Message {i}", timestamp=f"2021-10-10T10:10:0{i}", sender=PostgresMesssageSender.User) for i in range(quantity)
+        PostgresMessage(content=f"Message {i}", timestamp=f"2021-10-10T10:10:0{i}", sender=PostgresMesssageSender.USER) for i in range(quantity)
     ]
     mock_postgres_repository.get_messages.return_value = expected_response
 
