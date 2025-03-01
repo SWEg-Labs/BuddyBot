@@ -1,21 +1,25 @@
 import os
 from dotenv import load_dotenv
 import chromadb
+from github import Github
+import base64
 
 from models.header import Header
 from models.documentConstraints import DocumentConstraints
-from repositories.chromaVectorStoreRepository import ChromaVectorStoreRepository
-from adapters.chromaVectorStoreAdapter import ChromaVectorStoreAdapter
+from controllers.chatController import ChatController
 from services.similaritySearchService import SimilaritySearchService
-from repositories.langChainRepository import LangChainRepository
-from adapters.langChainAdapter import LangChainAdapter
 from services.generateAnswerService import GenerateAnswerService
 from services.chatService import ChatService
-from controllers.chatController import ChatController
-# from services.githubService import GithubService
-# from services.jiraService import JiraService
-# from services.confluenceService import ConfluenceService
+from adapters.chromaVectorStoreAdapter import ChromaVectorStoreAdapter
+from adapters.langChainAdapter import LangChainAdapter
+from adapters.gitHubAdapter import GitHubAdapter
+from adapters.jiraAdapter import JiraAdapter
+from repositories.chromaVectorStoreRepository import ChromaVectorStoreRepository
+from repositories.langChainRepository import LangChainRepository
+from repositories.gitHubRepository import GitHubRepository
+from repositories.jiraRepository import JiraRepository
 from utils.inizialize_llm import initialize_llm
+from utils.logger import Logger
 
 
 def dependency_injection():
@@ -27,6 +31,9 @@ def dependency_injection():
     try:
         # Caricamento delle variabili d'ambiente
         load_dotenv()
+
+
+        # ======================== 1. Architettura della generazione di una risposta ========================
 
         # Tipi di supporto
         document_constraints = DocumentConstraints(1.2, 0.3)
@@ -65,15 +72,47 @@ def dependency_injection():
         chat_service = ChatService(similarity_search_service, generate_answer_service)
         chat_controller = ChatController(chat_service)
 
-        # Piattaforme per l'accesso ai dati
-        # github_service = GithubService()
-        # jira_service = JiraService()
-        # confluence_service = ConfluenceService()
+
+        # ======================== 2. Architettura dell'aggiornamento automatico del database vettoriale ========================
+
+        # GitHub
+        github_token = os.getenv("GITHUB_TOKEN")
+        github = Github(github_token)
+        github_repo = github.get_repo(f"{os.getenv("OWNER")}/{os.getenv("REPO")}")
+        github_repository = GitHubRepository(github_repo)
+        github_adapter = GitHubAdapter(github_repository)
+
+        # Atlassian (Jira e Confluence)
+        atlassian_token = os.getenv("ATLASSIAN_TOKEN")
+        atlassian_user_email = os.getenv("ATLASSIAN_USER_EMAIL")
+        requests_timeout = int(os.getenv("TIMEOUT", "10"))
+        requests_auth_str = f"{atlassian_user_email}:{atlassian_token}"
+        requests_auth_bytes = base64.b64encode(requests_auth_str.encode("utf-8")).decode("utf-8")
+        requests_headers = {
+            "Authorization": f"Basic {requests_auth_bytes}",
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        }
+
+        # Jira
+        jira_base_url = os.getenv("JIRA_BASE_URL")
+        jira_project_key = os.getenv("JIRA_PROJECT_KEY")
+        jira_repository = JiraRepository(jira_base_url, jira_project_key, requests_timeout, requests_headers)
+        jira_adapter = JiraAdapter(jira_repository)
+
+        # Confluence
+        confluence_base_url = os.getenv("CONFLUENCE_BASE_URL")
+        confluence_space_key = os.getenv("CONFLUENCE_SPACE_KEY")
+        confluence_repository = JiraRepository(confluence_base_url, confluence_space_key, requests_timeout, requests_headers)
+        confluence_adapter = JiraAdapter(confluence_repository)
+
+
+
 
         return {
             "chat_controller": chat_controller,
             # Altri controller
         }
     except Exception as e:
-        print(f"Errore durante l'inizializzazione delle dipendenze: {e}")
+        Logger.error(f"Errore durante l'inizializzazione delle dipendenze: {e}")
         return None
