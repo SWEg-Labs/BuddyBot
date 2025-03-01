@@ -1,11 +1,12 @@
 from unittest.mock import MagicMock
+from datetime import datetime
 
-from models.loading_attempt import LoadingAttempt
-from models.postgres_loading_attempt import PostgresLoadingAttempt
-from models.db_save_operation_response import DbSaveOperationResponse
-from entities.postgres_save_operation_response import PostgresSaveOperationResponse
-from adapters.postgres_adapter import PostgresAdapter
-from repositories.postgres_repository import PostgresRepository
+from models.loggingModels import LoadingAttempt, LoadingItems, PlatformLog, VectorStoreLog
+from models.dbSaveOperationResponse import DbSaveOperationResponse
+from entities.loggingEntities import PostgresLoadingAttempt, PostgresLoadingItems, PostgresPlatformLog, PostgresVectorStoreLog
+from entities.postgresSaveOperationResponse import PostgresSaveOperationResponse
+from adapters.postgresAdapter import PostgresAdapter
+from repositories.postgresRepository import PostgresRepository
 
 # Verifica che il metodo save_loading_attempt di PostgresAdapter chiami il metodo save_loading_attempt di PostgresRepository
 

@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import chromadb
 from github import Github
 import base64
+import psycopg2
 
 from models.header import Header
 from models.documentConstraints import DocumentConstraints
@@ -105,6 +106,23 @@ def dependency_injection():
         confluence_space_key = os.getenv("CONFLUENCE_SPACE_KEY")
         confluence_repository = JiraRepository(confluence_base_url, confluence_space_key, requests_timeout, requests_headers)
         confluence_adapter = JiraAdapter(confluence_repository)
+
+        # Postgres
+        DB_CONFIG = {
+            "host": os.getenv("DB_HOST"),
+            "port": os.getenv("DB_PORT"),
+            "user": os.getenv("DB_USER"),
+            "password": os.getenv("DB_PASSWORD"),
+            "dbname": os.getenv("DB_NAME")
+        }
+        conn = psycopg2.connect(
+            host=DB_CONFIG["host"],
+            port=DB_CONFIG["port"],
+            user=DB_CONFIG["user"],
+            password=DB_CONFIG["password"],
+            dbname=DB_CONFIG["dbname"]
+        )
+        postgres_repository = PostgresRepository(conn)
 
 
 
