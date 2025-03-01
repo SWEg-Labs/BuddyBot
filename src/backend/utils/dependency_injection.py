@@ -60,8 +60,8 @@ def dependency_injection():
         # Catena di similarity search
         chroma_vector_store_repository = ChromaVectorStoreRepository(chroma_client, chroma_collection_name, chroma_collection)
         max_chunk_size = 41666  # 42 KB
-        vector_store_adapter = ChromaVectorStoreAdapter(max_chunk_size, chroma_vector_store_repository)
-        similarity_search_service = SimilaritySearchService(document_constraints, vector_store_adapter)
+        chroma_vector_store_adapter = ChromaVectorStoreAdapter(max_chunk_size, chroma_vector_store_repository)
+        similarity_search_service = SimilaritySearchService(document_constraints, chroma_vector_store_adapter)
 
         # Catena di generate answer
         langchain_repository = LangChainRepository(llm)
