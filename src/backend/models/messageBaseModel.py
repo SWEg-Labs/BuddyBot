@@ -1,11 +1,12 @@
 from enum import Enum
 from datetime import datetime
+from pydantic import BaseModel
 
-class MessageSenderBaseModel(Enum):
+class MessageSenderBaseModel(Enum, BaseModel):
     USER = "User"
     CHATBOT = "Chatbot"
 
-class MessageBaseModel:
+class MessageBaseModel(BaseModel):
     def __init__(self, content: str, timestamp: datetime, sender: MessageSenderBaseModel):
         self.__content = content
         self.__timestamp = timestamp
