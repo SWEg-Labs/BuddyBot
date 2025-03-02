@@ -13,13 +13,13 @@ class PostgresPlatformLog:
         self.__timestamp = timestamp
         self.__outcome = outcome
 
-    def get_postgres_loading_items(self):
+    def get_postgres_loading_items(self) -> PostgresLoadingItems:
         return self.__postgres_loading_items
 
-    def get_timestamp(self):
+    def get_timestamp(self) -> datetime:
         return self.__timestamp
 
-    def get_outcome(self):
+    def get_outcome(self) -> bool:
         return self.__outcome
 
     def __eq__(self, other):
@@ -37,19 +37,19 @@ class PostgresVectorStoreLog:
         self.__num_modified_items = num_modified_items
         self.__num_deleted_items = num_deleted_items
 
-    def get_timestamp(self):
+    def get_timestamp(self) -> datetime:
         return self.__timestamp
 
-    def get_outcome(self):
+    def get_outcome(self) -> bool:
         return self.__outcome
 
-    def get_num_added_items(self):
+    def get_num_added_items(self) -> int:
         return self.__num_added_items
 
-    def get_num_modified_items(self):
+    def get_num_modified_items(self) -> int:
         return self.__num_modified_items
 
-    def get_num_deleted_items(self):
+    def get_num_deleted_items(self) -> int:
         return self.__num_deleted_items
 
     def __eq__(self, other):
@@ -69,19 +69,19 @@ class PostgresLoadingAttempt:
         self.__ending_timestamp = postgres_vector_store_log.get_timestamp()
         self.__outcome = all(log.get_outcome() for log in postgres_platform_logs) and postgres_vector_store_log.get_outcome()
 
-    def get_postgres_platform_logs(self):
+    def get_postgres_platform_logs(self) -> list[PostgresPlatformLog]:
         return self.__postgres_platform_logs
 
-    def get_postgres_vector_store_log(self):
+    def get_postgres_vector_store_log(self) -> PostgresVectorStoreLog:
         return self.__postgres_vector_store_log
 
-    def get_starting_timestamp(self):
+    def get_starting_timestamp(self) -> datetime:
         return self.__starting_timestamp
 
-    def get_ending_timestamp(self):
+    def get_ending_timestamp(self) -> datetime:
         return self.__ending_timestamp
 
-    def get_outcome(self):
+    def get_outcome(self) -> bool:
         return self.__outcome
 
     def __eq__(self, other):

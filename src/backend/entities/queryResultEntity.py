@@ -4,13 +4,13 @@ class QueryResultEntity:
         self.__metadatas = metadatas if metadatas is not None else []
         self.__distances = distances if distances is not None else []
 
-    def get_documents(self):
+    def get_documents(self) -> list:
         return self.__documents
 
-    def get_metadatas(self):
+    def get_metadatas(self) -> list:
         return self.__metadatas
 
-    def get_distances(self):
+    def get_distances(self) -> list:
         return self.__distances
 
     def __getitem__(self, key):

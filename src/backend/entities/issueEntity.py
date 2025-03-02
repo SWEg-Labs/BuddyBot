@@ -32,43 +32,43 @@ class IssueEntity:
         self.__updated = updated
         self.__attachment = attachment
 
-    def get_id(self):
+    def get_id(self) -> str:
         return self.__id
 
-    def get_key(self):
+    def get_key(self) -> str:
         return self.__key
 
-    def get_summary(self):
+    def get_summary(self) -> str:
         return self.__summary
 
-    def get_description(self):
+    def get_description(self) -> str:
         return self.__description
 
-    def get_issuetype(self):
+    def get_issuetype(self) -> dict:
         return self.__issuetype
 
-    def get_project(self):
+    def get_project(self) -> dict:
         return self.__project
 
-    def get_status(self):
+    def get_status(self) -> dict:
         return self.__status
 
-    def get_priority(self):
+    def get_priority(self) -> dict:
         return self.__priority
 
-    def get_assignee(self):
+    def get_assignee(self) -> dict:
         return self.__assignee
 
-    def get_reporter(self):
+    def get_reporter(self) -> dict:
         return self.__reporter
 
-    def get_created(self):
+    def get_created(self) -> str:
         return self.__created
 
-    def get_updated(self):
+    def get_updated(self) -> str:
         return self.__updated
 
-    def get_attachment(self):
+    def get_attachment(self) -> list:
         return self.__attachment
 
     def __repr__(self):

@@ -36,17 +36,8 @@ class JiraRepository:
             logger.error(f"Error initializing JiraRepository: {e}")
             raise
 
-    def get_base_url(self):
+    def get_base_url(self) -> str:
         return self.__base_url
-
-    def get_project_key(self):
-        return self.__project_key
-
-    def get_timeout(self):
-        return self.__timeout
-
-    def get_headers(self):
-        return self.__headers
 
     def load_jira_issues(self) -> Tuple[PlatformLog, List[IssueEntity]]:
         """

@@ -3,10 +3,10 @@ class DbSaveOperationResponse:
         self.__success = success
         self.__message = message
 
-    def get_success(self):
+    def get_success(self) -> bool:
         return self.__success
 
-    def get_message(self):
+    def get_message(self) -> str:
         return self.__message
 
     def __eq__(self, other):

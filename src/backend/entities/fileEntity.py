@@ -28,37 +28,37 @@ class FileEntity:
         self.__download_url = download_url
         self.__git_url = git_url
 
-    def get_type(self):
+    def get_type(self) -> str:
         return self.__type
 
-    def get_encoding(self):
+    def get_encoding(self) -> str:
         return self.__encoding
 
-    def get_size(self):
+    def get_size(self) -> int:
         return self.__size
 
-    def get_name(self):
+    def get_name(self) -> str:
         return self.__name
 
-    def get_path(self):
+    def get_path(self) -> str:
         return self.__path
 
-    def get_content(self):
+    def get_content(self) -> str:
         return self.__content
 
-    def get_sha(self):
+    def get_sha(self) -> str:
         return self.__sha
 
-    def get_url(self):
+    def get_url(self) -> str:
         return self.__url
 
-    def get_html_url(self):
+    def get_html_url(self) -> str:
         return self.__html_url
 
-    def get_download_url(self):
+    def get_download_url(self) -> str:
         return self.__download_url
 
-    def get_git_url(self):
+    def get_git_url(self) -> str:
         return self.__git_url
 
     def __repr__(self):

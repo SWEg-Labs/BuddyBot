@@ -26,34 +26,34 @@ class PageEntity:
         self.__extensions = extensions
         self.__links = links
 
-    def get_id(self):
+    def get_id(self) -> str:
         return self.__id
 
-    def get_type(self):
+    def get_type(self) -> str:
         return self.__type
 
-    def get_title(self):
+    def get_title(self) -> str:
         return self.__title
 
-    def get_space(self):
+    def get_space(self) -> dict:
         return self.__space
 
-    def get_body(self):
+    def get_body(self) -> dict:
         return self.__body
 
-    def get_version(self):
+    def get_version(self) -> dict:
         return self.__version
 
-    def get_status(self):
+    def get_status(self) -> str:
         return self.__status
 
-    def get_ancestors(self):
+    def get_ancestors(self) -> list:
         return self.__ancestors
 
-    def get_extensions(self):
+    def get_extensions(self) -> dict:
         return self.__extensions
 
-    def get_links(self):
+    def get_links(self) -> dict:
         return self.__links
 
     def __repr__(self):

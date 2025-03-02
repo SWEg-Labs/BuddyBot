@@ -18,22 +18,22 @@ class CommitFileEntity:
         self.__deletions = deletions
         self.__patch = patch
 
-    def get_filename(self):
+    def get_filename(self) -> str:
         return self.__filename
 
-    def get_status(self):
+    def get_status(self) -> str:
         return self.__status
 
-    def get_changes(self):
+    def get_changes(self) -> int:
         return self.__changes
 
-    def get_additions(self):
+    def get_additions(self) -> int:
         return self.__additions
 
-    def get_deletions(self):
+    def get_deletions(self) -> int:
         return self.__deletions
 
-    def get_patch(self):
+    def get_patch(self) -> str:
         return self.__patch
 
     def __repr__(self):
@@ -72,25 +72,25 @@ class CommitEntity:
         self.__url = url
         self.__files = files
 
-    def get_sha(self):
+    def get_sha(self) -> str:
         return self.__sha
 
-    def get_message(self):
+    def get_message(self) -> str:
         return self.__message
 
-    def get_author_name(self):
+    def get_author_name(self) -> str:
         return self.__author_name
 
-    def get_author_email(self):
+    def get_author_email(self) -> str:
         return self.__author_email
 
-    def get_author_date(self):
+    def get_author_date(self) -> str:
         return self.__author_date
 
-    def get_url(self):
+    def get_url(self) -> str:
         return self.__url
 
-    def get_files(self):
+    def get_files(self) -> list[CommitFileEntity]:
         return self.__files
 
     def __repr__(self):

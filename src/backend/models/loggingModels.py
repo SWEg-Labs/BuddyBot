@@ -13,13 +13,13 @@ class PlatformLog:
         self.__timestamp = timestamp
         self.__outcome = outcome
 
-    def get_loading_items(self):
+    def get_loading_items(self) -> LoadingItems:
         return self.__loading_items
 
-    def get_timestamp(self):
+    def get_timestamp(self) -> datetime:
         return self.__timestamp
 
-    def get_outcome(self):
+    def get_outcome(self) -> bool:
         return self.__outcome
 
     def __eq__(self, other):
@@ -37,19 +37,19 @@ class VectorStoreLog:
         self.__num_modified_items = num_modified_items
         self.__num_deleted_items = num_deleted_items
 
-    def get_timestamp(self):
+    def get_timestamp(self) -> datetime:
         return self.__timestamp
 
-    def get_outcome(self):
+    def get_outcome(self) -> bool:
         return self.__outcome
 
-    def get_num_added_items(self):
+    def get_num_added_items(self) -> int:
         return self.__num_added_items
 
-    def get_num_modified_items(self):
+    def get_num_modified_items(self) -> int:
         return self.__num_modified_items
 
-    def get_num_deleted_items(self):
+    def get_num_deleted_items(self) -> int:
         return self.__num_deleted_items
 
     def __eq__(self, other):
@@ -69,19 +69,19 @@ class LoadingAttempt:
         self.__ending_timestamp = vector_store_log.get_timestamp()
         self.__outcome = all(log.get_outcome() for log in platform_logs) and vector_store_log.get_outcome()
 
-    def get_platform_logs(self):
+    def get_platform_logs(self) -> list[PlatformLog]:
         return self.__platform_logs
 
-    def get_vector_store_log(self):
+    def get_vector_store_log(self) -> VectorStoreLog:
         return self.__vector_store_log
 
-    def get_starting_timestamp(self):
+    def get_starting_timestamp(self) -> datetime:
         return self.__starting_timestamp
 
-    def get_ending_timestamp(self):
+    def get_ending_timestamp(self) -> datetime:
         return self.__ending_timestamp
 
-    def get_outcome(self):
+    def get_outcome(self) -> bool:
         return self.__outcome
 
     def __eq__(self, other):
