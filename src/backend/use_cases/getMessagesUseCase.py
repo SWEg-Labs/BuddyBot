@@ -13,7 +13,7 @@ class GetMessagesUseCase(ABC):
         """
         Retrieve a specified quantity of messages.
         Args:
-            quantity (int): The number of messages to retrieve.
+            quantity (Quantity): The quantity of messages to retrieve.
         Returns:
             List[Message]: A list of retrieved messages.
         """

@@ -18,5 +18,4 @@ class SaveMessageUseCase(ABC):
         Returns:
             DbSaveOperationResponse: The response object containing the result of the save operation.
         """
-
         pass
