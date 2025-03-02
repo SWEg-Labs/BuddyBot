@@ -1,5 +1,5 @@
 from use_cases.saveMessageUseCase import SaveMessageUseCase
-from backend.models.message import Message
+from models.message import Message
 from ports.saveMessagePort import SaveMessagePort
 from models.dbSaveOperationResponse import DbSaveOperationResponse
 

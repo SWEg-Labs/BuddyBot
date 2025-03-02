@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from backend.models.message import Message
+from models.message import Message
 from models.dbSaveOperationResponse import DbSaveOperationResponse
 
 class SaveMessagePort(ABC):
