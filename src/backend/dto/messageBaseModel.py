@@ -8,7 +8,7 @@ class MessageSenderBaseModel(Enum, BaseModel):
 
 class MessageBaseModel(BaseModel):
 
-    def __init__(self, content: str, timestamp: datetime, sender: MessageSenderBaseModel) -> None:
+    def __init__(self, content: str, timestamp: datetime, sender: MessageSenderBaseModel):
         self.__content = content
         self.__timestamp = timestamp
         self.__sender = sender

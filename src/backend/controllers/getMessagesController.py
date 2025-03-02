@@ -9,7 +9,7 @@ class GetMessagesController:
     Controller class to handle the retrieval of messages.
     """
 
-    def __init__(self, getMessagesUseCase:GetMessagesUseCase) -> None :
+    def __init__(self, getMessagesUseCase:GetMessagesUseCase) :
         self.__getMessagesUseCase = getMessagesUseCase
     
     def get_messages(self, quantity: int) -> List[MessageBaseModel]:

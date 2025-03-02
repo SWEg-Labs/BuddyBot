@@ -10,7 +10,7 @@ class SaveMessageService(SaveMessageUseCase):
     to persist messages.
     """
 
-    def __init__(self, saveMessagePort: SaveMessagePort) -> None:
+    def __init__(self, saveMessagePort: SaveMessagePort):
         self.__saveMessagePort = saveMessagePort
 
     def save(self, message: Message) ->DbSaveOperationResponse:

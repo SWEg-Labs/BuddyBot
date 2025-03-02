@@ -1,5 +1,5 @@
 class Quantity:
-    def __init__(self, value: int) -> None:
+    def __init__(self, value: int):
         self.__value = value
 
     def get_value(self) -> int:

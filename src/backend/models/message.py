@@ -6,7 +6,7 @@ class MessageSender(Enum):
     CHATBOT = "Chatbot"
 
 class Message:
-    def __init__(self, content: str, timestamp: datetime, sender: MessageSender) -> None:
+    def __init__(self, content: str, timestamp: datetime, sender: MessageSender):
         self.__content = content
         self.__timestamp = timestamp
         self.__sender = sender

@@ -11,7 +11,7 @@ class SaveMessagesController:
     Methods:
         save(message: MessageBaseModel) -> dict[str, bool | str]:
     """
-    def __init__(self, SaveMessageUseCase: SaveMessageUseCase)-> None:
+    def __init__(self, SaveMessageUseCase: SaveMessageUseCase):
         self.__SaveMessageUseCase = SaveMessageUseCase
     
     def save(self, message: MessageBaseModel) -> dict[str, bool | str]:
