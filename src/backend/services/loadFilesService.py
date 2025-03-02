@@ -27,8 +27,8 @@ class LoadFilesService(LoadFilesUseCase):
         confluence_cleaner_service (ConfluenceCleanerService): Service for cleaning Confluence pages.
     """
 
-    def __init__(self, github_port: GitHubPort, jira_port: JiraPort, confluence_port: ConfluencePort, load_files_in_vector_store_port: LoadFilesInVectorStorePort,
-                 save_loading_attempt_in_db_port: SaveLoadingAttemptInDbPort, confluence_cleaner_service: ConfluenceCleanerService):
+    def __init__(self, github_port: GitHubPort, jira_port: JiraPort, confluence_port: ConfluencePort, confluence_cleaner_service: ConfluenceCleanerService, 
+                 load_files_in_vector_store_port: LoadFilesInVectorStorePort, save_loading_attempt_in_db_port: SaveLoadingAttemptInDbPort):
         """
         Initializes the LoadFilesService with the given ports and services.
         Args:
@@ -43,9 +43,9 @@ class LoadFilesService(LoadFilesUseCase):
             self.github_port = github_port
             self.jira_port = jira_port
             self.confluence_port = confluence_port
+            self.confluence_cleaner_service = confluence_cleaner_service
             self.load_files_in_vector_store_port = load_files_in_vector_store_port
             self.save_loading_attempt_in_db_port = save_loading_attempt_in_db_port
-            self.confluence_cleaner_service = confluence_cleaner_service
         except Exception as e:
             logging.error(f"Error initializing LoadFilesService: {e}")
             raise

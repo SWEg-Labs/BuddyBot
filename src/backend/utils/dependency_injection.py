@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+from langchain_openai import ChatOpenAI
 import chromadb
 from github import Github
 import base64
@@ -8,18 +9,22 @@ import psycopg2
 from models.header import Header
 from models.documentConstraints import DocumentConstraints
 from controllers.chatController import ChatController
+from controllers.loadFilesController import LoadFilesController
 from services.similaritySearchService import SimilaritySearchService
 from services.generateAnswerService import GenerateAnswerService
 from services.chatService import ChatService
+from services.confluenceCleanerService import ConfluenceCleanerService
+from services.loadFilesService import LoadFilesService
 from adapters.chromaVectorStoreAdapter import ChromaVectorStoreAdapter
 from adapters.langChainAdapter import LangChainAdapter
 from adapters.gitHubAdapter import GitHubAdapter
 from adapters.jiraAdapter import JiraAdapter
+from adapters.postgresAdapter import PostgresAdapter
 from repositories.chromaVectorStoreRepository import ChromaVectorStoreRepository
 from repositories.langChainRepository import LangChainRepository
 from repositories.gitHubRepository import GitHubRepository
 from repositories.jiraRepository import JiraRepository
-from utils.inizialize_llm import initialize_llm
+from repositories.postgresRepository import PostgresRepository
 from utils.logger import Logger
 
 
@@ -34,11 +39,11 @@ def dependency_injection():
         load_dotenv()
 
 
+
         # ======================== 1. Architettura della generazione di una risposta ========================
 
         # Tipi di supporto
         document_constraints = DocumentConstraints(1.2, 0.3)
-        llm = initialize_llm()
         generate_answer_header = Header("""Sei un assistente virtuale esperto che risponde a domande in italiano.
                     Di seguito di verrà fornita una domanda dall'utente e un contesto, e riguarderanno 
                     codice, issues o documentazione di un'azienda informatica, provenienti rispettivamente da GitHub, Jira e Confluence.
@@ -50,6 +55,14 @@ def dependency_injection():
                     rispondi con "Informazione non trovata".
                     Se l'utente è uscito dal contesto informatico, rispondi con "La domanda è fuori contesto".
                     """)
+        
+        # LLM
+        openai_api_key = os.getenv("OPENAI_API_KEY")
+        model_name = os.getenv("OPENAI_MODEL_NAME", "gpt-4o-mini") # Valore di default per il modello LLM: gpt-4o-mini
+        llm = ChatOpenAI(
+            openai_api_key=openai_api_key,
+            model_name=model_name,
+        )
 
         # Chroma
         chroma_client = chromadb.HttpClient(host=os.getenv("CHROMA_HOST", "localhost"),
@@ -57,21 +70,20 @@ def dependency_injection():
         chroma_client.heartbeat()  # Verifica connessione
         chroma_collection_name = "buddybot-vector-store"
         chroma_collection = chroma_client.get_or_create_collection(name=chroma_collection_name) # Crea o ottieni una collezione esistente
-
-        # Catena di similarity search
         chroma_vector_store_repository = ChromaVectorStoreRepository(chroma_client, chroma_collection_name, chroma_collection)
         max_chunk_size = 41666  # 42 KB
         chroma_vector_store_adapter = ChromaVectorStoreAdapter(max_chunk_size, chroma_vector_store_repository)
-        similarity_search_service = SimilaritySearchService(document_constraints, chroma_vector_store_adapter)
 
-        # Catena di generate answer
+        # LangChain
         langchain_repository = LangChainRepository(llm)
         langchain_adapter = LangChainAdapter(langchain_repository)
-        generate_answer_service = GenerateAnswerService(generate_answer_header, langchain_adapter)
 
         # Catena di chat
+        similarity_search_service = SimilaritySearchService(document_constraints, chroma_vector_store_adapter)
+        generate_answer_service = GenerateAnswerService(generate_answer_header, langchain_adapter)
         chat_service = ChatService(similarity_search_service, generate_answer_service)
         chat_controller = ChatController(chat_service)
+
 
 
         # ======================== 2. Architettura dell'aggiornamento automatico del database vettoriale ========================
@@ -106,6 +118,7 @@ def dependency_injection():
         confluence_space_key = os.getenv("CONFLUENCE_SPACE_KEY")
         confluence_repository = JiraRepository(confluence_base_url, confluence_space_key, requests_timeout, requests_headers)
         confluence_adapter = JiraAdapter(confluence_repository)
+        confluence_cleaner_service = ConfluenceCleanerService()
 
         # Postgres
         DB_CONFIG = {
@@ -123,12 +136,19 @@ def dependency_injection():
             dbname=DB_CONFIG["dbname"]
         )
         postgres_repository = PostgresRepository(conn)
+        postgres_adapter = PostgresAdapter(postgres_repository)
+
+        # Catena di load_files
+        load_files_service = LoadFilesService(github_adapter, jira_adapter, confluence_adapter, confluence_cleaner_service,
+                                              chroma_vector_store_adapter, postgres_adapter)
+        load_files_controller = LoadFilesController(load_files_service)
 
 
 
 
         return {
             "chat_controller": chat_controller,
+            "load_files_controller": load_files_controller,
             # Altri controller
         }
     except Exception as e:
