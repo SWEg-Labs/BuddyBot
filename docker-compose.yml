@@ -35,6 +35,18 @@ services:
     stdin_open: true
     tty: true
 
+  postgres-db:
+    image: postgres:17.4
+    container_name: buddybot-postgres
+    environment:
+      POSTGRES_USER: buddybot
+      POSTGRES_PASSWORD: buddybot
+      POSTGRES_DB: buddybot
+    ports:
+      - "5432:5432"
+    networks:
+      - buddybot-network
+
 
 networks:
   buddybot-network:
