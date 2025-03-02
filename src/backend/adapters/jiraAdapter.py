@@ -22,7 +22,7 @@ class JiraAdapter(JiraPort):
             Exception: If an error occurs during initialization.
         """
         try:
-            self.jira_repository = jira_repository
+            self.__jira_repository = jira_repository
         except Exception as e:
             logger.error(f"An error occurred while initializing JiraAdapter: {e}")
             raise
@@ -36,22 +36,22 @@ class JiraAdapter(JiraPort):
             Exception: If an error occurs while loading or adapting Jira issues.
         """
         try:
-            platform_log, issues = self.jira_repository.load_jira_issues()
+            platform_log, issues = self.__jira_repository.load_jira_issues()
             documents = [
-            Document(
-                page_content=issue.summary,
-                metadata={
-                "project": issue.project["name"],
-                "status": issue.status["name"],
-                "assignee": issue.assignee["name"],
-                "priority": issue.priority["name"],
-                "type": issue.issuetype["name"],
-                "creation_date": issue.created,
-                "url": f"{self.jira_repository.base_url}/browse/{issue.key}",
-                "id": issue.key,
-                }
-            )
-            for issue in issues
+                Document(
+                    page_content=issue.get_summary(),
+                    metadata={
+                        "project": issue.get_project().get("name"),
+                        "status": issue.get_status().get("name"),
+                        "assignee": issue.get_assignee().get("name"),
+                        "priority": issue.get_priority().get("name"),
+                        "type": issue.get_issuetype().get("name"),
+                        "creation_date": issue.get_created(),
+                        "url": f"{self.__jira_repository.get_base_url()}/browse/{issue.get_key()}",
+                        "id": issue.get_key(),
+                    }
+                )
+                for issue in issues
             ]
             return platform_log, documents
         except Exception as e:

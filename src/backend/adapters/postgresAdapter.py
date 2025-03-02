@@ -22,7 +22,7 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort):
             Exception: If there is an error during initialization.
         """
         try:
-            self.repository = repository
+            self.__repository = repository
         except Exception as e:
             logger.error(f"Error initializing PostgresAdapter: {e}")
 
@@ -37,14 +37,14 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort):
             Exception: If there is an error during the save operation.
         """
         try:
-            postgres_loading_attempt = self.postgres_loading_attempt_converter(loading_attempt)
-            postgres_response = self.repository.save_loading_attempt(postgres_loading_attempt)
-            return self.dsor_converter(postgres_response)
+            postgres_loading_attempt = self.__postgres_loading_attempt_converter(loading_attempt)
+            postgres_response = self.__repository.save_loading_attempt(postgres_loading_attempt)
+            return self.__dsor_converter(postgres_response)
         except Exception as e:
             logger.error(f"Error in save_loading_attempt: {e}")
             return DbSaveOperationResponse(success=False, message=str(e))
 
-    def dsor_converter(self, psor: PostgresSaveOperationResponse) -> DbSaveOperationResponse:
+    def __dsor_converter(self, psor: PostgresSaveOperationResponse) -> DbSaveOperationResponse:
         """
         Convert a PostgresSaveOperationResponse to a DbSaveOperationResponse.
         Args:
@@ -55,12 +55,12 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort):
             Exception: If there is an error during the conversion.
         """
         try:
-            return DbSaveOperationResponse(success=psor.success, message=psor.message)
+            return DbSaveOperationResponse(success=psor.get_success(), message=psor.get_message())
         except Exception as e:
             logger.error(f"Error in dsor_converter: {e}")
             return DbSaveOperationResponse(success=False, message=str(e))
 
-    def postgres_loading_attempt_converter(self, loading_attempt: LoadingAttempt) -> PostgresLoadingAttempt:
+    def __postgres_loading_attempt_converter(self, loading_attempt: LoadingAttempt) -> PostgresLoadingAttempt:
         """
         Convert a LoadingAttempt to a PostgresLoadingAttempt.
         Args:
@@ -73,17 +73,17 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort):
         try:
             postgres_platform_logs = [
                 PostgresPlatformLog(
-                    postgres_loading_items=PostgresLoadingItems[log.loading_items.name],
-                    timestamp=log.timestamp,
-                    outcome=log.outcome
-                ) for log in loading_attempt.platform_logs
+                    postgres_loading_items=PostgresLoadingItems[log.get_loading_items().name],
+                    timestamp=log.get_timestamp(),
+                    outcome=log.get_outcome()
+                ) for log in loading_attempt.get_platform_logs()
             ]
             postgres_vector_store_log = PostgresVectorStoreLog(
-                timestamp=loading_attempt.vector_store_log.timestamp,
-                outcome=loading_attempt.vector_store_log.outcome,
-                num_added_items=loading_attempt.vector_store_log.num_added_items,
-                num_modified_items=loading_attempt.vector_store_log.num_modified_items,
-                num_deleted_items=loading_attempt.vector_store_log.num_deleted_items
+                timestamp=loading_attempt.get_vector_store_log().get_timestamp(),
+                outcome=loading_attempt.get_vector_store_log().get_outcome(),
+                num_added_items=loading_attempt.get_vector_store_log().get_num_added_items(),
+                num_modified_items=loading_attempt.get_vector_store_log().get_num_modified_items(),
+                num_deleted_items=loading_attempt.get_vector_store_log().get_num_deleted_items()
             )
             return PostgresLoadingAttempt(
                 postgres_platform_logs=postgres_platform_logs,

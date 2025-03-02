@@ -39,12 +39,12 @@ class LoadFilesService(LoadFilesUseCase):
             confluence_cleaner_service (ConfluenceCleanerService): Service for cleaning Confluence pages.
         """
         try:
-            self.github_port = github_port
-            self.jira_port = jira_port
-            self.confluence_port = confluence_port
-            self.confluence_cleaner_service = confluence_cleaner_service
-            self.load_files_in_vector_store_port = load_files_in_vector_store_port
-            self.save_loading_attempt_in_db_port = save_loading_attempt_in_db_port
+            self.__github_port = github_port
+            self.__jira_port = jira_port
+            self.__confluence_port = confluence_port
+            self.__confluence_cleaner_service = confluence_cleaner_service
+            self.__load_files_in_vector_store_port = load_files_in_vector_store_port
+            self.__save_loading_attempt_in_db_port = save_loading_attempt_in_db_port
         except Exception as e:
             logger.error(f"Error initializing LoadFilesService: {e}")
             raise
@@ -80,7 +80,7 @@ class LoadFilesService(LoadFilesUseCase):
             Tuple[PlatformLog, List[Document]]: A tuple containing the platform log and a list of documents.
         """
         try:
-            return self.github_port.load_github_commits()
+            return self.__github_port.load_github_commits()
         except Exception as e:
             logger.error(f"Error loading GitHub commits: {e}")
             raise
@@ -92,7 +92,7 @@ class LoadFilesService(LoadFilesUseCase):
             Tuple[PlatformLog, List[Document]]: A tuple containing the platform log and a list of documents.
         """
         try:
-            return self.github_port.load_github_files()
+            return self.__github_port.load_github_files()
         except Exception as e:
             logger.error(f"Error loading GitHub files: {e}")
             raise
@@ -104,7 +104,7 @@ class LoadFilesService(LoadFilesUseCase):
             Tuple[PlatformLog, List[Document]]: A tuple containing the platform log and a list of documents.
         """
         try:
-            return self.jira_port.load_jira_issues()
+            return self.__jira_port.load_jira_issues()
         except Exception as e:
             logger.error(f"Error loading Jira issues: {e}")
             raise
@@ -116,7 +116,7 @@ class LoadFilesService(LoadFilesUseCase):
             Tuple[PlatformLog, List[Document]]: A tuple containing the platform log and a list of documents.
         """
         try:
-            return self.confluence_port.load_confluence_pages()
+            return self.__confluence_port.load_confluence_pages()
         except Exception as e:
             logger.error(f"Error loading Confluence pages: {e}")
             raise
@@ -130,7 +130,7 @@ class LoadFilesService(LoadFilesUseCase):
             List[Document]: A list of cleaned Confluence pages.
         """
         try:
-            return self.confluence_cleaner_service.clean_confluence_pages(pages)
+            return self.__confluence_cleaner_service.clean_confluence_pages(pages)
         except Exception as e:
             logger.error(f"Error cleaning Confluence pages: {e}")
             raise
@@ -144,7 +144,7 @@ class LoadFilesService(LoadFilesUseCase):
             VectorStoreLog: The log of the vector store loading operation.
         """
         try:
-            return self.load_files_in_vector_store_port.load(documents)
+            return self.__load_files_in_vector_store_port.load(documents)
         except Exception as e:
             logger.error(f"Error loading documents in vector store: {e}")
             raise
@@ -158,7 +158,7 @@ class LoadFilesService(LoadFilesUseCase):
             DbSaveOperationResponse: The response of the database save operation.
         """
         try:
-            return self.save_loading_attempt_in_db_port.save_loading_attempt(loading_attempt)
+            return self.__save_loading_attempt_in_db_port.save_loading_attempt(loading_attempt)
         except Exception as e:
             logger.error(f"Error saving loading attempt in DB: {e}")
             raise

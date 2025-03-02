@@ -1,8 +1,11 @@
 class Answer:
     def __init__(self, content: str):
-        self.content = content
+        self.__content = content
+
+    def get_content(self) -> str:
+        return self.__content
 
     def __eq__(self, other):
         if isinstance(other, Answer):
-            return self.content == other.content
+            return self.__content == other.get_content()
         return False

@@ -18,7 +18,7 @@ class LangChainAdapter:
             langchain_repository (LangChainRepository): An instance of LangChainRepository used to generate answers.
         """
         try:
-            self.langchain_repository = langchain_repository
+            self.__langchain_repository = langchain_repository
         except Exception as e:
             print(f"An error occurred during initialization: {e}")
 
@@ -37,15 +37,15 @@ class LangChainAdapter:
 
         try:
             # Adapt the parameters to the format expected by LangChainRepository
-            user_input = user_input.content
+            user_input = user_input.get_content()
             relevant_docs = [
-            LangChainDocumentEntity(page_content=doc.page_content, metadata=doc.metadata)
-            for doc in relevant_docs
+                LangChainDocumentEntity(page_content=doc.get_page_content(), metadata=doc.get_metadata())
+                for doc in relevant_docs
             ]
-            header = header.content
+            header = header.get_content()
 
             # Call the generate_answer method of LangChainRepository
-            generated_answer = self.langchain_repository.generate_answer(user_input, relevant_docs, header)
+            generated_answer = self.__langchain_repository.generate_answer(user_input, relevant_docs, header)
 
             # Create an Answer object with the generated answer content
             answer = Answer(content=generated_answer)

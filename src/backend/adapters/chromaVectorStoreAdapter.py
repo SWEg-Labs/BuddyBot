@@ -25,8 +25,8 @@ class ChromaVectorStoreAdapter(SimilaritySearchPort, LoadFilesInVectorStorePort)
             max_chunk_size (int): Maximum size of each document chunk.
             chroma_vector_store_repository (ChromaVectorStoreRepository): Repository for interacting with the Chroma vector store.
         """
-        self.max_chunk_size = max_chunk_size
-        self.chroma_vector_store_repository = chroma_vector_store_repository
+        self.__max_chunk_size = max_chunk_size
+        self.__chroma_vector_store_repository = chroma_vector_store_repository
 
     def load(self, documents: list[Document]) -> VectorStoreLog:
         """
@@ -37,8 +37,8 @@ class ChromaVectorStoreAdapter(SimilaritySearchPort, LoadFilesInVectorStorePort)
             VectorStoreLog: Log of the load operation, including the outcome and number of items added, modified, and deleted.
         """
         try:
-            chroma_documents = self.split(documents)
-            result = self.chroma_vector_store_repository.load(chroma_documents)
+            chroma_documents = self.__split(documents)
+            result = self.__chroma_vector_store_repository.load(chroma_documents)
             return result
         except Exception as e:
             logger.error(f"Error in adapting Documents to load: {e}")
@@ -50,7 +50,7 @@ class ChromaVectorStoreAdapter(SimilaritySearchPort, LoadFilesInVectorStorePort)
                 num_deleted_items=0
             )
 
-    def split(self, documents: list[Document]) -> list[ChromaDocumentEntity]:
+    def __split(self, documents: list[Document]) -> list[ChromaDocumentEntity]:
         """
         Splits the given documents into chunks based on the maximum chunk size.
         Args:
@@ -64,7 +64,7 @@ class ChromaVectorStoreAdapter(SimilaritySearchPort, LoadFilesInVectorStorePort)
                 page_content = document.get_page_content()
                 metadata = document.get_metadata()
                 doc_id = metadata.get("id", "")
-                chunks = [page_content[i:i + self.max_chunk_size] for i in range(0, len(page_content), self.max_chunk_size)]
+                chunks = [page_content[i:i + self.__max_chunk_size] for i in range(0, len(page_content), self.__max_chunk_size)]
                 
                 for chunk_index, chunk in enumerate(chunks):
                     chunk_metadata = metadata.copy()
@@ -87,15 +87,15 @@ class ChromaVectorStoreAdapter(SimilaritySearchPort, LoadFilesInVectorStorePort)
             list[Document]: List of documents that are similar to the user input.
         """
         try:
-            query_result_entity = self.chroma_vector_store_repository.similarity_search(user_input.content)
+            query_result_entity = self.__chroma_vector_store_repository.similarity_search(user_input.get_content())
 
             relevant_docs = []
             # Per scalabilità creo un for anche per le queries, nonostante sia sempre una sola, avente indice i=0
-            for i in range(len(query_result_entity['documents'])):           # Indice i: va da 0 a (numero di query - 1)
-                for j in range(len(query_result_entity['documents'][i])):    # Indice j: va da 0 a (numero di risultati trovati in risposta alla query i-esima - 1)
-                    document = query_result_entity['documents'][i][j]
-                    metadata = query_result_entity['metadatas'][i][j]
-                    distance = query_result_entity['distances'][i][j]
+            for i in range(len(query_result_entity.get_documents())):           # Indice i: va da 0 a (numero di query - 1)
+                for j in range(len(query_result_entity.get_documents()[i])):    # Indice j: va da 0 a (numero di risultati trovati in risposta alla query i-esima - 1)
+                    document = query_result_entity.get_documents()[i][j]
+                    metadata = query_result_entity.get_metadatas()[i][j]
+                    distance = query_result_entity.get_distances()[i][j]
                     
                     # Aggiungi la distanza come metadato
                     metadata["distance"] = distance

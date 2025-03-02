@@ -22,12 +22,12 @@ class PostgresRepository:
             psycopg2.Error: If an error occurs while initializing the PostgresRepository.
         '''
         try:
-            self.conn = conn
+            self.__conn = conn
         except psycopg2.Error as e:
             logger.error(f"An error occurred while initializing the PostgresRepository: {e}")
-            self.conn = None
+            self.__conn = None
 
-    def _execute_query(self, query, params=None, fetch_one=False, fetch_all=False) -> tuple | list | None:
+    def __execute_query(self, query, params=None, fetch_one=False, fetch_all=False) -> tuple | list | None:
         '''
         Initializes the PostgresRepository with the given database connection parameters.
         Executes a given SQL query with optional parameters and fetch options.
@@ -42,13 +42,13 @@ class PostgresRepository:
             psycopg2.Error: If an error occurs while executing the query.
         '''
         try:
-            with self.conn.cursor() as cur:  # Cursor creato nel contesto e chiuso automaticamente
+            with self.__conn.cursor() as cur:  # Cursor creato nel contesto e chiuso automaticamente
                 cur.execute(query, params or ())
                 if fetch_one:
                     return cur.fetchone()
                 if fetch_all:
                     return cur.fetchall()
-                self.conn.commit()  # Commit solo per operazioni di scrittura
+                self.__conn.commit()  # Commit solo per operazioni di scrittura
         except psycopg2.Error as e:
             logger.error(f"An error occurred while executing the query: {e}")
             raise e
@@ -107,26 +107,36 @@ class PostgresRepository:
             """
             
             # Create tables
-            self._execute_query(create_loading_attempts_table_query)
-            self._execute_query(create_platform_logs_table_query)
-            self._execute_query(create_vector_store_logs_table_query)
+            self.__execute_query(create_loading_attempts_table_query)
+            self.__execute_query(create_platform_logs_table_query)
+            self.__execute_query(create_vector_store_logs_table_query)
             
             # Insert loading attempt
             params = (
-                postgres_loading_attempt.starting_timestamp,
-                postgres_loading_attempt.ending_timestamp,
-                postgres_loading_attempt.outcome
+                postgres_loading_attempt.get_starting_timestamp(),
+                postgres_loading_attempt.get_ending_timestamp(),
+                postgres_loading_attempt.get_outcome()
             )
-            loading_attempt_id = self._execute_query(insert_loading_attempt_query, params=params, fetch_one=True)[0]
+            loading_attempt_id = self.__execute_query(insert_loading_attempt_query, params=params, fetch_one=True)[0]
             
             # Insert platform logs
-            for log in postgres_loading_attempt.postgres_platform_logs:
-                self._execute_query(insert_platform_logs_query, params=(loading_attempt_id, log.postgres_loading_items.value, log.timestamp, log.outcome))
+            for log in postgres_loading_attempt.get_postgres_platform_logs():
+                self.__execute_query(insert_platform_logs_query, params=(
+                    loading_attempt_id, 
+                    log.get_postgres_loading_items().value, 
+                    log.get_timestamp(), 
+                    log.get_outcome()
+                ))
             
             # Insert vector store log
-            vector_log = postgres_loading_attempt.postgres_vector_store_log
-            self._execute_query(insert_vector_store_logs_query, params=(
-                loading_attempt_id, vector_log.timestamp, vector_log.outcome, vector_log.num_added_items, vector_log.num_modified_items, vector_log.num_deleted_items
+            vector_log = postgres_loading_attempt.get_postgres_vector_store_log()
+            self.__execute_query(insert_vector_store_logs_query, params=(
+                loading_attempt_id, 
+                vector_log.get_timestamp(), 
+                vector_log.get_outcome(), 
+                vector_log.get_num_added_items(), 
+                vector_log.get_num_modified_items(), 
+                vector_log.get_num_deleted_items()
             ))
 
             logger.info("Loading attempt saved successfully in the Postgres database.")

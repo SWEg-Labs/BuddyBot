@@ -35,9 +35,9 @@ class ChromaVectorStoreRepository:
             Exception: If an error occurs during initialization. 
         """
         try:
-            self.client = chroma_client
-            self.collection_name = collection_name
-            self.collection = collection
+            self.__client = chroma_client
+            self.__collection_name = collection_name
+            self.__collection = collection
             logger.info("Successfully connected to Chroma vector store.")
         except Exception as e:
             logger.error(f"Error initializing Chroma vector store: {e}")
@@ -67,7 +67,7 @@ class ChromaVectorStoreRepository:
             ]
 
             # Carica i documenti nel Chroma vector store
-            self.collection.add(documents_data)
+            self.__collection.add(documents_data)
 
             logger.info(f"Successfully loaded {len(documents)} documents into Chroma vector store.")
             log = VectorStoreLog(
@@ -105,7 +105,7 @@ class ChromaVectorStoreRepository:
         """
         try:
             # Esegui una ricerca di similarità
-            query_result = self.collection.query(
+            query_result = self.__collection.query(
                 query_texts=[query],
                 n_results=10000,
             )

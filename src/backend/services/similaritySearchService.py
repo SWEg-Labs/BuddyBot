@@ -19,8 +19,8 @@ class SimilaritySearchService:
             similarity_search_port (SimilaritySearchPort): The port used to perform the similarity search.
         """
         try:
-            self.document_constraints = document_constraints
-            self.similarity_search_port = similarity_search_port
+            self.__document_constraints = document_constraints
+            self.__similarity_search_port = similarity_search_port
         except Exception as e:
             logger.error(f"Error initializing SimilaritySearchService: {e}")
             raise
@@ -36,15 +36,15 @@ class SimilaritySearchService:
             Exception: If an error occurs during the similarity search.
         """
         try:
-            similarity_threshold = self.document_constraints.similarity_threshold
-            max_gap = self.document_constraints.max_gap
+            similarity_threshold = self.__document_constraints.similarity_threshold
+            max_gap = self.__document_constraints.max_gap
 
             relevant_docs = []
             previous_distance = None
 
-            documents = self.similarity_search_port.similarity_search(user_input)
+            documents = self.__similarity_search_port.similarity_search(user_input)
             for document in documents:
-                distance = document.metadata.get("distance", 1.0)
+                distance = document.get_metadata().get("distance", 1.0)
 
                 # Controlla la soglia di similarità
                 if distance > similarity_threshold:
@@ -55,7 +55,7 @@ class SimilaritySearchService:
                     return relevant_docs  # Termina e restituisce i documenti trovati finora
 
                 # Aggiungi il documento alla lista dei risultati
-                relevant_docs.append(Document(page_content=document.page_content, metadata=document.metadata))
+                relevant_docs.append(Document(page_content=document.get_page_content(), metadata=document.get_metadata()))
 
                 # Aggiorna la distanza precedente
                 previous_distance = distance

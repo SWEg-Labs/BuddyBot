@@ -22,7 +22,7 @@ class ConfluenceAdapter(ConfluencePort):
             Exception: If there is an error initializing the adapter.
         """
         try:
-            self.confluence_repository = confluence_repository
+            self.__confluence_repository = confluence_repository
         except Exception as e:
             logger.error(f"Error initializing ConfluenceAdapter: {e}")
             raise
@@ -36,17 +36,17 @@ class ConfluenceAdapter(ConfluencePort):
             Exception: If there is an error loading the Confluence pages.
         """
         try:
-            platform_log, page_entities = self.confluence_repository.load_confluence_pages()
+            platform_log, page_entities = self.__confluence_repository.load_confluence_pages()
             documents = [
                 Document(
-                    page_content=page.body["storage"]["value"],
+                    page_content=page.get_body().get("storage").get("value"),
                     metadata={
-                        "title": page.title,
-                        "space": page.space["name"],
-                        "created_by": page.version["by"]["displayName"],
-                        "created_date": page.version["when"],
-                        "url": f"{self.confluence_repository.base_url}{page.links['webui']}",
-                        "id": page.id,
+                        "title": page.get_title(),
+                        "space": page.get_space().get("name"),
+                        "created_by": page.get_version().get("by").get("displayName"),
+                        "created_date": page.get_version().get("when"),
+                        "url": f"{self.__confluence_repository.base_url}{page.get_links().get('webui')}",
+                        "id": page.get_id(),
                     }
                 )
             for page in page_entities]

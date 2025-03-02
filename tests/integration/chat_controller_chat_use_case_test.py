@@ -1,7 +1,6 @@
 import pytest
 from unittest.mock import AsyncMock, MagicMock
 from fastapi import Request
-from fastapi.responses import JSONResponse
 
 from models.question import Question
 from models.answer import Answer
@@ -21,7 +20,7 @@ async def test_process_chat_calls_get_answer():
     mock_request.json.return_value = {"message": "Hello"}
     answer = Answer("Hello, how can I help you?")
     mock_chat_use_case.get_answer.return_value = answer
-    expected_response = {"response": answer.content}
+    expected_response = {"response": answer.get_content()}
 
     # Act
     response = await chat_controller.get_answer(mock_request)

@@ -27,10 +27,10 @@ class ConfluenceRepository:
             headers (dict[str, str]): The headers to include in API requests.
         """
         try:
-            self.base_url = base_url
-            self.project_key = project_key
-            self.timeout = timeout
-            self.headers = headers
+            self.__base_url = base_url
+            self.__project_key = project_key
+            self.__timeout = timeout
+            self.__headers = headers
         except Exception as e:
             logger.error(f"Error initializing ConfluenceRepository: {e}")
             raise
@@ -44,14 +44,14 @@ class ConfluenceRepository:
             requests.RequestException: If there is an error during the API request.
         """
         try:
-            url = f"{self.base_url}/rest/api/content"
+            url = f"{self.__base_url}/rest/api/content"
             params = {
-                "spaceKey": self.project_key,
+                "spaceKey": self.__project_key,
                 "expand": "body.view,version,ancestors,space,extensions,links",
                 "limit": 50
             }
 
-            response = requests.get(url, headers=self.headers, params=params, timeout=self.timeout)
+            response = requests.get(url, headers=self.__headers, params=params, timeout=self.__timeout)
             response.raise_for_status()
             pages_data = response.json().get('results', [])
 
@@ -68,7 +68,7 @@ class ConfluenceRepository:
                 links=page['_links']
             ) for page in pages_data]
 
-            logger.info(f"Fetched {len(pages)} pages from Confluence space {self.project_key}")
+            logger.info(f"Fetched {len(pages)} pages from Confluence space {self.__project_key}")
             log = PlatformLog(LoadingItems.ConfluencePages, datetime.now(), True)
 
             return log, pages

@@ -16,7 +16,7 @@ class ChatController:
             chat_use_case (ChatUseCase): The use case to process chat interactions.
         """
         try:
-            self.chat_use_case = chat_use_case
+            self.__chat_use_case = chat_use_case
         except Exception as e:
             logger.error(f"Error initializing ChatController: {e}")
             raise e
@@ -42,8 +42,8 @@ class ChatController:
             user_message = Question(content=user_message)
 
             # Ottieni la risposta dal chatbot
-            response = self.chat_use_case.get_answer(user_message)
-            response = response.content
+            response = self.__chat_use_case.get_answer(user_message)
+            response = response.get_content()
 
             return {"response": response}
         except Exception as e:

@@ -15,32 +15,62 @@ class PageEntity:
             extensions (dict): Un dizionario che contiene estensioni specifiche della pagina.
             links (dict): Un dizionario che contiene i link relativi alla pagina.
         """
-        self.id = id
-        self.type = type
-        self.title = title
-        self.space = space
-        self.body = body
-        self.version = version
-        self.status = status
-        self.ancestors = ancestors
-        self.extensions = extensions
-        self.links = links
+        self.__id = id
+        self.__type = type
+        self.__title = title
+        self.__space = space
+        self.__body = body
+        self.__version = version
+        self.__status = status
+        self.__ancestors = ancestors
+        self.__extensions = extensions
+        self.__links = links
+
+    def get_id(self):
+        return self.__id
+
+    def get_type(self):
+        return self.__type
+
+    def get_title(self):
+        return self.__title
+
+    def get_space(self):
+        return self.__space
+
+    def get_body(self):
+        return self.__body
+
+    def get_version(self):
+        return self.__version
+
+    def get_status(self):
+        return self.__status
+
+    def get_ancestors(self):
+        return self.__ancestors
+
+    def get_extensions(self):
+        return self.__extensions
+
+    def get_links(self):
+        return self.__links
 
     def __repr__(self):
-        return (f"PageEntity(id={self.id}, type={self.type}, title={self.title}, space={self.space}, "
-                f"body={self.body}, version={self.version}, status={self.status}, ancestors={self.ancestors}, "
-                f"extensions={self.extensions}, links={self.links})")
+        return (f"PageEntity(id={self.__id}, type={self.__type}, title={self.__title}, space={self.__space}, "
+                f"body={self.__body}, version={self.__version}, status={self.__status}, ancestors={self.__ancestors}, "
+                f"extensions={self.__extensions}, links={self.__links})")
 
     def __eq__(self, other):
         if not isinstance(other, PageEntity):
             return False
-        return (self.id == other.id and
-                self.type == other.type and
-                self.title == other.title and
-                self.space == other.space and
-                self.body == other.body and
-                self.version == other.version and
-                self.status == other.status and
-                self.ancestors == other.ancestors and
-                self.extensions == other.extensions and
-                self.links == other.links)
+        return (self.__id == other.get_id() and
+            self.__type == other.get_type() and
+            self.__title == other.get_title() and
+            self.__space == other.get_space() and
+            self.__body == other.get_body() and
+            self.__version == other.get_version() and
+            self.__status == other.get_status() and
+            self.__ancestors == other.get_ancestors() and
+            self.__extensions == other.get_extensions() and
+            self.__links == other.get_links())

@@ -28,13 +28,25 @@ class JiraRepository:
             Exception: If there is an error during initialization.
         """
         try:
-            self.base_url = base_url
-            self.project_key = project_key
-            self.timeout = timeout
-            self.headers = headers
+            self.__base_url = base_url
+            self.__project_key = project_key
+            self.__timeout = timeout
+            self.__headers = headers
         except Exception as e:
             logger.error(f"Error initializing JiraRepository: {e}")
             raise
+
+    def get_base_url(self):
+        return self.__base_url
+
+    def get_project_key(self):
+        return self.__project_key
+
+    def get_timeout(self):
+        return self.__timeout
+
+    def get_headers(self):
+        return self.__headers
 
     def load_jira_issues(self) -> Tuple[PlatformLog, List[IssueEntity]]:
         """
@@ -45,13 +57,13 @@ class JiraRepository:
             requests.RequestException: If there is an error during the API request.
         """
         try:
-            url = f"{self.base_url}/rest/api/2/search"
+            url = f"{self.__base_url}/rest/api/2/search"
             params = {
-                'jql': f'project={self.project_key}',
+                'jql': f'project={self.__project_key}',
                 "maxResults": 50
             }
 
-            response = requests.get(url, headers=self.headers, params=params, timeout=self.timeout)
+            response = requests.get(url, headers=self.__headers, params=params, timeout=self.__timeout)
             response.raise_for_status()
             issues_data = response.json().get('issues', [])
 
@@ -71,7 +83,7 @@ class JiraRepository:
                 attachment=issue['fields'].get('attachment', [])
             ) for issue in issues_data]
 
-            logger.info(f"Fetched {len(issues)} issues from Jira project {self.project_key}")
+            logger.info(f"Fetched {len(issues)} issues from Jira project {self.__project_key}")
             log = PlatformLog(LoadingItems.JiraIssues, datetime.now(), True)
 
             return log, issues

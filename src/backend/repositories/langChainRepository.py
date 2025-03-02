@@ -24,7 +24,7 @@ class LangChainRepository:
             Exception: If an error occurs during initialization.
         """
         try:
-            self.llm = llm
+            self.__llm = llm
         except Exception as e:
             logger.error(f"Error initializing ChatService: {e}")
 
@@ -56,7 +56,7 @@ class LangChainRepository:
 
             # Crea una catena RAG (Retrieval-Augmented Generation)
             rag_chain = create_stuff_documents_chain(
-                llm=self.llm,
+                llm=self.__llm,
                 prompt=prompt
             )
 
@@ -101,7 +101,7 @@ class LangChainRepository:
 
             # Crea una catena RAG (Retrieval-Augmented Generation)
             rag_chain = create_stuff_documents_chain(
-            llm=self.llm,
+            llm=self.__llm,
             prompt=prompt
             )
 

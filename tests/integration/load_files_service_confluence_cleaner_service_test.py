@@ -20,8 +20,8 @@ def test_clean_confluence_pages_calls_cleaner_service_method():
     mock_confluence_cleaner_service = MagicMock(spec=ConfluenceCleanerService)
     load_files_service = LoadFilesService(
         mock_github_port, mock_jira_port,
-        mock_confluence_port, mock_load_files_in_vector_store_port,
-        mock_save_loading_attempt_in_db_port, mock_confluence_cleaner_service
+        mock_confluence_port, mock_confluence_cleaner_service,
+        mock_load_files_in_vector_store_port, mock_save_loading_attempt_in_db_port
     )
     pages = [
         Document(page_content="<html>doc1 &agrave; &egrave; &igrave; &ograve; &ugrave; &quot; &Egrave;</html>", metadata={"id": 1}),

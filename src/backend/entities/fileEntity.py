@@ -16,34 +16,67 @@ class FileEntity:
             download_url (str): L'URL per scaricare il contenuto.
             git_url (str): L'URL Git per accedere al contenuto.
         """
-        self.type = type
-        self.encoding = encoding
-        self.size = size
-        self.name = name
-        self.path = path
-        self.content = content
-        self.sha = sha
-        self.url = url
-        self.html_url = html_url
-        self.download_url = download_url
-        self.git_url = git_url
+        self.__type = type
+        self.__encoding = encoding
+        self.__size = size
+        self.__name = name
+        self.__path = path
+        self.__content = content
+        self.__sha = sha
+        self.__url = url
+        self.__html_url = html_url
+        self.__download_url = download_url
+        self.__git_url = git_url
+
+    def get_type(self):
+        return self.__type
+
+    def get_encoding(self):
+        return self.__encoding
+
+    def get_size(self):
+        return self.__size
+
+    def get_name(self):
+        return self.__name
+
+    def get_path(self):
+        return self.__path
+
+    def get_content(self):
+        return self.__content
+
+    def get_sha(self):
+        return self.__sha
+
+    def get_url(self):
+        return self.__url
+
+    def get_html_url(self):
+        return self.__html_url
+
+    def get_download_url(self):
+        return self.__download_url
+
+    def get_git_url(self):
+        return self.__git_url
 
     def __repr__(self):
-        return (f"FileEntity(type={self.type}, encoding={self.encoding}, size={self.size}, name={self.name}, "
-                f"path={self.path}, content={self.content}, sha={self.sha}, url={self.url}, html_url={self.html_url}, "
-                f"download_url={self.download_url}, git_url={self.git_url})")
+        return (f"FileEntity(type={self.__type}, encoding={self.__encoding}, size={self.__size}, name={self.__name}, "
+                f"path={self.__path}, content={self.__content}, sha={self.__sha}, url={self.__url}, html_url={self.__html_url}, "
+                f"download_url={self.__download_url}, git_url={self.__git_url})")
     
     def __eq__(self, other):
         if not isinstance(other, FileEntity):
             return False
-        return (self.type == other.type and
-                self.encoding == other.encoding and
-                self.size == other.size and
-                self.name == other.name and
-                self.path == other.path and
-                self.content == other.content and
-                self.sha == other.sha and
-                self.url == other.url and
-                self.html_url == other.html_url and
-                self.download_url == other.download_url and
-                self.git_url == other.git_url)
+        return (self.__type == other.get_type() and
+            self.__encoding == other.get_encoding() and
+            self.__size == other.get_size() and
+            self.__name == other.get_name() and
+            self.__path == other.get_path() and
+            self.__content == other.get_content() and
+            self.__sha == other.get_sha() and
+            self.__url == other.get_url() and
+            self.__html_url == other.get_html_url() and
+            self.__download_url == other.get_download_url() and
+            self.__git_url == other.get_git_url())

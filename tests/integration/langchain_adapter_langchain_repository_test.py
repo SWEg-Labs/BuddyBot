@@ -30,5 +30,5 @@ def test_generate_answer_calls_repository_method():
     result = langchain_adapter.generate_answer(user_input, relevant_docs, header)
 
     # Assert
-    mock_langchain_repository.generate_answer.assert_called_once_with(user_input.content, langchain_relevant_docs, header.content)
+    mock_langchain_repository.generate_answer.assert_called_once_with(user_input.get_content(), langchain_relevant_docs, header.get_content())
     assert result == expected_answer

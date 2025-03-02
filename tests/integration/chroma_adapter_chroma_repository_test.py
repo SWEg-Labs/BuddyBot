@@ -34,7 +34,7 @@ def test_similarity_search_calls_repository():
     result = adapter.similarity_search(user_input)
 
     # Assert
-    mock_repository.similarity_search.assert_called_once_with(user_input.content)
+    mock_repository.similarity_search.assert_called_once_with(user_input.get_content())
     assert result == documents
 
 
@@ -51,9 +51,9 @@ def test_load_calls_repository():
         Document(page_content="doc2", metadata={"author": "Author2", "id": "2"}),
     ]
     document_entities = [
-        ChromaDocumentEntity(page_content="doc1", 
+        ChromaDocumentEntity(page_content="doc1",
                        metadata={"author": "Author1", "id": "1", "chunk_index": 0, "doc_id": "1_0", "vector_store_insertion_date": datetime.now().isoformat()}),
-        ChromaDocumentEntity(page_content="doc2", 
+        ChromaDocumentEntity(page_content="doc2",
                        metadata={"author": "Author2", "id": "2", "chunk_index": 0, "doc_id": "2_0", "vector_store_insertion_date": datetime.now().isoformat()}),
     ]
 

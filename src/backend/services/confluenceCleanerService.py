@@ -20,14 +20,14 @@ class ConfluenceCleanerService:
         """
         try:
             for page in pages:
-                page = self._remove_html_tags(page)
-                page = self._replace_html_entities(page)
+                page = self.__remove_html_tags(page)
+                page = self.__replace_html_entities(page)
             return pages
         except Exception as e:
             logger.error(f"Error cleaning confluence pages: {e}")
             raise e
 
-    def _remove_html_tags(self, document: Document) -> Document:
+    def __remove_html_tags(self, document: Document) -> Document:
         """
         Removes HTML tags from the content of the given Document.
         Args:
@@ -44,7 +44,7 @@ class ConfluenceCleanerService:
             logger.error(f"Error removing HTML tags: {e}")
             raise e
 
-    def _replace_html_entities(self, document: Document) -> Document:
+    def __replace_html_entities(self, document: Document) -> Document:
         """
         Replaces HTML entities in the content of the given Document with their corresponding characters.
         Args:
