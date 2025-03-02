@@ -1,12 +1,4 @@
 services:
-  chroma-db:
-    image: chromadb/chroma
-    container_name: chroma-db
-    ports:
-      - "8000:8000"
-    networks:
-      - buddybot-network
-
   backend:
     build:
       context: ./src/backend
@@ -35,9 +27,17 @@ services:
     stdin_open: true
     tty: true
 
+  chroma-db:
+    image: chromadb/chroma
+    container_name: chroma-db
+    ports:
+      - "8000:8000"
+    networks:
+      - buddybot-network
+
   postgres-db:
     image: postgres:17.4
-    container_name: buddybot-postgres
+    container_name: postgres-db
     environment:
       POSTGRES_USER: buddybot
       POSTGRES_PASSWORD: buddybot
