@@ -8,7 +8,7 @@ class GetMessagesPort(ABC):
     GetMessagesPort is an abstract base class that defines the interface for retrieving messages.
     """
     @abstractmethod
-    def get_messages(self, quantity:Quantity)->List[Message]:
+    def get_messages(self, quantity:Quantity) -> List[Message]:
         """
         Retrieve a specified quantity of messages.
         Args:

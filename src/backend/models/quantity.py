@@ -9,4 +9,3 @@ class Quantity:
         if not isinstance(other, Quantity):
             return False
         return self.__value == other.get_value()
-    
