@@ -1,9 +1,12 @@
 from unittest.mock import MagicMock
+
 from controllers.getMessagesController import GetMessagesController
 from use_cases.getMessagesUseCase import GetMessagesUseCase
 from dto.messageBaseModel import MessageBaseModel, MessageSenderBaseModel
 from models.quantity import Quantity
 from models.message import Message, MessageSender
+
+# Verifica che il metodo get_messages di GetMessagesController chiami il metodo get_messages di GetMessagesUseCase
 
 def test_get_messages_calls_use_case_method():
     # Arrange

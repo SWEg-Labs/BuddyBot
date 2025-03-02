@@ -10,6 +10,7 @@ from models.message import Message, MessageSender
 from models.quantity import Quantity
 from entities.postgresEntities import PostgresMessage, PostgresMessageSender
 
+
 # Verifica che il metodo save_loading_attempt di PostgresAdapter chiami il metodo save_loading_attempt di PostgresRepository
 
 def test_save_loading_attempt_calls_repository_method():
@@ -64,6 +65,8 @@ def test_save_loading_attempt_calls_repository_method():
     assert result == expected_response
 
 
+# Verifica che il metodo save_message di PostgresAdapter chiami il metodo save_message di PostgresRepository
+
 def test_save_message_calls_repository_method():
     # Arrange
     mock_postgres_repository = MagicMock(spec=PostgresRepository)
@@ -83,6 +86,9 @@ def test_save_message_calls_repository_method():
     # Assert
     mock_postgres_repository.save_message.assert_called_once_with(postgres_message)
     assert result == expected_response
+
+
+# Verifica che il metodo get_messages di PostgresAdapter chiami il metodo get_messages di PostgresRepository
 
 def test_get_messages_calls_repository_method():
     # Arrange
