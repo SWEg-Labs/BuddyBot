@@ -1,5 +1,5 @@
 import psycopg2
-
+from typing import Optional, Tuple
 from entities.loggingEntities import PostgresLoadingAttempt
 from entities.loggingEntities import PostgresPlatformLog
 from entities.loggingEntities import PostgresVectorStoreLog
@@ -28,7 +28,7 @@ class PostgresRepository:
             logger.error(f"An error occurred while initializing the PostgresRepository: {e}")
             self.__conn = None
 
-    def execute_query(self, query, params=None, fetch_one=False, fetch_all=False) -> tuple | list | None:
+    def __execute_query(self, query: str, params: Optional[Tuple] = None, fetch_one: bool = False, fetch_all: bool = False) -> tuple | list | None:
         '''
         Initializes the PostgresRepository with the given database connection parameters.
         Executes a given SQL query with optional parameters and fetch options.
@@ -108,9 +108,9 @@ class PostgresRepository:
             """
             
             # Create tables
-            self.execute_query(create_loading_attempts_table_query)
-            self.execute_query(create_platform_logs_table_query)
-            self.execute_query(create_vector_store_logs_table_query)
+            self.__execute_query(create_loading_attempts_table_query)
+            self.__execute_query(create_platform_logs_table_query)
+            self.__execute_query(create_vector_store_logs_table_query)
             
             # Insert loading attempt
             params = (
@@ -118,15 +118,15 @@ class PostgresRepository:
                 postgres_loading_attempt.ending_timestamp,
                 postgres_loading_attempt.outcome
             )
-            loading_attempt_id = self.execute_query(insert_loading_attempt_query, params=params, fetch_one=True)[0]
+            loading_attempt_id = self.__execute_query(insert_loading_attempt_query, params=params, fetch_one=True)[0]
             
             # Insert platform logs
             for log in postgres_loading_attempt.postgres_platform_logs:
-                self.execute_query(insert_platform_logs_query, params=(loading_attempt_id, log.postgres_loading_items.value, log.timestamp, log.outcome))
+                self.__execute_query(insert_platform_logs_query, params=(loading_attempt_id, log.postgres_loading_items.value, log.timestamp, log.outcome))
             
             # Insert vector store log
             vector_log = postgres_loading_attempt.postgres_vector_store_log
-            self.execute_query(insert_vector_store_logs_query, params=(
+            self.__execute_query(insert_vector_store_logs_query, params=(
                 loading_attempt_id, vector_log.timestamp, vector_log.outcome, vector_log.num_added_items, vector_log.num_modified_items, vector_log.num_deleted_items
             ))
             
@@ -163,11 +163,11 @@ class PostgresRepository:
             """
             
             # Create table
-            self.execute_query(create_messages_table_query)
+            self.__execute_query(create_messages_table_query)
             
             # Insert message
             params = (message.get_content(), message.get_timestamp(), message.get_sender().value)
-            self.execute_query(insert_message_query, params=params)
+            self.__execute_query(insert_message_query, params=params)
             
             return PostgresSaveOperationResponse(success=True, message="Message saved successfully in the Postgres database.")
         

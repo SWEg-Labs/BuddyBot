@@ -41,12 +41,12 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort):
         try:
             postgres_loading_attempt = self.postgres_loading_attempt_converter(loading_attempt)
             postgres_response = self.__repository.save_loading_attempt(postgres_loading_attempt)
-            return self.dsor_converter(postgres_response)
+            return self.__dsor_converter(postgres_response)
         except Exception as e:
             logger.error(f"Error in save_loading_attempt: {e}")
             return DbSaveOperationResponse(success=False, message=str(e))
 
-    def dsor_converter(self, psor: PostgresSaveOperationResponse) -> DbSaveOperationResponse:
+    def __dsor_converter(self, psor: PostgresSaveOperationResponse) -> DbSaveOperationResponse:
         """
         Convert a PostgresSaveOperationResponse to a DbSaveOperationResponse.
         Args:
@@ -96,7 +96,7 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort):
             logger.error(f"Error in postgres_loading_attempt_converter: {e}")
             raise e
         
-    def postgres_message_converter(self, message: Message) -> PostgresMessage:
+    def __postgres_message_converter(self, message: Message) -> PostgresMessage:
         """
         Convert a Message to a PostgresMessage.
         Args:
@@ -127,9 +127,9 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort):
             Exception: If there is an error during the save operation.
         """
         try:
-            postgres_message = self.postgres_message_converter(message)
+            postgres_message = self.__postgres_message_converter(message)
             postgres_response = self.__repository.save_message(postgres_message)
-            return self.dsor_converter(postgres_response)
+            return self.__dsor_converter(postgres_response)
         except Exception as e:
             logger.error(f"Error in save_message: {e}")
             return DbSaveOperationResponse(success=False, message=str(e))

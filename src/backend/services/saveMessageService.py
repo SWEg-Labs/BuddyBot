@@ -1,6 +1,7 @@
 from use_cases.saveMessageUseCase import SaveMessageUseCase
 from backend.models.message import Message
 from ports.saveMessagePort import SaveMessagePort
+from models.dbSaveOperationResponse import DbSaveOperationResponse
 
 class SaveMessageService(SaveMessageUseCase):
     """
@@ -9,10 +10,10 @@ class SaveMessageService(SaveMessageUseCase):
     to persist messages.
     """
 
-    def __init__(self, saveMessagePort: SaveMessagePort):
+    def __init__(self, saveMessagePort: SaveMessagePort) -> None:
         self.__saveMessagePort = saveMessagePort
 
-    def save(self, message: Message):
+    def save(self, message: Message) ->DbSaveOperationResponse:
         """
         Saves the given message using the save message port.
         Args:
