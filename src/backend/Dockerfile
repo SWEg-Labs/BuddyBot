@@ -9,7 +9,7 @@ ENV DOTENV_PATH="${WORKDIR}/.env"
 ARG CHROMA_HOST="chroma-db"
 ARG CHROMA_PORT="8000"
 
-ARG DB_UPDATE_PATH="${WORKDIR}/db_update_controller.py"
+ARG DB_UPDATE_PATH="${WORKDIR}/vector_store_update_controller.py"
 ARG CRON_LOG_PATH="/var/log/cron.log"
 ARG PYTHON_INTERPRETER_PATH="/usr/local/bin/python"
 ENV CRONTAB_PATH="/etc/cron.d/crontab"

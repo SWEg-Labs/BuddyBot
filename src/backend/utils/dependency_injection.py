@@ -28,7 +28,7 @@ from repositories.postgresRepository import PostgresRepository
 from utils.logger import Logger
 
 
-def dependency_injection():
+def dependency_injection_frontend():
     """
     Configura e restituisce le dipendenze necessarie per l'applicazione BuddyBot.
 
@@ -86,6 +86,56 @@ def dependency_injection():
 
 
 
+        # ========= 6. Architettura backend dell'aggiornamento del badge di segnalazione esito aggiornamento automatico ==========
+
+        # ...
+
+
+
+        # =========================== 7. Architettura del salvataggio dei messaggi nello storico ============================
+
+        # ...
+
+
+
+        # ============================= 8. Architettura del recupero dei messaggi dallo storico =============================
+
+        # ...
+
+
+
+        # ==================== 9. Architettura della generazione di domande per proseguire la conversazione ====================
+
+        # ...
+
+
+
+
+        return {
+            "chat_controller": chat_controller,
+            # "get_last_load_outcome_controller": get_last_load_outcome_controller,
+            # "save_message_controller": save_message_controller,
+            # "get_messages_controller": get_messages_controller,
+            # "get_next_possible_questions_controller": get_next_possible_questions_controller
+        }
+    except Exception as e:
+        Logger.error(f"Errore durante l'inizializzazione delle dipendenze: {e}")
+        return None
+    
+
+
+def dependency_injection_cron():
+    """
+    Configura e restituisce le dipendenze necessarie per il funzionanmento del cron.
+
+    Carica le variabili d'ambiente, inizializza i servizi e i controller necessari.
+    """
+    try:
+        # Caricamento delle variabili d'ambiente
+        load_dotenv()
+
+
+
         # ======================== 2. Architettura dell'aggiornamento automatico del database vettoriale ========================
 
         # GitHub
@@ -120,6 +170,16 @@ def dependency_injection():
         confluence_adapter = JiraAdapter(confluence_repository)
         confluence_cleaner_service = ConfluenceCleanerService()
 
+        # Chroma
+        chroma_client = chromadb.HttpClient(host=os.getenv("CHROMA_HOST", "localhost"),
+                                            port=int(os.getenv("CHROMA_PORT", "8000"))) # Connessione al server ChromaDB
+        chroma_client.heartbeat()  # Verifica connessione
+        chroma_collection_name = "buddybot-vector-store"
+        chroma_collection = chroma_client.get_or_create_collection(name=chroma_collection_name) # Crea o ottieni una collezione esistente
+        chroma_vector_store_repository = ChromaVectorStoreRepository(chroma_client, chroma_collection_name, chroma_collection)
+        max_chunk_size = 41666  # 42 KB
+        chroma_vector_store_adapter = ChromaVectorStoreAdapter(max_chunk_size, chroma_vector_store_repository)
+
         # Postgres
         DB_CONFIG = {
             "host": os.getenv("DB_HOST"),
@@ -147,10 +207,8 @@ def dependency_injection():
 
 
         return {
-            "chat_controller": chat_controller,
-            "load_files_controller": load_files_controller,
-            # Altri controller
+            "load_files_controller": load_files_controller
         }
     except Exception as e:
-        Logger.error(f"Errore durante l'inizializzazione delle dipendenze: {e}")
+        Logger.error(f"Errore durante l'inizializzazione delle dipendenze per il cron: {e}")
         return None

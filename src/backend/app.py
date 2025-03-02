@@ -3,7 +3,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
-from utils.dependency_injection import dependency_injection
+from utils.dependency_injection import dependency_injection_frontend
 from utils.logger import logger
 
 # Inizializzazione dell'app FastAPI
@@ -23,8 +23,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-dependencies = dependency_injection()
-chat_controller = dependencies["chat_controller"]
+frontend_dependencies = dependency_injection_frontend()
+chat_controller = frontend_dependencies["chat_controller"]
 
 
 @app.post("/api/chat", summary="Invia un messaggio al chatbot", response_model=Dict[str, str])
