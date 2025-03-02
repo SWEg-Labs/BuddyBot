@@ -5,10 +5,14 @@ from entities.postgresSaveOperationResponse import PostgresSaveOperationResponse
 from entities.loggingEntities import PostgresLoadingAttempt, PostgresPlatformLog, PostgresVectorStoreLog, PostgresLoadingItems
 from ports.saveLoadingAttemptInDbPort import SaveLoadingAttemptInDbPort
 from utils.logger import logger
-from backend.models.message import Message
+from models.message import Message, MessageSender
 from entities.postgresMessage import PostgresMessage, PostgresMessageSender
+from ports.saveMessagePort import SaveMessagePort
+from ports.getMessagesPort import GetMessagesPort
+from typing import List
+from models.quantity import Quantity
 
-class PostgresAdapter(SaveLoadingAttemptInDbPort):
+class PostgresAdapter(SaveLoadingAttemptInDbPort, SaveMessagePort, GetMessagesPort):
     """
     Adapter class for interacting with a PostgreSQL repository.
     This class provides methods to save loading attempts and convert responses
@@ -116,6 +120,25 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort):
             logger.error(f"Error in postgres_message_converter: {e}")
             raise e
     
+    def __message_converter(self, postgres_message: PostgresMessage) -> Message:
+        """
+        Convert a PostgresMessage to a Message.
+        Args:
+            postgres_message (PostgresMessage): The message to be converted.
+        Returns:
+            Message: The converted message.
+        Raises:
+            Exception: If there is an error during the conversion.
+        """
+        try:
+            return Message(
+                content=postgres_message.get_content(),
+                timestamp=postgres_message.get_timestamp(),
+                sender=MessageSender[postgres_message.get_sender().value]
+            )
+        except Exception as e:
+            logger.error(f"Error in message_converter: {e}")
+
     def save_message(self, message: Message) -> DbSaveOperationResponse:
         """
         Save a message to the PostgreSQL repository.
@@ -133,3 +156,20 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort):
         except Exception as e:
             logger.error(f"Error in save_message: {e}")
             return DbSaveOperationResponse(success=False, message=str(e))
+
+    def get_messages(self, quantity: Quantity) -> List[Message]:
+        """
+        Retrieve a specified quantity of messages.
+        Args:
+            quantity (Quantity): The number of messages to retrieve.
+        Returns:
+            List[Message]: A list of retrieved messages.
+        Raises:
+            Exception: If there is an error during the retrieval operation.
+        """
+        try:
+            postgres_messages = self.__repository.get_messages(quantity.get_value())
+            return [self.__message_converter(pm) for pm in postgres_messages]
+        except Exception as e:
+            logger.error(f"Error in get_messages: {e}")
+            raise e

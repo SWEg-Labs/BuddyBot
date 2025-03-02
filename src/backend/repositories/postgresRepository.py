@@ -137,7 +137,6 @@ class PostgresRepository:
             logger.error(message)
             return PostgresSaveOperationResponse(success=False, message=message)
 
-
     def save_message(self, message: PostgresMessage) -> PostgresSaveOperationResponse:
         '''
         Saves a message into the PostgreSQL database.
@@ -175,3 +174,28 @@ class PostgresRepository:
             message = f"An error occurred while saving the message in the Postgres database: {e}"
             logger.error(message)
             return PostgresSaveOperationResponse(success=False, message=message)
+        
+    def get_messages(self, quantity: int) -> list[PostgresMessage]:
+        '''
+        Retrieves the specified number of messages from the PostgreSQL database.
+        Args:
+            quantity (int): The number of messages to retrieve.
+        Returns:
+            list[PostgresMessage]: The list of retrieved messages.
+        Raises:
+            psycopg2.Error: If an error occurs while retrieving the messages from the PostgreSQL database.
+        '''
+        try:
+            get_messages_query = """
+            SELECT content, timestamp, sender
+            FROM messages
+            ORDER BY timestamp DESC
+            LIMIT %s;
+            """
+            messages = self.__execute_query(get_messages_query, params=(quantity,), fetch_all=True)
+            return [PostgresMessage(content=message[0], timestamp=message[1], sender=message[2]) for message in messages]
+        
+        except psycopg2.Error as e:
+            message = f"An error occurred while retrieving the messages from the Postgres database: {e}"
+            logger.error(message)
+            raise e
