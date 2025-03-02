@@ -1,7 +1,9 @@
 from unittest.mock import MagicMock
 from controllers.getMessagesController import GetMessagesController
 from use_cases.getMessagesUseCase import GetMessagesUseCase
-from models.messageBaseModel import MessageBaseModel, MessageSenderBaseModel
+from dto.messageBaseModel import MessageBaseModel, MessageSenderBaseModel
+from models.quantity import Quantity
+from models.message import Message, MessageSender
 
 def test_get_messages_calls_use_case_method():
     # Arrange
@@ -10,11 +12,12 @@ def test_get_messages_calls_use_case_method():
     
     quantity = 5
     expected_result = [MessageBaseModel(content=f"Message {i}", timestamp=f"2021-10-10T10:10:0{i}", sender=MessageSenderBaseModel.User) for i in range(quantity)]
-    mock_get_messages_use_case.get_messages.return_value = expected_result
+    use_case_result = [Message(content=f"Message {i}", timestamp=f"2021-10-10T10:10:0{i}", sender=MessageSender.User) for i in range(quantity)]
+    mock_get_messages_use_case.get_messages.return_value = use_case_result
 
     # Act
     result = get_messages_controller.get_messages(quantity)
 
     # Assert
-    mock_get_messages_use_case.get_messages.assert_called_once_with(quantity)
+    mock_get_messages_use_case.get_messages.assert_called_once_with(Quantity(quantity))
     assert result == expected_result

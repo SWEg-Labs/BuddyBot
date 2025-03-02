@@ -19,3 +19,8 @@ class Message:
     
     def get_sender(self):
         return self.__sender
+
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, Message):
+            return False
+        return self.__content == other.__content and self.__timestamp == other.__timestamp and self.__sender == other.__sender

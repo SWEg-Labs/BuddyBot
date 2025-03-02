@@ -10,3 +10,8 @@ class PostgresMessage:
         self.content = content
         self.timestamp = timestamp
         self.sender = sender
+
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, PostgresMessage):
+            return False
+        return self.content == other.content and self.timestamp == other.timestamp and self.sender == other.sender

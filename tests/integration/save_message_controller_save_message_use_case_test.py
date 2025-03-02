@@ -1,11 +1,9 @@
 from unittest.mock import MagicMock
 from controllers.saveMessageController import SaveMessageController
 from use_cases.saveMessageService import SaveMessageService
-from models.messageBaseModel import MessageBaseModel
+from dto.messageBaseModel import MessageBaseModel, MessageSenderBaseModel
 from models.dbSaveOperationResponse import DbSaveOperationResponse
-from dto.messageDtos import Message
-from models.messageBaseModel import MesssageSenderBaseModel
-from dto.messageDtos import MessageSender
+from models.message import Message, MessageSender
 
 
 # Verifica che il metodo save di SaveMessageController chiami il metodo save di SaveMessageUseCase
@@ -17,7 +15,7 @@ def test_save_calls_use_case_method():
 
     content = "test message"
     timestamp = "2021-10-10T10:10:10"
-    message = MessageBaseModel(content, timestamp, MesssageSenderBaseModel.User)
+    message = MessageBaseModel(content, timestamp, MessageSenderBaseModel.User)
 
     mock_save_message_use_case.save.return_value = DbSaveOperationResponse(True, "Message saved successfully")
     expected_response = {"success": True, "message": "Message saved successfully"}

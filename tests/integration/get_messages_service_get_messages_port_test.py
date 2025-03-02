@@ -1,8 +1,8 @@
 from unittest.mock import MagicMock
 from services.getMessagesService import GetMessagesService
 from ports.getMessagesPort import GetMessagesPort
-from dto.messageDtos import Message, MessageSender
-from dto.quantity import Quantity
+from models.message import Message, MessageSender
+from models.quantity import Quantity
 
 # Verifica che il metodo get_messages di GetMessagesService chiami il metodo get_messages di GetMessagesPort
 

@@ -6,9 +6,9 @@ from models.db_save_operation_response import DbSaveOperationResponse
 from entities.postgres_save_operation_response import PostgresSaveOperationResponse
 from adapters.postgres_adapter import PostgresAdapter
 from repositories.postgres_repository import PostgresRepository
-from dto.messageDtos import Message, MesssageSender
-from dto.quantity import Quantity
-from entities.postgresEntities import PostgresMessage, PostgresMesssageSender
+from models.message import Message, MessageSender
+from models.quantity import Quantity
+from entities.postgresEntities import PostgresMessage, PostgresMessageSender
 
 # Verifica che il metodo save_loading_attempt di PostgresAdapter chiami il metodo save_loading_attempt di PostgresRepository
 
@@ -71,7 +71,8 @@ def test_save_message_calls_repository_method():
 
     content = "test message"
     timestamp = "2021-10-10T10:10:10"
-    message = Message(content, timestamp, MesssageSender.USER)
+    message = Message(content, timestamp, MessageSender.USER)
+    postgres_message = PostgresMessage(content, timestamp, PostgresMessageSender.USER)
 
     mock_postgres_repository.save_message.return_value = PostgresSaveOperationResponse(True, "Message saved successfully")
     expected_response = DbSaveOperationResponse(True, "Message saved successfully")
@@ -80,7 +81,7 @@ def test_save_message_calls_repository_method():
     result = postgres_adapter.save_message(message)
 
     # Assert
-    mock_postgres_repository.save_message.assert_called_once_with(message)
+    mock_postgres_repository.save_message.assert_called_once_with(postgres_message)
     assert result == expected_response
 
 def test_get_messages_calls_repository_method():
@@ -91,12 +92,12 @@ def test_get_messages_calls_repository_method():
     quantity = 5
 
     expected_response = [
-        PostgresMessage(content=f"Message {i}", timestamp=f"2021-10-10T10:10:0{i}", sender=PostgresMesssageSender.USER) for i in range(quantity)
+        PostgresMessage(content=f"Message {i}", timestamp=f"2021-10-10T10:10:0{i}", sender=PostgresMessageSender.USER if i%2==0 else PostgresMessageSender.CHATBOT) for i in range(quantity)
     ]
     mock_postgres_repository.get_messages.return_value = expected_response
 
     # Act
-    result = postgres_adapter.get_messages()
+    result = postgres_adapter.get_messages(Quantity(quantity))
 
     # Assert
     mock_postgres_repository.get_messages.assert_called_once_with(quantity)

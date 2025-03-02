@@ -5,7 +5,7 @@ from entities.postgresSaveOperationResponse import PostgresSaveOperationResponse
 from entities.loggingEntities import PostgresLoadingAttempt, PostgresPlatformLog, PostgresVectorStoreLog, PostgresLoadingItems
 from ports.saveLoadingAttemptInDbPort import SaveLoadingAttemptInDbPort
 from utils.logger import logger
-from dto.messageDtos import Message
+from backend.models.message import Message
 from entities.postgresMessage import PostgresMessage, PostgresMessageSender
 
 class PostgresAdapter(SaveLoadingAttemptInDbPort):
