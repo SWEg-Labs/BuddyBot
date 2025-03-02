@@ -27,7 +27,7 @@ class PostgresRepository:
             logger.error(f"An error occurred while initializing the PostgresRepository: {e}")
             self.conn = None
 
-    def execute_query(self, query, params=None, fetch_one=False, fetch_all=False) -> tuple | list | None:
+    def _execute_query(self, query, params=None, fetch_one=False, fetch_all=False) -> tuple | list | None:
         '''
         Initializes the PostgresRepository with the given database connection parameters.
         Executes a given SQL query with optional parameters and fetch options.
@@ -107,9 +107,9 @@ class PostgresRepository:
             """
             
             # Create tables
-            self.execute_query(create_loading_attempts_table_query)
-            self.execute_query(create_platform_logs_table_query)
-            self.execute_query(create_vector_store_logs_table_query)
+            self._execute_query(create_loading_attempts_table_query)
+            self._execute_query(create_platform_logs_table_query)
+            self._execute_query(create_vector_store_logs_table_query)
             
             # Insert loading attempt
             params = (
@@ -117,22 +117,23 @@ class PostgresRepository:
                 postgres_loading_attempt.ending_timestamp,
                 postgres_loading_attempt.outcome
             )
-            loading_attempt_id = self.execute_query(insert_loading_attempt_query, params=params, fetch_one=True)[0]
+            loading_attempt_id = self._execute_query(insert_loading_attempt_query, params=params, fetch_one=True)[0]
             
             # Insert platform logs
             for log in postgres_loading_attempt.postgres_platform_logs:
-                self.execute_query(insert_platform_logs_query, params=(loading_attempt_id, log.postgres_loading_items.value, log.timestamp, log.outcome))
+                self._execute_query(insert_platform_logs_query, params=(loading_attempt_id, log.postgres_loading_items.value, log.timestamp, log.outcome))
             
             # Insert vector store log
             vector_log = postgres_loading_attempt.postgres_vector_store_log
-            self.execute_query(insert_vector_store_logs_query, params=(
+            self._execute_query(insert_vector_store_logs_query, params=(
                 loading_attempt_id, vector_log.timestamp, vector_log.outcome, vector_log.num_added_items, vector_log.num_modified_items, vector_log.num_deleted_items
             ))
+
+            logger.info("Loading attempt saved successfully in the Postgres database.")
             
             return PostgresSaveOperationResponse(success=True, message="Loading attempt saved successfully in the Postgres database.")
-        
+
         except psycopg2.Error as e:
             message = f"An error occurred while saving the loading attempt in the Postgres database: {e}"
             logger.error(message)
             return PostgresSaveOperationResponse(success=False, message=message)
-

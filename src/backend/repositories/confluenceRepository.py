@@ -68,6 +68,7 @@ class ConfluenceRepository:
                 links=page['_links']
             ) for page in pages_data]
 
+            logger.info(f"Fetched {len(pages)} pages from Confluence space {self.project_key}")
             log = PlatformLog(LoadingItems.ConfluencePages, datetime.now(), True)
 
             return log, pages

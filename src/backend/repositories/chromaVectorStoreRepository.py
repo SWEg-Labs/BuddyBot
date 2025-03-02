@@ -69,6 +69,7 @@ class ChromaVectorStoreRepository:
             # Carica i documenti nel Chroma vector store
             self.collection.add(documents_data)
 
+            logger.info(f"Successfully loaded {len(documents)} documents into Chroma vector store.")
             log = VectorStoreLog(
                 timestamp=datetime.now(),
                 outcome=True,
@@ -77,7 +78,6 @@ class ChromaVectorStoreRepository:
                 num_deleted_items=0
             )
 
-            logger.info(f"Successfully loaded {len(documents)} documents into Chroma vector store.")
             return log
         except Exception as e:
             logger.error(f"Error loading documents into Chroma vector store: {e}")
@@ -115,6 +115,8 @@ class ChromaVectorStoreRepository:
                 metadatas=query_result.get("metadatas", []),
                 distances=query_result.get("distances", [])
             )
+
+            logger.info(f"Successfully performed similarity search for query: {query}")
 
             return query_result_entity
         except Exception as e:

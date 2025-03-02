@@ -71,6 +71,8 @@ class LangChainRepository:
                 "context": relevant_docs
             })
 
+            logger.info(f"Generated response: {response}")
+
             return response
         except Exception as e:
             logger.error(f"Error getting the answer: {e}")
@@ -109,6 +111,8 @@ class LangChainRepository:
             "question": question_answer_couple[0],
             "answer": question_answer_couple[1]
             })
+
+            logger.info(f"Generated next possible questions: {response}")
 
             return response
         except Exception as e:

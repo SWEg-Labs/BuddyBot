@@ -1,5 +1,3 @@
-import logging
-import structlog
 from typing import List, Tuple
 import re
 
@@ -13,6 +11,7 @@ from ports.confluencePort import ConfluencePort
 from ports.loadFilesInVectorStorePort import LoadFilesInVectorStorePort
 from ports.saveLoadingAttemptInDbPort import SaveLoadingAttemptInDbPort
 from services.confluenceCleanerService import ConfluenceCleanerService
+from utils.logger import logger, structured_logger
 
 class LoadFilesService(LoadFilesUseCase):
     """
@@ -47,7 +46,7 @@ class LoadFilesService(LoadFilesUseCase):
             self.load_files_in_vector_store_port = load_files_in_vector_store_port
             self.save_loading_attempt_in_db_port = save_loading_attempt_in_db_port
         except Exception as e:
-            logging.error(f"Error initializing LoadFilesService: {e}")
+            logger.error(f"Error initializing LoadFilesService: {e}")
             raise
 
     def load(self):
@@ -71,7 +70,7 @@ class LoadFilesService(LoadFilesUseCase):
             self.save_loading_attempt_in_db(loading_attempt)
             self.save_loading_attempt_in_txt(loading_attempt)
         except Exception as e:
-            logging.error(f"Error in load method: {e}")
+            logger.error(f"Error in load method: {e}")
             raise
 
     def load_github_commits(self) -> Tuple[PlatformLog, List[Document]]:
@@ -83,7 +82,7 @@ class LoadFilesService(LoadFilesUseCase):
         try:
             return self.github_port.load_github_commits()
         except Exception as e:
-            logging.error(f"Error loading GitHub commits: {e}")
+            logger.error(f"Error loading GitHub commits: {e}")
             raise
 
     def load_github_files(self) -> Tuple[PlatformLog, List[Document]]:
@@ -95,7 +94,7 @@ class LoadFilesService(LoadFilesUseCase):
         try:
             return self.github_port.load_github_files()
         except Exception as e:
-            logging.error(f"Error loading GitHub files: {e}")
+            logger.error(f"Error loading GitHub files: {e}")
             raise
 
     def load_jira_issues(self) -> Tuple[PlatformLog, List[Document]]:
@@ -107,7 +106,7 @@ class LoadFilesService(LoadFilesUseCase):
         try:
             return self.jira_port.load_jira_issues()
         except Exception as e:
-            logging.error(f"Error loading Jira issues: {e}")
+            logger.error(f"Error loading Jira issues: {e}")
             raise
 
     def load_confluence_pages(self) -> Tuple[PlatformLog, List[Document]]:
@@ -119,7 +118,7 @@ class LoadFilesService(LoadFilesUseCase):
         try:
             return self.confluence_port.load_confluence_pages()
         except Exception as e:
-            logging.error(f"Error loading Confluence pages: {e}")
+            logger.error(f"Error loading Confluence pages: {e}")
             raise
 
     def clean_confluence_pages(self, pages: List[Document]) -> List[Document]:
@@ -133,7 +132,7 @@ class LoadFilesService(LoadFilesUseCase):
         try:
             return self.confluence_cleaner_service.clean_confluence_pages(pages)
         except Exception as e:
-            logging.error(f"Error cleaning Confluence pages: {e}")
+            logger.error(f"Error cleaning Confluence pages: {e}")
             raise
 
     def load_in_vector_store(self, documents: List[Document]) -> VectorStoreLog:
@@ -147,7 +146,7 @@ class LoadFilesService(LoadFilesUseCase):
         try:
             return self.load_files_in_vector_store_port.load(documents)
         except Exception as e:
-            logging.error(f"Error loading documents in vector store: {e}")
+            logger.error(f"Error loading documents in vector store: {e}")
             raise
 
     def save_loading_attempt_in_db(self, loading_attempt: LoadingAttempt) -> DbSaveOperationResponse:
@@ -161,7 +160,7 @@ class LoadFilesService(LoadFilesUseCase):
         try:
             return self.save_loading_attempt_in_db_port.save_loading_attempt(loading_attempt)
         except Exception as e:
-            logging.error(f"Error saving loading attempt in DB: {e}")
+            logger.error(f"Error saving loading attempt in DB: {e}")
             raise
 
     def save_loading_attempt_in_txt(self, loading_attempt: LoadingAttempt):
@@ -171,22 +170,6 @@ class LoadFilesService(LoadFilesUseCase):
             loading_attempt (LoadingAttempt): The loading attempt to be saved.
         """
         try:
-            logging.basicConfig(
-                level=logging.DEBUG,
-                format="%(message)s",
-                handlers=[
-                    logging.FileHandler("../../../../log_aggiornamento_automatico.txt", mode='a'),
-                    logging.StreamHandler()
-                ]
-            )
-            structlog.configure(
-                processors=[
-                    structlog.processors.TimeStamper(fmt="iso"),
-                    structlog.processors.JSONRenderer()
-                ],
-                logger_factory=structlog.stdlib.LoggerFactory()
-            )
-            logger = structlog.get_logger()
             log_message = (
                 "=============================================\n"
                 f"Tentativo aggiornamento database vettoriale:\n"
@@ -198,7 +181,7 @@ class LoadFilesService(LoadFilesUseCase):
                 f"- Numero elementi modificati: {loading_attempt.vector_store_log.num_modified_items}\n"
                 f"- Numero elementi eliminati: {loading_attempt.vector_store_log.num_deleted_items}\n"
             )
-            logger.info(log_message)
+            structured_logger.info(log_message)
         except Exception as e:
-            logging.error(f"Error saving loading attempt in TXT: {e}")
+            logger.error(f"Error saving loading attempt in TXT: {e}")
             raise

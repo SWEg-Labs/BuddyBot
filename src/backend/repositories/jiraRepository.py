@@ -71,6 +71,7 @@ class JiraRepository:
                 attachment=issue['fields'].get('attachment', [])
             ) for issue in issues_data]
 
+            logger.info(f"Fetched {len(issues)} issues from Jira project {self.project_key}")
             log = PlatformLog(LoadingItems.JiraIssues, datetime.now(), True)
 
             return log, issues

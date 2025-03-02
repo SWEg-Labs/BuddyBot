@@ -25,7 +25,7 @@ from repositories.langChainRepository import LangChainRepository
 from repositories.gitHubRepository import GitHubRepository
 from repositories.jiraRepository import JiraRepository
 from repositories.postgresRepository import PostgresRepository
-from utils.logger import Logger
+from utils.logger import logger
 
 
 def dependency_injection_frontend():
@@ -63,6 +63,7 @@ def dependency_injection_frontend():
             openai_api_key=openai_api_key,
             model_name=model_name,
         )
+        logger.info(f"Modello LLM caricato: {model_name}")
 
         # Chroma
         chroma_client = chromadb.HttpClient(host=os.getenv("CHROMA_HOST", "localhost"),
@@ -73,6 +74,7 @@ def dependency_injection_frontend():
         chroma_vector_store_repository = ChromaVectorStoreRepository(chroma_client, chroma_collection_name, chroma_collection)
         max_chunk_size = 41666  # 42 KB
         chroma_vector_store_adapter = ChromaVectorStoreAdapter(max_chunk_size, chroma_vector_store_repository)
+        logger.info("Collezione ChromaDB caricata")
 
         # LangChain
         langchain_repository = LangChainRepository(llm)
@@ -119,7 +121,7 @@ def dependency_injection_frontend():
             # "get_next_possible_questions_controller": get_next_possible_questions_controller
         }
     except Exception as e:
-        Logger.error(f"Errore durante l'inizializzazione delle dipendenze: {e}")
+        logger.error(f"Errore durante l'inizializzazione delle dipendenze: {e}")
         return None
     
 
@@ -144,6 +146,7 @@ def dependency_injection_cron():
         github_repo = github.get_repo(f"{os.getenv("OWNER")}/{os.getenv("REPO")}")
         github_repository = GitHubRepository(github_repo)
         github_adapter = GitHubAdapter(github_repository)
+        logger.info("Repository GitHub caricato")
 
         # Atlassian (Jira e Confluence)
         atlassian_token = os.getenv("ATLASSIAN_TOKEN")
@@ -162,6 +165,7 @@ def dependency_injection_cron():
         jira_project_key = os.getenv("JIRA_PROJECT_KEY")
         jira_repository = JiraRepository(jira_base_url, jira_project_key, requests_timeout, requests_headers)
         jira_adapter = JiraAdapter(jira_repository)
+        logger.info("Progetto Jira caricato")
 
         # Confluence
         confluence_base_url = os.getenv("CONFLUENCE_BASE_URL")
@@ -169,6 +173,7 @@ def dependency_injection_cron():
         confluence_repository = JiraRepository(confluence_base_url, confluence_space_key, requests_timeout, requests_headers)
         confluence_adapter = JiraAdapter(confluence_repository)
         confluence_cleaner_service = ConfluenceCleanerService()
+        logger.info("Spazio Confluence caricato")
 
         # Chroma
         chroma_client = chromadb.HttpClient(host=os.getenv("CHROMA_HOST", "localhost"),
@@ -179,6 +184,7 @@ def dependency_injection_cron():
         chroma_vector_store_repository = ChromaVectorStoreRepository(chroma_client, chroma_collection_name, chroma_collection)
         max_chunk_size = 41666  # 42 KB
         chroma_vector_store_adapter = ChromaVectorStoreAdapter(max_chunk_size, chroma_vector_store_repository)
+        logger.info("Collezione ChromaDB caricata")
 
         # Postgres
         DB_CONFIG = {
@@ -197,6 +203,7 @@ def dependency_injection_cron():
         )
         postgres_repository = PostgresRepository(conn)
         postgres_adapter = PostgresAdapter(postgres_repository)
+        logger.info("Database Postgres caricato")
 
         # Catena di load_files
         load_files_service = LoadFilesService(github_adapter, jira_adapter, confluence_adapter, confluence_cleaner_service,
@@ -210,5 +217,5 @@ def dependency_injection_cron():
             "load_files_controller": load_files_controller
         }
     except Exception as e:
-        Logger.error(f"Errore durante l'inizializzazione delle dipendenze per il cron: {e}")
+        logger.error(f"Errore durante l'inizializzazione delle dipendenze per il cron: {e}")
         return None
