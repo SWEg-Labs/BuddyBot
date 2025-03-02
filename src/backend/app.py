@@ -50,59 +50,6 @@ async def chat(request: Request):
         return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
 
 
-'''
-@app.get("/api/github/load", summary="Carica i file da GitHub", response_model=Dict[str, str])
-async def load_from_github():
-    """
-    Endpoint per caricare i file da GitHub nel database Chroma.
-
-    Returns:
-        Dict[str, str]: Stato dell'operazione con un messaggio.
-    """
-    try:
-        UserController.load_github_files(chroma_vector_store_repository, github_service)
-        UserController.load_github_commits(chroma_vector_store_repository, github_service)
-        return {"response": "File caricati con successo da GitHub"}
-    except Exception as e:
-        logger.error(str(e))
-        return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
-
-
-@app.get("/api/jira/load", summary="Carica le issue da Jira", response_model=Dict[str, str])
-async def load_from_jira():
-    """
-    Endpoint per caricare le issue da Jira nel database Chroma.
-
-    Returns:
-        Dict[str, str]: Stato dell'operazione con un messaggio.
-    """
-    try:
-        UserController.load_jira(chroma_vector_store_repository, github_service, jira_service)
-        return {"response": "File caricati con successo da Jira"}
-    except Exception as e:
-        logger.error(str(e))
-        return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
-
-
-@app.get("/api/confluence/load", summary="Carica le pagine da Confluence",
-         response_model=Dict[str, str])
-async def load_from_confluence():
-    """
-    Endpoint per caricare le pagine da Confluence nel database Chroma.
-
-    Returns:
-        Dict[str, str]: Stato dell'operazione con un messaggio.
-    """
-    try:
-        UserController.load_confluence(chroma_vector_store_repository, github_service, jira_service,
-                                       confluence_service)
-        return {"response": "File caricati con successo da Confluence"}
-    except Exception as e:
-        logger.error(str(e))
-        return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
-'''
-
-
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=5000)
