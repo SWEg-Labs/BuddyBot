@@ -25,4 +25,4 @@ class MessageBaseModel(BaseModel):
     def __eq__(self, other)-> bool:
         if not isinstance(other, MessageBaseModel):
             return False
-        return self.__content == other.__content and self.__timestamp == other.__timestamp and self.__sender == other.__sender
+        return self.__content == other.get_content() and self.__timestamp == other.get_timestamp() and self.__sender == other.get_sender()

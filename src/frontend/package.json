@@ -28,6 +28,7 @@
     "@angular/ssr": "^19.0.6",
     "dompurify": "^3.2.4",
     "express": "^4.18.2",
+    "my-chat-frontend": "file:",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"

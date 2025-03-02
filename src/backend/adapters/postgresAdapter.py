@@ -24,7 +24,7 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort):
             Exception: If there is an error during initialization.
         """
         try:
-            self.repository = repository
+            self.__repository = repository
         except Exception as e:
             logger.error(f"Error initializing PostgresAdapter: {e}")
 
@@ -40,7 +40,7 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort):
         """
         try:
             postgres_loading_attempt = self.postgres_loading_attempt_converter(loading_attempt)
-            postgres_response = self.repository.save_loading_attempt(postgres_loading_attempt)
+            postgres_response = self.__repository.save_loading_attempt(postgres_loading_attempt)
             return self.dsor_converter(postgres_response)
         except Exception as e:
             logger.error(f"Error in save_loading_attempt: {e}")
@@ -57,7 +57,7 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort):
             Exception: If there is an error during the conversion.
         """
         try:
-            return DbSaveOperationResponse(success=psor.success, message=psor.message)
+            return DbSaveOperationResponse(success=psor.get_success(), message=psor.get_message())
         except Exception as e:
             logger.error(f"Error in dsor_converter: {e}")
             return DbSaveOperationResponse(success=False, message=str(e))
@@ -108,9 +108,9 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort):
         """
         try:
             return PostgresMessage(
-                content=message.content,
-                timestamp=message.timestamp,
-                sender=PostgresMessageSender(message.sender)
+                content=message.get_content(),
+                timestamp=message.get_timestamp(),
+                sender=PostgresMessageSender(message.get_sender().value)
             )
         except Exception as e:
             logger.error(f"Error in postgres_message_converter: {e}")
@@ -128,7 +128,7 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort):
         """
         try:
             postgres_message = self.postgres_message_converter(message)
-            postgres_response = self.repository.save_message(postgres_message)
+            postgres_response = self.__repository.save_message(postgres_message)
             return self.dsor_converter(postgres_response)
         except Exception as e:
             logger.error(f"Error in save_message: {e}")

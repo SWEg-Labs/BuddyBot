@@ -14,8 +14,8 @@ def test_get_messages_calls_use_case_method():
     get_messages_controller = GetMessagesController(mock_get_messages_use_case)
     
     quantity = 5
-    expected_result = [MessageBaseModel(content=f"Message {i}", timestamp=f"2021-10-10T10:10:0{i}", sender=MessageSenderBaseModel.User) for i in range(quantity)]
-    use_case_result = [Message(content=f"Message {i}", timestamp=f"2021-10-10T10:10:0{i}", sender=MessageSender.User) for i in range(quantity)]
+    expected_result = [MessageBaseModel(content=f"Message {i}", timestamp=f"2021-10-10T10:10:0{i}", sender=MessageSenderBaseModel.USER) for i in range(quantity)]
+    use_case_result = [Message(content=f"Message {i}", timestamp=f"2021-10-10T10:10:0{i}", sender=MessageSender.USER) for i in range(quantity)]
     mock_get_messages_use_case.get_messages.return_value = use_case_result
 
     # Act

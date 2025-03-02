@@ -12,7 +12,7 @@ class SaveMessagesController:
         save(message: MessageBaseModel) -> dict[str, bool | str]:
     """
     def __init__(self, SaveMessageUseCase: SaveMessageUseCase):
-        self.SaveMessageUseCase = SaveMessageUseCase
+        self.__SaveMessageUseCase = SaveMessageUseCase
     
     def save(self, message: MessageBaseModel) -> dict[str, bool | str]:
         """
@@ -23,7 +23,7 @@ class SaveMessagesController:
             dict: A dictionary containing the success status and message of the save operation.
         """
 
-        dbSaveOperationResponse = self.SaveMessageUseCase.save(message).__copy__()
+        dbSaveOperationResponse = self.__SaveMessageUseCase.save(message).__copy__()
 
-        result = {"success": dbSaveOperationResponse.success, "message": dbSaveOperationResponse.message}
+        result = {"success": dbSaveOperationResponse.get_success(), "message": dbSaveOperationResponse.get_message()}
         return result

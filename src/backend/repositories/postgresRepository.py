@@ -23,10 +23,10 @@ class PostgresRepository:
             psycopg2.Error: If an error occurs while initializing the PostgresRepository.
         '''
         try:
-            self.conn = conn
+            self.__conn = conn
         except psycopg2.Error as e:
             logger.error(f"An error occurred while initializing the PostgresRepository: {e}")
-            self.conn = None
+            self.__conn = None
 
     def execute_query(self, query, params=None, fetch_one=False, fetch_all=False) -> tuple | list | None:
         '''
@@ -43,13 +43,13 @@ class PostgresRepository:
             psycopg2.Error: If an error occurs while executing the query.
         '''
         try:
-            with self.conn.cursor() as cur:  # Cursor creato nel contesto e chiuso automaticamente
+            with self.__conn.cursor() as cur:  # Cursor creato nel contesto e chiuso automaticamente
                 cur.execute(query, params or ())
                 if fetch_one:
                     return cur.fetchone()
                 if fetch_all:
                     return cur.fetchall()
-                self.conn.commit()  # Commit solo per operazioni di scrittura
+                self.__conn.commit()  # Commit solo per operazioni di scrittura
         except psycopg2.Error as e:
             logger.error(f"An error occurred while executing the query: {e}")
             raise e
@@ -166,7 +166,7 @@ class PostgresRepository:
             self.execute_query(create_messages_table_query)
             
             # Insert message
-            params = (message.content, message.timestamp, message.sender.value)
+            params = (message.get_content(), message.get_timestamp(), message.get_sender().value)
             self.execute_query(insert_message_query, params=params)
             
             return PostgresSaveOperationResponse(success=True, message="Message saved successfully in the Postgres database.")
