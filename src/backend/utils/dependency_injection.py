@@ -93,11 +93,11 @@ def initialize_postgres() -> PostgresAdapter:
     """
     try:
         DB_CONFIG = {
-            "host": os.getenv("DB_HOST", "localhost"),
-            "port": os.getenv("DB_PORT", "5432"),
-            "user": os.getenv("DB_USER", "buddybot"),
-            "password": os.getenv("DB_PASSWORD", "buddybot"),
-            "dbname": os.getenv("DB_NAME", "buddybot")
+            "host": os.getenv("POSTGRES_HOST", "localhost"),
+            "port": os.getenv("POSTGRES_PORT", "5432"),
+            "user": os.getenv("POSTGRES_USER", "buddybot"),
+            "password": os.getenv("POSTGRES_PASSWORD", "buddybot"),
+            "dbname": os.getenv("POSTGRES_DB_NAME", "buddybot")
         }
         conn = psycopg2.connect(
             host=DB_CONFIG["host"],

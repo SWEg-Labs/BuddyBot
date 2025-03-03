@@ -9,6 +9,12 @@ ENV DOTENV_PATH="${WORKDIR}/.env"
 ARG CHROMA_HOST="chroma-db"
 ARG CHROMA_PORT="8000"
 
+ARG POSTGRES_HOST="postgres-db"
+ARG POSTGRES_PORT="5432"
+ARG POSTGRES_USER="buddybot"
+ARG POSTGRES_PASSWORD="buddybot"
+ARG POSTGRES_DB_NAME="buddybot"
+
 ARG DB_UPDATE_PATH="${WORKDIR}/vector_store_update_controller.py"
 ARG CRON_LOG_PATH="/var/log/cron.log"
 ARG PYTHON_INTERPRETER_PATH="/usr/local/bin/python"
@@ -39,6 +45,12 @@ RUN apt-get update && apt-get install -y cron supervisor && \
 RUN echo "" >> ${DOTENV_PATH} && \
     echo "CHROMA_HOST=${CHROMA_HOST}" >> ${DOTENV_PATH} && \
     echo "CHROMA_PORT=${CHROMA_PORT}" >> ${DOTENV_PATH} && \
+    echo "" >> ${DOTENV_PATH} && \
+    echo "POSTGRES_HOST=${POSTGRES_HOST}" >> ${DOTENV_PATH} && \
+    echo "POSTGRES_PORT=${POSTGRES_PORT}" >> ${DOTENV_PATH} && \
+    echo "POSTGRES_USER=${POSTGRES_USER}" >> ${DOTENV_PATH} && \
+    echo "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}" >> ${DOTENV_PATH} && \
+    echo "POSTGRES_DB_NAME=${POSTGRES_DB_NAME}" >> ${DOTENV_PATH} && \
     echo "" >> ${DOTENV_PATH} && \
     echo "LOGGING_ENABLED=${LOGGING_ENABLED}" >> ${DOTENV_PATH} && \
     echo "TIMEOUT=${TIMEOUT}" >> ${DOTENV_PATH} && \
