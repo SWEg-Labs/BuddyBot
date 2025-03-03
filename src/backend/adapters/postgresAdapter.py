@@ -157,17 +157,17 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort, SaveMessagePort, GetMessagesPo
         try:
             postgres_platform_logs = [
                 PostgresPlatformLog(
-                    postgres_loading_items=PostgresLoadingItems[log.loading_items.name],
-                    timestamp=log.timestamp,
-                    outcome=log.outcome
-                ) for log in loading_attempt.platform_logs
+                    postgres_loading_items=PostgresLoadingItems[log.get_loading_items().name],
+                    timestamp=log.get_timestamp(),
+                    outcome=log.get_outcome()
+                ) for log in loading_attempt.get_platform_logs()
             ]
             postgres_vector_store_log = PostgresVectorStoreLog(
-                timestamp=loading_attempt.vector_store_log.timestamp,
-                outcome=loading_attempt.vector_store_log.outcome,
-                num_added_items=loading_attempt.vector_store_log.num_added_items,
-                num_modified_items=loading_attempt.vector_store_log.num_modified_items,
-                num_deleted_items=loading_attempt.vector_store_log.num_deleted_items
+                timestamp=loading_attempt.get_vector_store_log().get_timestamp(),
+                outcome=loading_attempt.get_vector_store_log().get_outcome(),
+                num_added_items=loading_attempt.get_vector_store_log().get_num_added_items(),
+                num_modified_items=loading_attempt.get_vector_store_log().get_num_modified_items(),
+                num_deleted_items=loading_attempt.get_vector_store_log().get_num_deleted_items()
             )
             return PostgresLoadingAttempt(
                 postgres_platform_logs=postgres_platform_logs,
