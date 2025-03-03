@@ -83,6 +83,8 @@ class PostgresRepository:
             # Insert message
             params = (message.get_content(), message.get_timestamp(), message.get_sender().value)
             self.__execute_query(insert_message_query, params=params)
+
+            logger.info("Message saved successfully in the Postgres database.")
             
             return PostgresSaveOperationResponse(success=True, message="Message saved successfully in the Postgres database.")
 
@@ -109,6 +111,9 @@ class PostgresRepository:
             LIMIT %s;
             """
             messages = self.__execute_query(get_messages_query, params=(quantity,), fetch_all=True)
+
+            logger.info("Messages retrieved successfully from the Postgres database.")
+
             return [PostgresMessage(content=message[0], timestamp=message[1], sender=message[2]) for message in messages]
 
         except psycopg2.Error as e:
