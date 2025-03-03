@@ -7,7 +7,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 LOGGING_ENABLED = os.getenv("LOGGING_ENABLED", "true").lower() == "true"
-LOG_FILE_PATH = os.getenv("LOG_FILE_PATH", "logs_new.txt")
+LOG_FILE_PATH = os.getenv("LOG_FILE_PATH", "logs_db_update.txt")
+
 
 ### LOGGER 1: Logging standard su console (console_logger) ###
 logger = logging.getLogger("console_logger")
@@ -16,6 +17,7 @@ logger.setLevel(logging.DEBUG if LOGGING_ENABLED else logging.WARNING)
 console_handler = logging.StreamHandler()
 console_handler.setFormatter(logging.Formatter("%(asctime)s - %(filename)s - %(levelname)s - %(message)s"))
 logger.addHandler(console_handler)
+
 
 ### LOGGER 2: Structlog su file (structured_logger) ###
 structlog.configure(

@@ -92,7 +92,7 @@ def initialize_postgres() -> PostgresAdapter:
       - Exception: If an error occurs during Postgres initialization.
     """
     try:
-        DB_CONFIG = {
+        db_config = {
             "host": os.getenv("POSTGRES_HOST", "localhost"),
             "port": os.getenv("POSTGRES_PORT", "5432"),
             "user": os.getenv("POSTGRES_USER", "buddybot"),
@@ -100,11 +100,11 @@ def initialize_postgres() -> PostgresAdapter:
             "dbname": os.getenv("POSTGRES_DB_NAME", "buddybot")
         }
         conn = psycopg2.connect(
-            host=DB_CONFIG["host"],
-            port=DB_CONFIG["port"],
-            user=DB_CONFIG["user"],
-            password=DB_CONFIG["password"],
-            dbname=DB_CONFIG["dbname"]
+            host=db_config["host"],
+            port=db_config["port"],
+            user=db_config["user"],
+            password=db_config["password"],
+            dbname=db_config["dbname"]
         )
         postgres_repository = PostgresRepository(conn)
         postgres_adapter = PostgresAdapter(postgres_repository)
@@ -147,7 +147,7 @@ def initialize_atlassian() -> tuple[int, dict[str, str]]:
     try:
         atlassian_token = os.getenv("ATLASSIAN_TOKEN")
         atlassian_user_email = os.getenv("ATLASSIAN_USER_EMAIL")
-        requests_timeout = int(os.getenv("TIMEOUT", "10"))
+        requests_timeout = int(os.getenv("REQUESTS_TIMEOUT", "10"))
         requests_auth_str = f"{atlassian_user_email}:{atlassian_token}"
         requests_auth_bytes = base64.b64encode(requests_auth_str.encode("utf-8")).decode("utf-8")
         requests_headers = {
