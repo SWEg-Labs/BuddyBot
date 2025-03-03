@@ -1,6 +1,7 @@
-from models.message import Message
-from typing import List
 from abc import ABC, abstractmethod
+from typing import List
+
+from models.message import Message
 from models.quantity import Quantity
 
 class GetMessagesUseCase(ABC):

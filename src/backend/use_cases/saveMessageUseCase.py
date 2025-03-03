@@ -1,5 +1,6 @@
-from models.dbSaveOperationResponse import DbSaveOperationResponse
 from abc import ABC, abstractmethod
+
+from models.dbSaveOperationResponse import DbSaveOperationResponse
 from models.message import Message
 
 class SaveMessageUseCase(ABC):

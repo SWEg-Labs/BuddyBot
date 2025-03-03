@@ -1,8 +1,9 @@
-from use_cases.getMessagesUseCase import GetMessagesUseCase
-from ports.getMessagesPort import GetMessagesPort
+from typing import List
+
 from models.quantity import Quantity
 from models.message import Message
-from typing import List
+from use_cases.getMessagesUseCase import GetMessagesUseCase
+from ports.getMessagesPort import GetMessagesPort
 from utils.logger import logger
 
 class GetMessagesService(GetMessagesUseCase):
@@ -10,6 +11,7 @@ class GetMessagesService(GetMessagesUseCase):
     Service class to handle the retrieval of messages.
     This class implements the GetMessagesUseCase interface and uses a 
     GetMessagesPort to fetch messages.
+
     """
     def __init__(self, get_messages_port: GetMessagesPort):
         """

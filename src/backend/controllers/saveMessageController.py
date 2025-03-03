@@ -6,10 +6,10 @@ from utils.logger import logger
 class SaveMessageController:
     """
     A controller class responsible for saving messages.
-    
     Attributes:
         __save_message_use_case (SaveMessageUseCase): The use case instance responsible for saving messages.
     """
+
     def __init__(self, save_message_use_case: SaveMessageUseCase):
         """
         Initializes the SaveMessagesController with the given SaveMessageUseCase.

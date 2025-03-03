@@ -1,7 +1,8 @@
-from use_cases.saveMessageUseCase import SaveMessageUseCase
 from models.message import Message
-from ports.saveMessagePort import SaveMessagePort
 from models.dbSaveOperationResponse import DbSaveOperationResponse
+
+from use_cases.saveMessageUseCase import SaveMessageUseCase
+from ports.saveMessagePort import SaveMessagePort
 from utils.logger import logger
 
 class SaveMessageService(SaveMessageUseCase):
@@ -11,18 +12,18 @@ class SaveMessageService(SaveMessageUseCase):
     to persist messages.
     """
 
-    def __init__(self, saveMessagePort: SaveMessagePort):
+    def __init__(self, save_message_port: SaveMessagePort):
         """
         Initializes the SaveMessageService with the given SaveMessagePort.
         Args:
-            saveMessagePort (SaveMessagePort): The port used to save messages.
+            save_message_port (SaveMessagePort): The port used to save messages.
         Raises:
             Exception: If there is an error initializing the SaveMessagePort.
         """
         try:
-            self.__saveMessagePort = saveMessagePort
+            self.__save_message_port = save_message_port
         except Exception as e:
-            logger.error(f"Failed to initialize SaveMessagePort: {e}")
+            logger.error(f"Failed to initialize SaveMessageService: {e}")
             raise
 
     def save(self, message: Message) -> DbSaveOperationResponse:
@@ -36,7 +37,7 @@ class SaveMessageService(SaveMessageUseCase):
             Exception: If there is an error saving the message.
         """
         try:
-            return self.__saveMessagePort.save_message(message)
+            return self.__save_message_port.save_message(message)
         except Exception as e:
             logger.error(f"Failed to save message: {e}")
             raise

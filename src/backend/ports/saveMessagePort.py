@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+
 from models.message import Message
 from models.dbSaveOperationResponse import DbSaveOperationResponse
 
@@ -8,6 +9,7 @@ class SaveMessagePort(ABC):
     This class defines the interface for saving messages, which must be implemented
     by any concrete class that inherits from it.
     """
+
     @abstractmethod
     def save_message(self, message: Message)  -> DbSaveOperationResponse:
         """
