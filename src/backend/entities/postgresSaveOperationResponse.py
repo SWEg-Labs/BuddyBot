@@ -5,7 +5,7 @@ class PostgresSaveOperationResponse:
 
     def get_success(self) -> bool:
         return self.__success
-    
+
     def get_message(self) -> str:
         return self.__message
 
