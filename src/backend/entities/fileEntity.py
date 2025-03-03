@@ -66,7 +66,7 @@ class FileEntity:
                 f"path={self.__path}, content={self.__content}, sha={self.__sha}, url={self.__url}, html_url={self.__html_url}, "
                 f"download_url={self.__download_url}, git_url={self.__git_url})")
     
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if not isinstance(other, FileEntity):
             return False
         return (self.__type == other.get_type() and

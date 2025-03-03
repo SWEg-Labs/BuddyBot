@@ -77,7 +77,7 @@ class IssueEntity:
                 f"assignee={self.__assignee}, reporter={self.__reporter}, created={self.__created}, updated={self.__updated}, "
                 f"attachment={self.__attachment})")
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if not isinstance(other, IssueEntity):
             return False
         return (self.__id == other.get_id() and

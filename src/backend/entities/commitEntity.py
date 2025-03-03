@@ -39,7 +39,7 @@ class CommitFileEntity:
     def __repr__(self):
         return f"CommitFileEntity(filename={self.__filename}, status={self.__status}, changes={self.__changes}, additions={self.__additions}, deletions={self.__deletions}, patch={self.__patch})"
     
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if not isinstance(other, CommitFileEntity):
             return False
         return (self.get_filename() == other.get_filename() and
@@ -96,7 +96,7 @@ class CommitEntity:
     def __repr__(self):
         return f"CommitEntity(sha={self.__sha}, message={self.__message}, author_name={self.__author_name}, author_email={self.__author_email}, author_date={self.__author_date}, url={self.__url}, files={self.__files})"
     
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if not isinstance(other, CommitEntity):
             return False
         return (self.get_sha() == other.get_sha() and

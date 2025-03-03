@@ -61,7 +61,7 @@ class PageEntity:
                 f"body={self.__body}, version={self.__version}, status={self.__status}, ancestors={self.__ancestors}, "
                 f"extensions={self.__extensions}, links={self.__links})")
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if not isinstance(other, PageEntity):
             return False
         return (self.__id == other.get_id() and

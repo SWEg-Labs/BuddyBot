@@ -5,7 +5,7 @@ class Answer:
     def get_content(self) -> str:
         return self.__content
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if isinstance(other, Answer):
             return self.__content == other.get_content()
         return False

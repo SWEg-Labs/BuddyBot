@@ -31,7 +31,7 @@ class QueryResultEntity:
             distances=data.get("distances", [])
         )
     
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if not isinstance(other, QueryResultEntity):
             return False
         return (self.__documents == other.documents and

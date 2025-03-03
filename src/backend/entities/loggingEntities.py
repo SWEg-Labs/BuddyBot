@@ -22,7 +22,7 @@ class PostgresPlatformLog:
     def get_outcome(self) -> bool:
         return self.__outcome
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if not isinstance(other, PostgresPlatformLog):
             return False
         return (self.__postgres_loading_items == other.get_postgres_loading_items() and
@@ -52,7 +52,7 @@ class PostgresVectorStoreLog:
     def get_num_deleted_items(self) -> int:
         return self.__num_deleted_items
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if not isinstance(other, PostgresVectorStoreLog):
             return False
         return (self.__timestamp == other.get_timestamp() and
@@ -84,7 +84,7 @@ class PostgresLoadingAttempt:
     def get_outcome(self) -> bool:
         return self.__outcome
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if not isinstance(other, PostgresLoadingAttempt):
             return False
         return (self.__postgres_platform_logs == other.get_postgres_platform_logs() and
