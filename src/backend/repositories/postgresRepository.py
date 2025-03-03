@@ -1,5 +1,6 @@
 import psycopg2
 from typing import Optional, Tuple
+
 from entities.loggingEntities import PostgresLoadingAttempt
 from entities.postgresSaveOperationResponse import PostgresSaveOperationResponse
 from entities.postgresMessage import PostgresMessage
@@ -51,7 +52,7 @@ class PostgresRepository:
         except psycopg2.Error as e:
             logger.error(f"An error occurred while executing the query: {e}")
             raise e
-        
+
     def save_message(self, message: PostgresMessage) -> PostgresSaveOperationResponse:
         '''
         Saves a message into the PostgreSQL database.
@@ -75,21 +76,23 @@ class PostgresRepository:
             INSERT INTO messages (content, timestamp, sender)
             VALUES (%s, %s, %s);
             """
-            
+
             # Create table
             self.__execute_query(create_messages_table_query)
-            
+
             # Insert message
             params = (message.get_content(), message.get_timestamp(), message.get_sender().value)
             self.__execute_query(insert_message_query, params=params)
+
+            logger.info("Message saved successfully in the Postgres database.")
             
             return PostgresSaveOperationResponse(success=True, message="Message saved successfully in the Postgres database.")
-        
+
         except psycopg2.Error as e:
             message = f"An error occurred while saving the message in the Postgres database: {e}"
             logger.error(message)
             return PostgresSaveOperationResponse(success=False, message=message)
-        
+
     def get_messages(self, quantity: int) -> list[PostgresMessage]:
         '''
         Retrieves the specified number of messages from the PostgreSQL database.
@@ -108,8 +111,11 @@ class PostgresRepository:
             LIMIT %s;
             """
             messages = self.__execute_query(get_messages_query, params=(quantity,), fetch_all=True)
+
+            logger.info("Messages retrieved successfully from the Postgres database.")
+
             return [PostgresMessage(content=message[0], timestamp=message[1], sender=message[2]) for message in messages]
-        
+
         except psycopg2.Error as e:
             message = f"An error occurred while retrieving the messages from the Postgres database: {e}"
             logger.error(message)
@@ -167,32 +173,44 @@ class PostgresRepository:
             INSERT INTO vector_store_logs (loading_attempt_id, timestamp, outcome, num_added_items, num_modified_items, num_deleted_items)
             VALUES (%s, %s, %s, %s, %s, %s);
             """
-            
+
             # Create tables
             self.__execute_query(create_loading_attempts_table_query)
             self.__execute_query(create_platform_logs_table_query)
             self.__execute_query(create_vector_store_logs_table_query)
-            
+
             # Insert loading attempt
             params = (
-                postgres_loading_attempt.starting_timestamp,
-                postgres_loading_attempt.ending_timestamp,
-                postgres_loading_attempt.outcome
+                postgres_loading_attempt.get_starting_timestamp(),
+                postgres_loading_attempt.get_ending_timestamp(),
+                postgres_loading_attempt.get_outcome()
             )
             loading_attempt_id = self.__execute_query(insert_loading_attempt_query, params=params, fetch_one=True)[0]
-            
+
             # Insert platform logs
-            for log in postgres_loading_attempt.postgres_platform_logs:
-                self.__execute_query(insert_platform_logs_query, params=(loading_attempt_id, log.postgres_loading_items.value, log.timestamp, log.outcome))
-            
+            for log in postgres_loading_attempt.get_postgres_platform_logs():
+                self.__execute_query(insert_platform_logs_query, params=(
+                    loading_attempt_id,
+                    log.get_postgres_loading_items().value,
+                    log.get_timestamp(),
+                    log.get_outcome()
+                ))
+
             # Insert vector store log
-            vector_log = postgres_loading_attempt.postgres_vector_store_log
+            vector_log = postgres_loading_attempt.get_postgres_vector_store_log()
             self.__execute_query(insert_vector_store_logs_query, params=(
-                loading_attempt_id, vector_log.timestamp, vector_log.outcome, vector_log.num_added_items, vector_log.num_modified_items, vector_log.num_deleted_items
+                loading_attempt_id,
+                vector_log.get_timestamp(),
+                vector_log.get_outcome(),
+                vector_log.get_num_added_items(),
+                vector_log.get_num_modified_items(),
+                vector_log.get_num_deleted_items()
             ))
-            
+
+            logger.info("Loading attempt saved successfully in the Postgres database.")
+
             return PostgresSaveOperationResponse(success=True, message="Loading attempt saved successfully in the Postgres database.")
-        
+
         except psycopg2.Error as e:
             message = f"An error occurred while saving the loading attempt in the Postgres database: {e}"
             logger.error(message)
