@@ -1,22 +1,25 @@
-from repositories.postgresRepository import PostgresRepository
+from typing import List
+
 from models.dbSaveOperationResponse import DbSaveOperationResponse
 from models.loggingModels import LoadingAttempt
+from models.quantity import Quantity
+from models.message import Message, MessageSender
 from entities.postgresSaveOperationResponse import PostgresSaveOperationResponse
 from entities.loggingEntities import PostgresLoadingAttempt, PostgresPlatformLog, PostgresVectorStoreLog, PostgresLoadingItems
-from ports.saveLoadingAttemptInDbPort import SaveLoadingAttemptInDbPort
-from utils.logger import logger
-from models.message import Message, MessageSender
 from entities.postgresMessage import PostgresMessage, PostgresMessageSender
+from ports.saveLoadingAttemptInDbPort import SaveLoadingAttemptInDbPort
 from ports.saveMessagePort import SaveMessagePort
 from ports.getMessagesPort import GetMessagesPort
-from typing import List
-from models.quantity import Quantity
+from repositories.postgresRepository import PostgresRepository
+from utils.logger import logger
 
 class PostgresAdapter(SaveLoadingAttemptInDbPort, SaveMessagePort, GetMessagesPort):
     """
     Adapter class for interacting with a PostgreSQL repository.
-    This class provides methods to save loading attempts and convert responses
+    This class provides methods to save and retrieve data, and convert responses
     between different formats used in the application and the PostgreSQL repository.
+    Attributes:
+        repository (PostgresRepository): The repository to interact with.
     """
 
     def __init__(self, repository: PostgresRepository):
@@ -66,7 +69,7 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort, SaveMessagePort, GetMessagesPo
         except Exception as e:
             logger.error(f"Error in get_messages: {e}")
             raise e
-        
+
     def save_loading_attempt(self, loading_attempt: LoadingAttempt) -> DbSaveOperationResponse:
         """
         Save a loading attempt to the PostgreSQL repository.
@@ -84,7 +87,7 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort, SaveMessagePort, GetMessagesPo
         except Exception as e:
             logger.error(f"Error in save_loading_attempt: {e}")
             return DbSaveOperationResponse(success=False, message=str(e))
-        
+
     def __dsor_converter(self, psor: PostgresSaveOperationResponse) -> DbSaveOperationResponse:
         """
         Convert a PostgresSaveOperationResponse to a DbSaveOperationResponse.
@@ -120,7 +123,7 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort, SaveMessagePort, GetMessagesPo
         except Exception as e:
             logger.error(f"Error in postgres_message_converter: {e}")
             raise e
-    
+
     def __message_converter(self, postgres_message: PostgresMessage) -> Message:
         """
         Convert a PostgresMessage to a Message.
@@ -140,7 +143,7 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort, SaveMessagePort, GetMessagesPo
         except Exception as e:
             logger.error(f"Error in message_converter: {e}")
             raise e
-        
+
     def __postgres_loading_attempt_converter(self, loading_attempt: LoadingAttempt) -> PostgresLoadingAttempt:
         """
         Convert a LoadingAttempt to a PostgresLoadingAttempt.
