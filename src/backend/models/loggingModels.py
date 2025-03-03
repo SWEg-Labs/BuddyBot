@@ -22,7 +22,7 @@ class PlatformLog:
     def get_outcome(self) -> bool:
         return self.__outcome
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if not isinstance(other, PlatformLog):
             return False
         return (self.__loading_items == other.get_loading_items() and
@@ -52,7 +52,7 @@ class VectorStoreLog:
     def get_num_deleted_items(self) -> int:
         return self.__num_deleted_items
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if not isinstance(other, VectorStoreLog):
             return False
         return (self.__timestamp == other.get_timestamp() and
@@ -84,7 +84,7 @@ class LoadingAttempt:
     def get_outcome(self) -> bool:
         return self.__outcome
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if not isinstance(other, LoadingAttempt):
             return False
         return (self.__platform_logs == other.get_platform_logs() and
