@@ -47,7 +47,7 @@ class LangChainRepository:
             # Aggiorna page_content di ogni documento con metadati e contenuto completo
             # Perchè create_stuff_documents_chain fornisce al chatbot solo il campo page_content di ogni documento
             for doc in relevant_docs:
-                doc.page_content = f"Metadata: {doc.metadata}\nContent: {doc.page_content}"
+                doc.set_page_content(f"Metadata: {doc.get_metadata()}\nContent: {doc.get_page_content()}")
 
             # Crea un PromptTemplate per il modello AI
             prompt = ChatPromptTemplate.from_messages(
@@ -62,7 +62,7 @@ class LangChainRepository:
 
             print("relevant_docs : ")
             for i, doc in enumerate(relevant_docs, start=1):
-                print(f"\nDocumento {i}:\n{doc.page_content}")
+                print(f"\nDocumento {i}:\n{doc.get_page_content()}")
 
             # Esegue la catena per ottenere una risposta
             response = rag_chain.invoke({

@@ -44,8 +44,8 @@ class ChatService(ChatUseCase):
             Answer: The generated answer.
         """
         try:
-            relevant_docs = self.__similarity_search(user_input)
-            answer = self.__generate_answer(user_input, relevant_docs)
+            relevant_docs = self.similarity_search(user_input)
+            answer = self.generate_answer(user_input, relevant_docs)
             return answer
         except Exception as e:
             logger.error(f"Error in get_answer: {e}")

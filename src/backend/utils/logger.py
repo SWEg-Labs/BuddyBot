@@ -14,7 +14,7 @@ logger = logging.getLogger("console_logger")
 logger.setLevel(logging.DEBUG if LOGGING_ENABLED else logging.WARNING)
 
 console_handler = logging.StreamHandler()
-console_handler.setFormatter(logging.Formatter("%(levelname)s - %(message)s"))
+console_handler.setFormatter(logging.Formatter("%(asctime)s - %(filename)s - %(levelname)s - %(message)s"))
 logger.addHandler(console_handler)
 
 ### LOGGER 2: Structlog su file (structured_logger) ###

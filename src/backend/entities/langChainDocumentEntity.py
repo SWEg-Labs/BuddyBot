@@ -5,6 +5,14 @@ class LangChainDocumentEntity:
         self.__page_content = page_content
         self.__metadata = metadata if metadata is not None else {}
 
+    @property
+    def page_content(self) -> str:     # La funzione invoke di LangChain richiede di accedere a doc.page_content
+        return self.__page_content
+    
+    @property
+    def metadata(self) -> dict:        # La funzione invoke di LangChain richiede di accedere a doc.metadata
+        return self.__metadata
+
     def get_page_content(self) -> str:
         return self.__page_content
 

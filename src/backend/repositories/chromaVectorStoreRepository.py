@@ -38,7 +38,6 @@ class ChromaVectorStoreRepository:
             self.__client = chroma_client
             self.__collection_name = collection_name
             self.__collection = collection
-            logger.info("Successfully connected to Chroma vector store.")
         except Exception as e:
             logger.error(f"Error initializing Chroma vector store: {e}")
             raise

@@ -36,8 +36,8 @@ class SimilaritySearchService:
             Exception: If an error occurs during the similarity search.
         """
         try:
-            similarity_threshold = self.__document_constraints.similarity_threshold
-            max_gap = self.__document_constraints.max_gap
+            similarity_threshold = self.__document_constraints.get_similarity_threshold()
+            max_gap = self.__document_constraints.get_max_gap()
 
             relevant_docs = []
             previous_distance = None
