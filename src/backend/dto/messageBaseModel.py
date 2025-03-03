@@ -2,26 +2,26 @@ from enum import Enum
 from datetime import datetime
 from pydantic import BaseModel
 
-class MessageSenderBaseModel(Enum, BaseModel):
+class MessageSenderBaseModel(Enum):
     USER = "User"
     CHATBOT = "Chatbot"
 
 class MessageBaseModel(BaseModel):
-
     def __init__(self, content: str, timestamp: datetime, sender: MessageSenderBaseModel):
+        super().__init__(content=content, timestamp=timestamp, sender=sender)
         self.__content = content
         self.__timestamp = timestamp
         self.__sender = sender
     
     def get_content(self) -> str:
         return self.__content
-    
+
     def get_timestamp(self) ->datetime:
         return self.__timestamp
-    
+
     def get_sender(self) ->MessageSenderBaseModel:
         return self.__sender
-    
+
     def __eq__(self, other)-> bool:
         if not isinstance(other, MessageBaseModel):
             return False

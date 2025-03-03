@@ -1,5 +1,6 @@
-from use_cases.saveMessageUseCase import SaveMessageUseCase
 from dto.messageBaseModel import MessageBaseModel
+from models.message import Message, MessageSender
+from use_cases.saveMessageUseCase import SaveMessageUseCase
 from utils.logger import logger
 
 class SaveMessageController:
@@ -34,6 +35,11 @@ class SaveMessageController:
             Exception: If there is an error during the save operation.
         """
         try:
+            message = Message(
+                content=message.get_content(),
+                timestamp=message.get_timestamp(),
+                sender=MessageSender[message.get_sender().name]
+            )
             db_save_operation_response = self.__save_message_use_case.save(message)
             result = {"success": db_save_operation_response.get_success(), "message": db_save_operation_response.get_message()}
         except Exception as e:

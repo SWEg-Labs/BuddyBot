@@ -1,14 +1,15 @@
 from unittest.mock import MagicMock
+from datetime import datetime
 
-from models.loading_attempt import LoadingAttempt
-from models.postgres_loading_attempt import PostgresLoadingAttempt
-from models.db_save_operation_response import DbSaveOperationResponse
-from entities.postgres_save_operation_response import PostgresSaveOperationResponse
-from adapters.postgres_adapter import PostgresAdapter
-from repositories.postgres_repository import PostgresRepository
+from models.loggingModels import LoadingAttempt, LoadingItems, PlatformLog, VectorStoreLog
+from models.dbSaveOperationResponse import DbSaveOperationResponse
 from models.message import Message, MessageSender
 from models.quantity import Quantity
-from entities.postgresEntities import PostgresMessage, PostgresMessageSender
+from entities.loggingEntities import PostgresLoadingAttempt, PostgresLoadingItems, PostgresPlatformLog, PostgresVectorStoreLog
+from entities.postgresSaveOperationResponse import PostgresSaveOperationResponse
+from entities.postgresMessage import PostgresMessage, PostgresMessageSender
+from adapters.postgresAdapter import PostgresAdapter
+from repositories.postgresRepository import PostgresRepository
 
 
 # Verifica che il metodo save_loading_attempt di PostgresAdapter chiami il metodo save_loading_attempt di PostgresRepository
@@ -96,11 +97,14 @@ def test_get_messages_calls_repository_method():
     postgres_adapter = PostgresAdapter(mock_postgres_repository)
 
     quantity = 5
-
     expected_response = [
+        Message(content=f"Message {i}", timestamp=f"2021-10-10T10:10:0{i}", sender=MessageSender.USER if i%2==0 else MessageSender.CHATBOT) for i in range(quantity)
+    ]
+
+    postgres_messages = [
         PostgresMessage(content=f"Message {i}", timestamp=f"2021-10-10T10:10:0{i}", sender=PostgresMessageSender.USER if i%2==0 else PostgresMessageSender.CHATBOT) for i in range(quantity)
     ]
-    mock_postgres_repository.get_messages.return_value = expected_response
+    mock_postgres_repository.get_messages.return_value = postgres_messages
 
     # Act
     result = postgres_adapter.get_messages(Quantity(quantity))
