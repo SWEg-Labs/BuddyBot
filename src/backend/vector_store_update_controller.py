@@ -2,16 +2,15 @@ import os
 from dotenv import load_dotenv, set_key, find_dotenv
 load_dotenv()
 from crontab import CronTab
-from db_update import update_database
 from datetime import datetime
-from zoneinfo import ZoneInfo
+
+from utils.dependency_injection import dependency_injection_cron
 
 try:
     print("--------------------------------------------------")
 
     # Stampa l'ora di inizio aggiornamento
-    italy_tz = ZoneInfo("Europe/Rome")
-    start_italian_time = datetime.now(italy_tz)
+    start_italian_time = datetime.now()
     start_time_string = start_italian_time.strftime("%d/%m/%Y %H:%M:%S")
     print(f"[{start_time_string}] Inizio aggiornamento")
 
@@ -29,11 +28,16 @@ try:
     print(f"db_update_error_frequency: {db_update_error_frequency}")
     print(f"db_update_max_retries: {db_update_max_retries}")
     '''
-    # inizializza cron
+
+    # Inizializza cron
     cron = CronTab(tabfile=crontab_path)
 
-    # Esegue l'aggiornamento del database
-    update_database()
+    # Ottiene il controller per il caricamento dei file
+    cron_dependencies = dependency_injection_cron()
+    load_files_controller = cron_dependencies["load_files_controller"]
+
+    # Esegue l'aggiornamento del database vettoriale
+    load_files_controller.load()
 
     # Se siamo passati da stato di errore a stato di successo ripristina variabili e cron
     if os.getenv('DB_UPDATE_ERROR')=='1':
@@ -51,7 +55,7 @@ try:
         cron.write()
 
     # Stampa l'ora di fine aggiornamento
-    end_italian_time = datetime.now(italy_tz)
+    end_italian_time = datetime.now()
     end_time_string = end_italian_time.strftime("%d/%m/%Y %H:%M:%S")
     print(f"[{end_time_string}] Aggiornamento completato")
 
@@ -64,7 +68,7 @@ except Exception as e:
     print(f"Error: {e}")
 
     try:
-        # Se siamo passati da stato di successo a stato di errore modifica variabil e cron
+        # Se siamo passati da stato di successo a stato di errore modifica variabili e cron
         if os.getenv('DB_UPDATE_ERROR')=='0':
             '''
             print(f"db_update_error prima: {os.getenv('DB_UPDATE_ERROR')}")

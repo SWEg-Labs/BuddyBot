@@ -2,32 +2,40 @@ from typing import Optional
 
 class LangChainDocumentEntity:
     def __init__(self, page_content: str, metadata: Optional[dict] = None):
-        self.page_content = page_content
-        self.metadata = metadata if metadata is not None else {}
+        self.__page_content = page_content
+        self.__metadata = metadata if metadata is not None else {}
+
+    @property
+    def page_content(self) -> str:     # La funzione invoke di LangChain richiede di accedere a doc.page_content
+        return self.__page_content
+    
+    @property
+    def metadata(self) -> dict:        # La funzione invoke di LangChain richiede di accedere a doc.metadata
+        return self.__metadata
 
     def get_page_content(self) -> str:
-        return self.page_content
+        return self.__page_content
 
     def get_metadata(self) -> dict:
-        return self.metadata
+        return self.__metadata
 
     def set_page_content(self, page_content: str):
-        self.page_content = page_content
+        self.__page_content = page_content
 
     def set_metadata(self, metadata: dict):
-        self.metadata = metadata
+        self.__metadata = metadata
 
     def add_metadata(self, key: str, value):
-        self.metadata[key] = value
+        self.__metadata[key] = value
 
     def remove_metadata(self, key: str):
-        if key in self.metadata:
-            del self.metadata[key]
+        if key in self.__metadata:
+            del self.__metadata[key]
 
     def __repr__(self) -> str:
-        return f"Document(page_content={self.page_content!r}, metadata={self.metadata!r})"
+        return f"Document(page_content={self.__page_content!r}, metadata={self.__metadata!r})"
     
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if not isinstance(other, LangChainDocumentEntity):
             return False
-        return self.page_content == other.page_content and self.metadata == other.metadata
+        return self.__page_content == other.get_page_content() and self.__metadata == other.get_metadata()

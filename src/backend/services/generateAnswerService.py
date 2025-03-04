@@ -19,8 +19,8 @@ class GenerateAnswerService:
             generate_answer_port (GenerateAnswerPort): The port used to generate answers.
         """
         try:
-            self.header = header
-            self.generate_answer_port = generate_answer_port
+            self.__header = header
+            self.__generate_answer_port = generate_answer_port
         except Exception as e:
             print(f"An error occurred during initialization: {e}")
 
@@ -34,7 +34,7 @@ class GenerateAnswerService:
             Answer: The generated answer.
         """
         try:
-            answer = self.generate_answer_port.generate_answer(user_input, relevant_docs, self.header)
+            answer = self.__generate_answer_port.generate_answer(user_input, relevant_docs, self.__header)
             return answer
         except Exception as e:
             print(f"An error occurred while generating the answer: {e}")

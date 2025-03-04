@@ -9,7 +9,13 @@ ENV DOTENV_PATH="${WORKDIR}/.env"
 ARG CHROMA_HOST="chroma-db"
 ARG CHROMA_PORT="8000"
 
-ARG DB_UPDATE_PATH="${WORKDIR}/db_update_controller.py"
+ARG POSTGRES_HOST="postgres-db"
+ARG POSTGRES_PORT="5432"
+ARG POSTGRES_USER="buddybot"
+ARG POSTGRES_PASSWORD="buddybot"
+ARG POSTGRES_DB_NAME="buddybot"
+
+ARG DB_UPDATE_PATH="${WORKDIR}/vector_store_update_controller.py"
 ARG CRON_LOG_PATH="/var/log/cron.log"
 ARG PYTHON_INTERPRETER_PATH="/usr/local/bin/python"
 ENV CRONTAB_PATH="/etc/cron.d/crontab"
@@ -18,7 +24,8 @@ ENV CRONJOB_COMMAND="${PYTHON_INTERPRETER_PATH} ${DB_UPDATE_PATH} >> ${CRON_LOG_
 ENV SUPERVISOR_CONF_PATH="/etc/supervisor/supervisord.conf"
 
 ENV LOGGING_ENABLED=true
-ENV TIMEOUT=10
+ENV LOG_FILE_PATH="${WORKDIR}/logs_db_update.txt"
+ENV REQUESTS_TIMEOUT=10
 ENV DB_UPDATE_MAX_RETRIES=3
 ENV DB_UPDATE_FREQUENCY="*/10 * * * *" 
 ENV DB_UPDATE_ERROR_FREQUENCY="*/5 * * * *"
@@ -40,8 +47,16 @@ RUN echo "" >> ${DOTENV_PATH} && \
     echo "CHROMA_HOST=${CHROMA_HOST}" >> ${DOTENV_PATH} && \
     echo "CHROMA_PORT=${CHROMA_PORT}" >> ${DOTENV_PATH} && \
     echo "" >> ${DOTENV_PATH} && \
+    echo "POSTGRES_HOST=${POSTGRES_HOST}" >> ${DOTENV_PATH} && \
+    echo "POSTGRES_PORT=${POSTGRES_PORT}" >> ${DOTENV_PATH} && \
+    echo "POSTGRES_USER=${POSTGRES_USER}" >> ${DOTENV_PATH} && \
+    echo "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}" >> ${DOTENV_PATH} && \
+    echo "POSTGRES_DB_NAME=${POSTGRES_DB_NAME}" >> ${DOTENV_PATH} && \
+    echo "" >> ${DOTENV_PATH} && \
     echo "LOGGING_ENABLED=${LOGGING_ENABLED}" >> ${DOTENV_PATH} && \
-    echo "TIMEOUT=${TIMEOUT}" >> ${DOTENV_PATH} && \
+    echo "LOG_FILE_PATH=${LOG_FILE_PATH}" >> ${DOTENV_PATH} && \
+    echo "" >> ${DOTENV_PATH} && \
+    echo "REQUESTS_TIMEOUT=${REQUESTS_TIMEOUT}" >> ${DOTENV_PATH} && \
     echo "" >> ${DOTENV_PATH} && \
     echo "DB_UPDATE_ERROR=${DB_UPDATE_ERROR}" >> ${DOTENV_PATH} && \
     echo "DB_UPDATE_RETRY=${DB_UPDATE_RETRY}" >> ${DOTENV_PATH} && \

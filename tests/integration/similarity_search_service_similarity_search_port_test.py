@@ -10,8 +10,8 @@ from ports.similaritySearchPort import SimilaritySearchPort
 def test_similarity_search_calls_port_method():
     # Arrange
     mock_document_constraints = MagicMock(spec=DocumentConstraints)
-    mock_document_constraints.similarity_threshold = 1.2
-    mock_document_constraints.max_gap = 0.3
+    mock_document_constraints.get_similarity_threshold.return_value = 1.2
+    mock_document_constraints.get_max_gap.return_value = 0.3
     mock_similarity_search_port = MagicMock(spec=SimilaritySearchPort)
     similarity_search_service = SimilaritySearchService(mock_document_constraints, mock_similarity_search_port)
     user_input = Question("test input")

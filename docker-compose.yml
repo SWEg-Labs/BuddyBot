@@ -7,6 +7,18 @@ services:
     networks:
       - buddybot-network
 
+  postgres-db:
+    image: postgres:17.4
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: buddybot
+      POSTGRES_PASSWORD: buddybot
+      POSTGRES_DB: buddybot
+    ports:
+      - "5432:5432"
+    networks:
+      - buddybot-network 
+
   backend:
     build:
       context: ./src/backend
@@ -18,6 +30,7 @@ services:
       - buddybot-network
     depends_on:
       - chroma-db
+      - postgres-db
     tty: true
     stdin_open: true
 

@@ -1,47 +1,38 @@
 import os
+import structlog
+import logging
+from dotenv import load_dotenv
 
-# Ottiene la configurazione LOGGING_ENABLED dalle variabili di ambiente
+# Carica le variabili d'ambiente
+load_dotenv()
+
 LOGGING_ENABLED = os.getenv("LOGGING_ENABLED", "true").lower() == "true"
+LOG_FILE_PATH = os.getenv("LOG_FILE_PATH", "logs_db_update.txt")
 
-class Logger:
-    """
-    Utility logger that can be enabled/disabled via environment variables.
-    Wraps print with additional formatting and checks.
 
-    Requires the `LOGGING_ENABLED` environment variable to be set to `true` to enable logging.
-    """
-    @staticmethod
-    def info(message: str):
-        """
-        Logs an informational message.
+### LOGGER 1: Logging standard su console (console_logger) ###
+logger = logging.getLogger("console_logger")
+logger.setLevel(logging.DEBUG if LOGGING_ENABLED else logging.WARNING)
 
-        Args:
-            message (str): The message to log.
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(logging.Formatter("%(asctime)s - %(filename)s - %(levelname)s - %(message)s"))
+logger.addHandler(console_handler)
 
-        Raises:
-            Exception: If an error occurs while logging the message.
-        """
-        try:
-            if LOGGING_ENABLED:
-                print(f"[INFO] {message}")
-        except Exception as e:
-            print(f"Error logging message: {e}")
 
-    @staticmethod
-    def error(message: str):
-        """
-        Logs an error message.
+### LOGGER 2: Structlog su file (structured_logger) ###
+structlog.configure(
+    processors=[
+        structlog.processors.TimeStamper(fmt="iso", utc=False),  # Usa ora locale
+        structlog.processors.JSONRenderer()
+    ],
+    logger_factory=structlog.stdlib.LoggerFactory()
+)
 
-        Args:
-            message (str): The error message to log.
+file_handler = logging.FileHandler(LOG_FILE_PATH)
+file_handler.setFormatter(logging.Formatter("%(message)s"))
 
-        Raises:
-            Exception: If an error occurs while logging the message.
-        """
-        try:
-            if LOGGING_ENABLED:
-                print(f"[ERROR] {message}")
-        except Exception as e:
-            print(f"Error logging message: {e}")
+file_logger = logging.getLogger("file_logger")
+file_logger.setLevel(logging.INFO)
+file_logger.addHandler(file_handler)
 
-logger = Logger()
+structured_logger = structlog.wrap_logger(file_logger)

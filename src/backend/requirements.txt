@@ -8,3 +8,6 @@ PyGithub
 python-crontab
 pytest==8.3.4
 pytest-asyncio
+freezegun
+psycopg2
+structlog

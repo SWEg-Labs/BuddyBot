@@ -1,10 +1,12 @@
-from typing import Dict
+from typing import Dict, List
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
-from utils.dependency_injection import dependency_injection
+from dto.messageBaseModel import MessageBaseModel
+from utils.dependency_injection import dependency_injection_frontend
 from utils.logger import logger
+
 
 # Inizializzazione dell'app FastAPI
 app = FastAPI(
@@ -23,84 +25,72 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-dependencies = dependency_injection()
-chat_controller = dependencies["chat_controller"]
+frontend_dependencies = dependency_injection_frontend()
+chat_controller = frontend_dependencies["chat_controller"]
+save_message_controller = frontend_dependencies["save_message_controller"]
+get_messages_controller = frontend_dependencies["get_messages_controller"]
 
 
-@app.post("/api/chat", summary="Invia un messaggio al chatbot", response_model=Dict[str, str])
-async def chat(request: Request):
+@app.post("/api/chat", summary="Send a messagge to the chatbot", response_model=Dict[str, str])
+async def chat(request: Request) -> Dict[str, str] | JSONResponse:
     """
-    Endpoint per inviare un messaggio al chatbot e ottenere una risposta.
-
+    Endpoint to send a message to the chatbot and get a response.
     Args:
-        request (Request): La richiesta JSON contenente il messaggio dell'utente.
-
+        request (Request): The JSON request containing the user's message.
     Returns:
-        Dict[str, str]: Una risposta JSON con la risposta del chatbot.
-    
-    Body JSON esempio:
+        Union[Dict[str, str], JSONResponse]: 
+            - If successful, returns a dictionary containing the chatbot's reply.
+            - If an error occurs, returns a JSONResponse with error details and 500 status code
+    Example Request JSON body:
         {
-            "message": "Ciao, chatbot!"
+            "message": "Hello, chatbot!"
         }
     """
     try:
         return await chat_controller.get_answer(request)
     except Exception as e:
-        logger.error(f"Error processing chat request: {e}")
-        return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
+        error_message = f"Error processing chat request: {e}"
+        logger.error(error_message)
+        return JSONResponse(content={"status": "error", "message": error_message}, status_code=500)
 
 
-'''
-@app.get("/api/github/load", summary="Carica i file da GitHub", response_model=Dict[str, str])
-async def load_from_github():
+@app.post("/api/save_message", summary="Save a message to the Postgres database", response_model=dict[str, bool | str])
+async def save_message(message: MessageBaseModel) -> dict[str, bool | str] | JSONResponse:
     """
-    Endpoint per caricare i file da GitHub nel database Chroma.
-
+    Save a message to the Postgres database.
+    Args:
+        message (MessageBaseModel): The message to save.
     Returns:
-        Dict[str, str]: Stato dell'operazione con un messaggio.
+        Union[dict[str, bool | str], JSONResponse]: 
+            - If successful, returns a dictionary containing the operation status.
+            - If an error occurs, returns a JSONResponse with error details and 500 status code
     """
     try:
-        UserController.load_github_files(chroma_vector_store_repository, github_service)
-        UserController.load_github_commits(chroma_vector_store_repository, github_service)
-        return {"response": "File caricati con successo da GitHub"}
+        return save_message_controller.save(message)
     except Exception as e:
-        logger.error(str(e))
-        return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
+        error_message = f"Error saving the given message: {e}"
+        logger.error(error_message)
+        return JSONResponse(content={"status": "error", "message": error_message}, status_code=500)
 
 
-@app.get("/api/jira/load", summary="Carica le issue da Jira", response_model=Dict[str, str])
-async def load_from_jira():
+@app.post("/api/get_messages", summary="Get messages from the Postgres database", response_model=List[MessageBaseModel])
+async def get_messages(quantity: dict[str, int]) -> List[MessageBaseModel] | JSONResponse:
     """
-    Endpoint per caricare le issue da Jira nel database Chroma.
-
+    Retrieves a specified quantity of messages from the chat history.
+    Args:
+        quantity (dict[str, int]): A dictionary containing the number of messages to retrieve as value
     Returns:
-        Dict[str, str]: Stato dell'operazione con un messaggio.
+        Union[List[MessageBaseModel], JSONResponse]: 
+            - If successful, returns a list of MessageBaseModel objects containing the messages
+            - If an error occurs, returns a JSONResponse with error details and 500 status code
     """
     try:
-        UserController.load_jira(chroma_vector_store_repository, github_service, jira_service)
-        return {"response": "File caricati con successo da Jira"}
+        return get_messages_controller.get_messages(quantity)
     except Exception as e:
-        logger.error(str(e))
-        return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
+        error_message = f"Error getting the previous messages: {e}"
+        logger.error(error_message)
+        return JSONResponse(content={"status": "error", "message": error_message}, status_code=500)
 
-
-@app.get("/api/confluence/load", summary="Carica le pagine da Confluence",
-         response_model=Dict[str, str])
-async def load_from_confluence():
-    """
-    Endpoint per caricare le pagine da Confluence nel database Chroma.
-
-    Returns:
-        Dict[str, str]: Stato dell'operazione con un messaggio.
-    """
-    try:
-        UserController.load_confluence(chroma_vector_store_repository, github_service, jira_service,
-                                       confluence_service)
-        return {"response": "File caricati con successo da Confluence"}
-    except Exception as e:
-        logger.error(str(e))
-        return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
-'''
 
 
 if __name__ == "__main__":
