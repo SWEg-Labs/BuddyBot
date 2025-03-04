@@ -1,5 +1,6 @@
 from typing import List, Tuple
-import re
+from datetime import datetime
+import pytz
 
 from models.document import Document
 from models.loggingModels import PlatformLog, VectorStoreLog, LoadingAttempt
@@ -54,19 +55,22 @@ class LoadFilesService(LoadFilesUseCase):
         Loads data from GitHub, Jira, and Confluence, cleans Confluence pages, and saves the loading attempt logs.
         """
         try:
+            italy_tz = pytz.timezone('Europe/Rome')
+            starting_timestamp = datetime.now(italy_tz)
+
             github_commits_log, github_commits = self.load_github_commits()
             github_files_log, github_files = self.load_github_files()
             jira_issues_log, jira_issues = self.load_jira_issues()
             confluence_pages_log, confluence_pages = self.load_confluence_pages()
-            
+
             cleaned_confluence_pages = self.clean_confluence_pages(confluence_pages)
-            
+
             documents = github_commits + github_files + jira_issues + cleaned_confluence_pages
             vector_store_log = self.load_in_vector_store(documents)
-            
+
             platform_logs = [github_commits_log, github_files_log, jira_issues_log, confluence_pages_log]
-            loading_attempt = LoadingAttempt(platform_logs, vector_store_log)
-            
+            loading_attempt = LoadingAttempt(platform_logs, vector_store_log, starting_timestamp)
+
             self.save_loading_attempt_in_db(loading_attempt)
             self.save_loading_attempt_in_txt(loading_attempt)
         except Exception as e:

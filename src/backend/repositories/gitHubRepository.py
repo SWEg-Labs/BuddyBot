@@ -1,5 +1,6 @@
 from github.Repository import Repository
 from datetime import datetime
+import pytz
 from typing import Tuple, List
 
 from models.loggingModels import PlatformLog, LoadingItems
@@ -46,12 +47,13 @@ class GitHubRepository:
                 commit_entities.append(commit_entity)
 
             logger.info(f"Fetched {len(commit_entities)} commits for repository {self.__github_repo.full_name}")
-            log = PlatformLog(LoadingItems.GitHubCommits, datetime.now(), True)
+            italy_tz = pytz.timezone('Europe/Rome')
+            log = PlatformLog(LoadingItems.GitHubCommits, datetime.now(italy_tz), True)
 
             return log, commit_entities
         except Exception as e:
             logger.error(f"Error fetching commits for repository {self.__github_repo.full_name}: {e}")
-            log = PlatformLog(LoadingItems.GitHubCommits, datetime.now(), False)
+            log = PlatformLog(LoadingItems.GitHubCommits, datetime.now(italy_tz), False)
             return log, []
 
     def load_github_files(self) -> Tuple[PlatformLog, List[FileEntity]]:
@@ -75,10 +77,11 @@ class GitHubRepository:
                     file_entities.append(file_entity)
 
             logger.info(f"Fetched {len(file_entities)} files for repository {self.__github_repo.full_name}")
-            log = PlatformLog(LoadingItems.GitHubFiles, datetime.now(), True)
+            italy_tz = pytz.timezone('Europe/Rome')
+            log = PlatformLog(LoadingItems.GitHubFiles, datetime.now(italy_tz), True)
 
             return log, file_entities
         except Exception as e:
             logger.error(f"Error fetching files for repository {self.__github_repo.full_name}: {e}")
-            log = PlatformLog(LoadingItems.GitHubFiles, datetime.now(), False)
+            log = PlatformLog(LoadingItems.GitHubFiles, datetime.now(italy_tz), False)
             return log, []

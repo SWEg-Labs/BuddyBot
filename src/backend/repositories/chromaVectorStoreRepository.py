@@ -1,6 +1,5 @@
-import os
-from langchain.text_splitter import RecursiveCharacterTextSplitter
 import chromadb
+import pytz
 
 from models.loggingModels import VectorStoreLog
 from entities.chromaDocumentEntity import ChromaDocumentEntity
@@ -98,8 +97,9 @@ class ChromaVectorStoreRepository:
             )
 
             logger.info(f"Successfully loaded {len(documents)} documents into Chroma vector store.")
+            italy_tz = pytz.timezone('Europe/Rome')
             log = VectorStoreLog(
-                timestamp=datetime.now(),
+                timestamp=datetime.now(italy_tz),
                 outcome=True,
                 num_added_items=len(documents) - num_modified_items,
                 num_modified_items=num_modified_items,
@@ -110,7 +110,7 @@ class ChromaVectorStoreRepository:
         except Exception as e:
             logger.error(f"Error loading documents into Chroma vector store: {e}")
             log = VectorStoreLog(
-                timestamp=datetime.now(),
+                timestamp=datetime.now(italy_tz),
                 outcome=False,
                 num_added_items=0,
                 num_modified_items=0,

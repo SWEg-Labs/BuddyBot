@@ -1,5 +1,6 @@
 from unittest.mock import MagicMock
 from datetime import datetime
+import pytz
 from freezegun import freeze_time
 
 from models.document import Document
@@ -40,7 +41,7 @@ def test_similarity_search_calls_repository():
 
 # Verifica che il metodo load di ChromaVectorStoreAdapter chiami il metodo load di ChromaVectorStoreRepository
 
-@freeze_time("2025-03-01 12:00:00")  # Freeze time to avoid issues with datetime.now()
+@freeze_time("2025-03-01 12:00:00")  # Freeze time to avoid issues with datetime.now(italy_tz)
 def test_load_calls_repository():
     # Arrange
     mock_repository = MagicMock(spec=ChromaVectorStoreRepository)
@@ -50,11 +51,12 @@ def test_load_calls_repository():
         Document(page_content="doc1", metadata={"author": "Author1", "id": "1"}),
         Document(page_content="doc2", metadata={"author": "Author2", "id": "2"}),
     ]
+    italy_tz = pytz.timezone('Europe/Rome')
     document_entities = [
         ChromaDocumentEntity(page_content="doc1",
-                       metadata={"author": "Author1", "id": "1", "chunk_index": 0, "doc_id": "1_0", "vector_store_insertion_date": datetime.now().strftime("%Y-%m-%dT%H:%M:%S")}),
+                       metadata={"author": "Author1", "id": "1", "chunk_index": 0, "doc_id": "1_0", "vector_store_insertion_date": datetime.now(italy_tz).strftime("%Y-%m-%dT%H:%M:%S")}),
         ChromaDocumentEntity(page_content="doc2",
-                       metadata={"author": "Author2", "id": "2", "chunk_index": 0, "doc_id": "2_0", "vector_store_insertion_date": datetime.now().strftime("%Y-%m-%dT%H:%M:%S")}),
+                       metadata={"author": "Author2", "id": "2", "chunk_index": 0, "doc_id": "2_0", "vector_store_insertion_date": datetime.now(italy_tz).strftime("%Y-%m-%dT%H:%M:%S")}),
     ]
 
     vector_store_log = VectorStoreLog(

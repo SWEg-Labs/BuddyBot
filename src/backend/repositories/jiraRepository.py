@@ -1,5 +1,6 @@
 import requests
 from datetime import datetime
+import pytz
 from typing import List, Tuple
 
 from models.loggingModels import PlatformLog, LoadingItems
@@ -75,10 +76,11 @@ class JiraRepository:
             ) for issue in issues_data]
 
             logger.info(f"Fetched {len(issues)} issues from Jira project {self.__project_key}")
-            log = PlatformLog(LoadingItems.JiraIssues, datetime.now(), True)
+            italy_tz = pytz.timezone('Europe/Rome')
+            log = PlatformLog(LoadingItems.JiraIssues, datetime.now(italy_tz), True)
 
             return log, issues
         except requests.RequestException as e:
             logger.error(f"Error fetching Jira issues: {e}")
-            log = PlatformLog(LoadingItems.JiraIssues, datetime.now(), False)
+            log = PlatformLog(LoadingItems.JiraIssues, datetime.now(italy_tz), False)
             return log, []

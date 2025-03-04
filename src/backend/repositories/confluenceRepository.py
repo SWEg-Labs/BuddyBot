@@ -1,5 +1,6 @@
 import requests
 from datetime import datetime
+import pytz
 from typing import List, Tuple
 
 from models.loggingModels import PlatformLog, LoadingItems
@@ -77,10 +78,11 @@ class ConfluenceRepository:
             ) for page in pages_data]
 
             logger.info(f"Fetched {len(pages)} pages from Confluence space {self.__project_key}")
-            log = PlatformLog(LoadingItems.ConfluencePages, datetime.now(), True)
+            italy_tz = pytz.timezone('Europe/Rome')
+            log = PlatformLog(LoadingItems.ConfluencePages, datetime.now(italy_tz), True)
 
             return log, pages
         except requests.RequestException as e:
             logger.error(f"Error fetching Confluence pages: {e}")
-            log = PlatformLog(LoadingItems.ConfluencePages, datetime.now(), False)
+            log = PlatformLog(LoadingItems.ConfluencePages, datetime.now(italy_tz), False)
             raise

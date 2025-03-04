@@ -62,10 +62,10 @@ class PostgresVectorStoreLog:
             self.__num_deleted_items == other.get_num_deleted_items())
 
 class PostgresLoadingAttempt:
-    def __init__(self, postgres_platform_logs: list[PostgresPlatformLog], postgres_vector_store_log: PostgresVectorStoreLog):
+    def __init__(self, postgres_platform_logs: list[PostgresPlatformLog], postgres_vector_store_log: PostgresVectorStoreLog, starting_timestamp: datetime):
         self.__postgres_platform_logs = postgres_platform_logs
         self.__postgres_vector_store_log = postgres_vector_store_log
-        self.__starting_timestamp = postgres_platform_logs[0].get_timestamp()
+        self.__starting_timestamp = starting_timestamp
         self.__ending_timestamp = postgres_vector_store_log.get_timestamp()
         self.__outcome = all(log.get_outcome() for log in postgres_platform_logs) and postgres_vector_store_log.get_outcome()
 

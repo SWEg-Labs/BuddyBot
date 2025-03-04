@@ -62,10 +62,10 @@ class VectorStoreLog:
             self.__num_deleted_items == other.get_num_deleted_items())
 
 class LoadingAttempt:
-    def __init__(self, platform_logs: list[PlatformLog], vector_store_log: VectorStoreLog):
+    def __init__(self, platform_logs: list[PlatformLog], vector_store_log: VectorStoreLog, starting_timestamp: datetime):
         self.__platform_logs = platform_logs
         self.__vector_store_log = vector_store_log
-        self.__starting_timestamp = platform_logs[0].get_timestamp()
+        self.__starting_timestamp = starting_timestamp
         self.__ending_timestamp = vector_store_log.get_timestamp()
         self.__outcome = all(log.get_outcome() for log in platform_logs) and vector_store_log.get_outcome()
 
