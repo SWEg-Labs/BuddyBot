@@ -11,3 +11,4 @@ pytest-asyncio
 freezegun
 psycopg2
 structlog
+pytz

@@ -3,6 +3,7 @@ from dotenv import load_dotenv, set_key, find_dotenv
 load_dotenv()
 from crontab import CronTab
 from datetime import datetime
+import pytz
 
 from utils.dependency_injection import dependency_injection_cron
 
@@ -10,7 +11,8 @@ try:
     print("--------------------------------------------------")
 
     # Stampa l'ora di inizio aggiornamento
-    start_italian_time = datetime.now()
+    italy_tz = pytz.timezone('Europe/Rome')
+    start_italian_time = datetime.now(italy_tz)
     start_time_string = start_italian_time.strftime("%d/%m/%Y %H:%M:%S")
     print(f"[{start_time_string}] Inizio aggiornamento")
 
@@ -55,7 +57,7 @@ try:
         cron.write()
 
     # Stampa l'ora di fine aggiornamento
-    end_italian_time = datetime.now()
+    end_italian_time = datetime.now(italy_tz)
     end_time_string = end_italian_time.strftime("%d/%m/%Y %H:%M:%S")
     print(f"[{end_time_string}] Aggiornamento completato")
 

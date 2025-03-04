@@ -11,7 +11,7 @@ from ports.confluencePort import ConfluencePort
 from ports.loadFilesInVectorStorePort import LoadFilesInVectorStorePort
 from ports.saveLoadingAttemptInDbPort import SaveLoadingAttemptInDbPort
 from services.confluenceCleanerService import ConfluenceCleanerService
-from utils.logger import logger, structured_logger
+from utils.logger import logger, file_logger
 
 class LoadFilesService(LoadFilesUseCase):
     """
@@ -180,8 +180,9 @@ class LoadFilesService(LoadFilesUseCase):
                 f"- Numero elementi aggiunti: {loading_attempt.get_vector_store_log().get_num_added_items()}\n"
                 f"- Numero elementi modificati: {loading_attempt.get_vector_store_log().get_num_modified_items()}\n"
                 f"- Numero elementi eliminati: {loading_attempt.get_vector_store_log().get_num_deleted_items()}\n"
+                "=============================================\n"
             )
-            structured_logger.info(log_message)
+            file_logger.info(log_message)
         except Exception as e:
             logger.error(f"Error saving loading attempt in TXT: {e}")
             raise

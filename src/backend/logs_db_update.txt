@@ -1,8 +1,22 @@
-{"event": "=============================================\nTentativo aggiornamento database vettoriale:\n- Esito: fallito\n- Elementi interessati: GitHubCommits, GitHubFiles, JiraIssues, ConfluencePages\n- Data di inizio: 2025/03/04 00:10:47\n- Data di fine: 2025/03/04 00:17:25\n- Numero elementi aggiunti: 0\n- Numero elementi modificati: 0\n- Numero elementi eliminati: 0\n", "timestamp": "2025-03-04T00:17:25.285250"}
-{"event": "=============================================\nTentativo aggiornamento database vettoriale:\n- Esito: fallito\n- Elementi interessati: GitHubCommits, GitHubFiles, JiraIssues, ConfluencePages\n- Data di inizio: 2025/03/04 00:30:26\n- Data di fine: 2025/03/04 00:31:51\n- Numero elementi aggiunti: 0\n- Numero elementi modificati: 0\n- Numero elementi eliminati: 0\n", "timestamp": "2025-03-04T00:31:51.607322"}
-{"event": "=============================================\nTentativo aggiornamento database vettoriale:\n- Esito: fallito\n- Elementi interessati: GitHubCommits, GitHubFiles, JiraIssues, ConfluencePages\n- Data di inizio: 2025/03/04 00:44:19\n- Data di fine: 2025/03/04 00:45:41\n- Numero elementi aggiunti: 0\n- Numero elementi modificati: 0\n- Numero elementi eliminati: 0\n", "timestamp": "2025-03-04T00:45:42.011278"}
-{"event": "=============================================\nTentativo aggiornamento database vettoriale:\n- Esito: fallito\n- Elementi interessati: GitHubCommits, GitHubFiles, JiraIssues, ConfluencePages\n- Data di inizio: 2025/03/04 01:00:17\n- Data di fine: 2025/03/04 01:01:42\n- Numero elementi aggiunti: 0\n- Numero elementi modificati: 0\n- Numero elementi eliminati: 0\n", "timestamp": "2025-03-04T01:01:43.039812"}
-{"event": "=============================================\nTentativo aggiornamento database vettoriale:\n- Esito: fallito\n- Elementi interessati: GitHubCommits, GitHubFiles, JiraIssues, ConfluencePages\n- Data di inizio: 2025/03/04 01:18:53\n- Data di fine: 2025/03/04 01:20:35\n- Numero elementi aggiunti: 0\n- Numero elementi modificati: 0\n- Numero elementi eliminati: 0\n", "timestamp": "2025-03-04T01:20:35.801942"}
-{"event": "=============================================\nTentativo aggiornamento database vettoriale:\n- Esito: riuscito\n- Elementi interessati: GitHubCommits, GitHubFiles, JiraIssues, ConfluencePages\n- Data di inizio: 2025/03/04 01:40:05\n- Data di fine: 2025/03/04 01:42:19\n- Numero elementi aggiunti: 339\n- Numero elementi modificati: 0\n- Numero elementi eliminati: 0\n", "timestamp": "2025-03-04T01:42:19.277051"}
-{"event": "=============================================\nTentativo aggiornamento database vettoriale:\n- Esito: riuscito\n- Elementi interessati: GitHubCommits, GitHubFiles, JiraIssues, ConfluencePages\n- Data di inizio: 2025/03/04 01:49:16\n- Data di fine: 2025/03/04 01:52:35\n- Numero elementi aggiunti: 0\n- Numero elementi modificati: 339\n- Numero elementi eliminati: 0\n", "timestamp": "2025-03-04T01:52:35.920904"}
-{"event": "=============================================\nTentativo aggiornamento database vettoriale:\n- Esito: riuscito\n- Elementi interessati: GitHubCommits, GitHubFiles, JiraIssues, ConfluencePages\n- Data di inizio: 2025/03/04 02:02:37\n- Data di fine: 2025/03/04 02:05:17\n- Numero elementi aggiunti: 0\n- Numero elementi modificati: 339\n- Numero elementi eliminati: 0\n", "timestamp": "2025-03-04T02:05:17.109413"}
+=============================================
+Tentativo aggiornamento database vettoriale:
+- Esito: riuscito
+- Elementi interessati: GitHubCommits, GitHubFiles, JiraIssues, ConfluencePages
+- Data di inizio: 2025/03/04 12:21:08
+- Data di fine: 2025/03/04 12:25:04
+- Numero elementi aggiunti: 0
+- Numero elementi modificati: 456
+- Numero elementi eliminati: 0
+=============================================
+
+=============================================
+Tentativo aggiornamento database vettoriale:
+- Esito: riuscito
+- Elementi interessati: GitHubCommits, GitHubFiles, JiraIssues, ConfluencePages
+- Data di inizio: 2025/03/04 12:28:30
+- Data di fine: 2025/03/04 12:32:02
+- Numero elementi aggiunti: 0
+- Numero elementi modificati: 456
+- Numero elementi eliminati: 0
+=============================================
+

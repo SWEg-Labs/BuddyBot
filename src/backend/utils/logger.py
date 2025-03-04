@@ -1,5 +1,4 @@
 import os
-import structlog
 import logging
 from dotenv import load_dotenv
 
@@ -19,20 +18,12 @@ console_handler.setFormatter(logging.Formatter("%(asctime)s - %(filename)s - %(l
 logger.addHandler(console_handler)
 
 
-### LOGGER 2: Structlog su file (structured_logger) ###
-structlog.configure(
-    processors=[
-        structlog.processors.TimeStamper(fmt="iso", utc=False),  # Usa ora locale
-        structlog.processors.JSONRenderer()
-    ],
-    logger_factory=structlog.stdlib.LoggerFactory()
-)
+### LOGGER 2: Logging standard su file (plain_file_logger) ###
+
+file_logger = logging.getLogger("plain_file_logger")
+file_logger.setLevel(logging.INFO)
 
 file_handler = logging.FileHandler(LOG_FILE_PATH)
 file_handler.setFormatter(logging.Formatter("%(message)s"))
 
-file_logger = logging.getLogger("file_logger")
-file_logger.setLevel(logging.INFO)
 file_logger.addHandler(file_handler)
-
-structured_logger = structlog.wrap_logger(file_logger)
