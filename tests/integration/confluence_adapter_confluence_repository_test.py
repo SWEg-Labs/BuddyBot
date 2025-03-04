@@ -6,6 +6,8 @@ from adapters.confluenceAdapter import ConfluenceAdapter
 from repositories.confluenceRepository import ConfluenceRepository
 from entities.pageEntity import PageEntity
 
+# Verifica che il metodo load_confluence_pages del ConfluenceAdapter chiami il metodo load_confluence_pages del ConfluenceRepository
+
 def test_load_confluence_pages_calls_repository_method():
     # Arrange
     mock_confluence_repository = MagicMock(spec=ConfluenceRepository)
