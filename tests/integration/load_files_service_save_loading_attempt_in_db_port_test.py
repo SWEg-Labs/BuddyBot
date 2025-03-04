@@ -42,6 +42,7 @@ def test_save_loading_attempt_in_db_calls_port_method():
     loading_attempt = LoadingAttempt(
         platform_logs=platform_logs,
         vector_store_log=vector_store_log,
+        starting_timestamp=datetime(2025, 2, 28, 12, 34, 56) - timedelta(minutes=6)
     )
     db_save_response = DbSaveOperationResponse(success=True, message="Saved successfully")
     mock_save_loading_attempt_in_db_port.save_loading_attempt.return_value = db_save_response

@@ -164,6 +164,5 @@ cython_debug/
 # Angular
 package-lock.json
 
-# Toglie il file logs_db_update.txt creato vuoto quando si esegue "pytest" sulla root, ma mantiene i log dentro src/backend
-logs_db_update.txt
-!src/backend/logs_db_update.txt
+# Il file txt di log dell'aggiornamento automatico del database vettoriale, che viene creato nelle prove locali
+**/logs_db_update.txt

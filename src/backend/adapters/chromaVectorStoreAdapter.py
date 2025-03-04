@@ -1,3 +1,6 @@
+from datetime import datetime
+import pytz
+
 from models.question import Question
 from models.document import Document
 from models.loggingModels import VectorStoreLog
@@ -6,7 +9,6 @@ from ports.similaritySearchPort import SimilaritySearchPort
 from ports.loadFilesInVectorStorePort import LoadFilesInVectorStorePort
 from repositories.chromaVectorStoreRepository import ChromaVectorStoreRepository
 from utils.logger import logger
-from datetime import datetime
 
 class ChromaVectorStoreAdapter(SimilaritySearchPort, LoadFilesInVectorStorePort):
     """
@@ -42,8 +44,9 @@ class ChromaVectorStoreAdapter(SimilaritySearchPort, LoadFilesInVectorStorePort)
             return result
         except Exception as e:
             logger.error(f"Error in adapting Documents to load: {e}")
+            italy_tz = pytz.timezone('Europe/Rome')
             return VectorStoreLog(
-                timestamp=datetime.now(),
+                timestamp=datetime.now(italy_tz),
                 outcome=False,
                 num_added_items=0,
                 num_modified_items=0,
@@ -91,7 +94,8 @@ class ChromaVectorStoreAdapter(SimilaritySearchPort, LoadFilesInVectorStorePort)
                         chunk_metadata["creation_date"] = chunk_metadata["creation_date"].strftime(date_format)
 
                     # Add vector store insertion date
-                    chunk_metadata["vector_store_insertion_date"] = datetime.now().strftime(date_format)
+                    italy_tz = pytz.timezone('Europe/Rome')
+                    chunk_metadata["vector_store_insertion_date"] = datetime.now(italy_tz).strftime(date_format)
 
                     # Add chunk metadata
                     chunk_metadata["chunk_index"] = chunk_index

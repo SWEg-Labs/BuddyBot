@@ -171,7 +171,8 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort, SaveMessagePort, GetMessagesPo
             )
             return PostgresLoadingAttempt(
                 postgres_platform_logs=postgres_platform_logs,
-                postgres_vector_store_log=postgres_vector_store_log
+                postgres_vector_store_log=postgres_vector_store_log,
+                starting_timestamp=loading_attempt.get_starting_timestamp()
             )
         except Exception as e:
             logger.error(f"Error in postgres_loading_attempt_converter: {e}")
