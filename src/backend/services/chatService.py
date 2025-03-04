@@ -49,7 +49,7 @@ class ChatService(ChatUseCase):
             return answer
         except Exception as e:
             logger.error(f"Error in get_answer: {e}")
-            return None
+            raise
 
     def similarity_search(self, user_input: Question) -> list[Document]:
         """
@@ -65,7 +65,7 @@ class ChatService(ChatUseCase):
             return self.__similarity_search_service.similarity_search(user_input)
         except Exception as e:
             logger.error(f"Error in similarity_search: {e}")
-            return None
+            raise
 
     def generate_answer(self, user_input: Question, relevant_docs: list[Document]) -> Answer:
         """
@@ -82,4 +82,4 @@ class ChatService(ChatUseCase):
             return self.__generate_answer_service.generate_answer(user_input, relevant_docs)
         except Exception as e:
             logger.error(f"Error in generate_answer: {e}")
-            return None
+            raise

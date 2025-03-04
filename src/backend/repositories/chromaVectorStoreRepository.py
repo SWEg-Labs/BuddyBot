@@ -56,25 +56,54 @@ class ChromaVectorStoreRepository:
             Exception: If an error occurs while loading the documents.
         """
         try:
-            documents_data = [
-                {
-                    "id": doc.get_metadata()["doc_id"],
-                    "content": doc.get_page_content(),
-                    "metadata": doc.get_metadata()
-                }
-                for doc in documents
-            ]
+            ids = [doc.get_metadata()["doc_id"] for doc in documents]
+            documents_content = [doc.get_page_content() for doc in documents]
+            metadatas = [doc.get_metadata() for doc in documents]
 
-            # Carica i documenti nel Chroma vector store
-            self.__collection.add(documents_data)
+            # Initialize counters
+            num_modified_items = 0
+            num_deleted_items = 0
+            
+            # Check and delete existing documents with the same IDs
+            for doc_id in ids:
+                try:
+                    # Check if document exists by trying to retrieve it
+                    existing_docs = self.__collection.get(ids=[doc_id])
+                    if existing_docs and len(existing_docs.get('ids', [])) > 0:
+                        # Document exists, delete it
+                        self.__collection.delete(ids=[doc_id])
+                        num_modified_items += 1
+                        logger.info(f"Deleted existing document with ID: {doc_id} for update")
+                except Exception as e:
+                    logger.error(f"Error checking document existence: {e}")
+            
+            # Check for documents in collection that are not in the current batch
+            try:
+                all_docs = self.__collection.get()
+                all_ids = all_docs.get('ids', []) if all_docs else []
+                
+                for existing_id in all_ids:
+                    if existing_id not in ids:
+                        # This document is not in the new batch, delete it
+                        self.__collection.delete(ids=[existing_id])
+                        num_deleted_items += 1
+                        logger.info(f"Deleted obsolete document with ID: {existing_id}")
+            except Exception as e:
+                logger.error(f"Error checking for obsolete documents: {e}")
+
+            self.__collection.add(
+                ids=ids,
+                documents=documents_content,
+                metadatas=metadatas
+            )
 
             logger.info(f"Successfully loaded {len(documents)} documents into Chroma vector store.")
             log = VectorStoreLog(
                 timestamp=datetime.now(),
                 outcome=True,
-                num_added_items=len(documents),
-                num_modified_items=0,
-                num_deleted_items=0
+                num_added_items=len(documents) - num_modified_items,
+                num_modified_items=num_modified_items,
+                num_deleted_items=num_deleted_items
             )
 
             return log

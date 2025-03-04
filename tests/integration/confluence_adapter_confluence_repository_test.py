@@ -11,7 +11,7 @@ def test_load_confluence_pages_calls_repository_method():
     mock_confluence_repository = MagicMock(spec=ConfluenceRepository)
     confluence_adapter = ConfluenceAdapter(mock_confluence_repository)
 
-    mock_confluence_repository.base_url = "https://confluence.example.com"
+    mock_confluence_repository.get_base_url.return_value = "https://confluence.example.com"
 
     expected_result = (
         PlatformLog(
@@ -26,7 +26,7 @@ def test_load_confluence_pages_calls_repository_method():
                     "title": "Example Page",
                     "space": "Space Name",
                     "created_by": "John Doe",
-                    "created_date": "2025-02-28T12:34:56.000+0000",
+                    "creation_date": "2025-02-28T12:34:56.000+0000",
                     "url": "https://confluence.example.com/spaces/SPACEKEY/pages/12345/Example+Page", # Unione dei due campi dentro "links"
                     "id": "12345",
                 }
@@ -51,7 +51,7 @@ def test_load_confluence_pages_calls_repository_method():
                     "type": "global"
                 },
                 body={
-                    "storage": {
+                    "view": {
                         "value": "<p>This is an example page content.</p>",
                         "representation": "storage"
                     }

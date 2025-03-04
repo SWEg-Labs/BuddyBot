@@ -39,18 +39,51 @@ class ConfluenceAdapter(ConfluencePort):
             platform_log, page_entities = self.__confluence_repository.load_confluence_pages()
             documents = [
                 Document(
-                    page_content=page.get_body().get("storage").get("value"),
+                    page_content=(
+                        page.get_body().get("view").get("value")
+                        if page.get_body().get("view").get("value") is not None
+                        else "/"
+                    ),
                     metadata={
-                        "title": page.get_title(),
-                        "space": page.get_space().get("name"),
-                        "created_by": page.get_version().get("by").get("displayName"),
-                        "created_date": page.get_version().get("when"),
-                        "url": f"{self.__confluence_repository.base_url}{page.get_links().get('webui')}",
-                        "id": page.get_id(),
+                        "title": (
+                            page.get_title()
+                            if page.get_title() is not None
+                            else "/"
+                        ),
+                        "space": (
+                            page.get_space().get("name")
+                            if page.get_space()
+                            and page.get_space().get("name") is not None
+                            else "/"
+                        ),
+                        "created_by": (
+                            page.get_version().get("by").get("displayName")
+                            if page.get_version()
+                            and page.get_version().get("by")
+                            and page.get_version().get("by").get("displayName") is not None
+                            else "/"
+                        ),
+                        "creation_date": (
+                            page.get_version().get("when")
+                            if page.get_version().get("when") is not None
+                            else "/"
+                        ),
+                        "url": (
+                            f"{self.__confluence_repository.get_base_url()}{page.get_links().get('webui')}"
+                            if page.get_links()
+                            and page.get_links().get("webui") is not None
+                            else "/"
+                        ),
+                        "id": (
+                            page.get_id()
+                            if page.get_id() is not None
+                            else "/"
+                        ),
                     }
                 )
-            for page in page_entities]
+                for page in page_entities
+            ]
             return platform_log, documents
         except Exception as e:
             logger.error(f"Error adapting Confluence pages: {e}")
-            return None, []
+            raise

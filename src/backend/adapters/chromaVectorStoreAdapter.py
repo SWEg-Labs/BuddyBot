@@ -60,17 +60,43 @@ class ChromaVectorStoreAdapter(SimilaritySearchPort, LoadFilesInVectorStorePort)
         """
         try:
             chroma_documents = []
+            seen_doc_ids = set()
+            date_format = "%Y-%m-%dT%H:%M:%S"
+
             for document in documents:
                 page_content = document.get_page_content()
                 metadata = document.get_metadata()
                 doc_id = metadata.get("id", "")
+
+                # Check for duplicate doc_id values
+                if doc_id in seen_doc_ids:
+                    logger.info(f"Skipping duplicate document with id: {doc_id}")
+                    continue
+                seen_doc_ids.add(doc_id)
+
+                logger.info(f"Splitting document {doc_id} into chunks...")
                 chunks = [page_content[i:i + self.__max_chunk_size] for i in range(0, len(page_content), self.__max_chunk_size)]
-                
+
                 for chunk_index, chunk in enumerate(chunks):
                     chunk_metadata = metadata.copy()
+
+                    # Convert list of files to string
+                    if "files" in chunk_metadata and isinstance(chunk_metadata["files"], list):
+                        chunk_metadata["files"] = "\n".join(chunk_metadata["files"])
+
+                    # Format dates as strings
+                    if "date" in chunk_metadata and hasattr(chunk_metadata["date"], "strftime"):
+                        chunk_metadata["date"] = chunk_metadata["date"].strftime(date_format)
+                    if "creation_date" in chunk_metadata and hasattr(chunk_metadata["creation_date"], "strftime"):
+                        chunk_metadata["creation_date"] = chunk_metadata["creation_date"].strftime(date_format)
+
+                    # Add vector store insertion date
+                    chunk_metadata["vector_store_insertion_date"] = datetime.now().strftime(date_format)
+
+                    # Add chunk metadata
                     chunk_metadata["chunk_index"] = chunk_index
                     chunk_metadata["doc_id"] = f"{doc_id}_{chunk_index}"
-                    chunk_metadata["vector_store_insertion_date"] = datetime.now().isoformat()
+
                     chroma_documents.append(ChromaDocumentEntity(page_content=chunk, metadata=chunk_metadata))
 
             return chroma_documents

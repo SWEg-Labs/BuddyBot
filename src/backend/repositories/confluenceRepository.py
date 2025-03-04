@@ -35,6 +35,14 @@ class ConfluenceRepository:
             logger.error(f"Error initializing ConfluenceRepository: {e}")
             raise
 
+    def get_base_url(self) -> str:
+        """
+        Returns the base URL of the Confluence instance.
+        Returns:
+            str: The base URL of the Confluence instance.
+        """
+        return self.__base_url
+
     def load_confluence_pages(self) -> Tuple[PlatformLog, List[PageEntity]]:
         """
         Fetches pages from the Confluence space.
@@ -75,4 +83,4 @@ class ConfluenceRepository:
         except requests.RequestException as e:
             logger.error(f"Error fetching Confluence pages: {e}")
             log = PlatformLog(LoadingItems.ConfluencePages, datetime.now(), False)
-            return log, []
+            raise

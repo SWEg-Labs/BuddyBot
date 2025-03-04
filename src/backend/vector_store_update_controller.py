@@ -3,7 +3,6 @@ from dotenv import load_dotenv, set_key, find_dotenv
 load_dotenv()
 from crontab import CronTab
 from datetime import datetime
-from zoneinfo import ZoneInfo
 
 from utils.dependency_injection import dependency_injection_cron
 
@@ -11,8 +10,7 @@ try:
     print("--------------------------------------------------")
 
     # Stampa l'ora di inizio aggiornamento
-    italy_tz = ZoneInfo("Europe/Rome")
-    start_italian_time = datetime.now(italy_tz)
+    start_italian_time = datetime.now()
     start_time_string = start_italian_time.strftime("%d/%m/%Y %H:%M:%S")
     print(f"[{start_time_string}] Inizio aggiornamento")
 
@@ -30,9 +28,9 @@ try:
     print(f"db_update_error_frequency: {db_update_error_frequency}")
     print(f"db_update_max_retries: {db_update_max_retries}")
     '''
-    
+
     # Inizializza cron
-    cron = CronTab(tabfile=crontab_path)
+    cron = CronTab(user=True)
 
     # Ottiene il controller per il caricamento dei file
     cron_dependencies = dependency_injection_cron()
@@ -57,7 +55,7 @@ try:
         cron.write()
 
     # Stampa l'ora di fine aggiornamento
-    end_italian_time = datetime.now(italy_tz)
+    end_italian_time = datetime.now()
     end_time_string = end_italian_time.strftime("%d/%m/%Y %H:%M:%S")
     print(f"[{end_time_string}] Aggiornamento completato")
 

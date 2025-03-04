@@ -173,13 +173,13 @@ class LoadFilesService(LoadFilesUseCase):
             log_message = (
                 "=============================================\n"
                 f"Tentativo aggiornamento database vettoriale:\n"
-                f"- Esito: {'riuscito' if loading_attempt.outcome else 'fallito'}\n"
-                f"- Elementi interessati: {', '.join([log.loading_items.value for log in loading_attempt.platform_logs])}\n"
-                f"- Data di inizio: {loading_attempt.starting_timestamp.strftime('%Y/%m/%d %H:%M:%S')}\n"
-                f"- Data di fine: {loading_attempt.ending_timestamp.strftime('%Y/%m/%d %H:%M:%S')}\n"
-                f"- Numero elementi aggiunti: {loading_attempt.vector_store_log.num_added_items}\n"
-                f"- Numero elementi modificati: {loading_attempt.vector_store_log.num_modified_items}\n"
-                f"- Numero elementi eliminati: {loading_attempt.vector_store_log.num_deleted_items}\n"
+                f"- Esito: {'riuscito' if loading_attempt.get_outcome() else 'fallito'}\n"
+                f"- Elementi interessati: {', '.join([log.get_loading_items().value for log in loading_attempt.get_platform_logs()])}\n"
+                f"- Data di inizio: {loading_attempt.get_starting_timestamp().strftime('%Y/%m/%d %H:%M:%S')}\n"
+                f"- Data di fine: {loading_attempt.get_ending_timestamp().strftime('%Y/%m/%d %H:%M:%S')}\n"
+                f"- Numero elementi aggiunti: {loading_attempt.get_vector_store_log().get_num_added_items()}\n"
+                f"- Numero elementi modificati: {loading_attempt.get_vector_store_log().get_num_modified_items()}\n"
+                f"- Numero elementi eliminati: {loading_attempt.get_vector_store_log().get_num_deleted_items()}\n"
             )
             structured_logger.info(log_message)
         except Exception as e:

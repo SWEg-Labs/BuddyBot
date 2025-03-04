@@ -44,7 +44,7 @@ class SimilaritySearchService:
 
             documents = self.__similarity_search_port.similarity_search(user_input)
             for document in documents:
-                distance = document.get_metadata().get("distance", 1.0)
+                distance = document.get_metadata().get("distance")
 
                 # Controlla la soglia di similarità
                 if distance > similarity_threshold:

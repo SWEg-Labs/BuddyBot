@@ -38,7 +38,7 @@ class ConfluenceCleanerService:
             Exception: If an error occurs during the removal of HTML tags.
         """
         try:
-            document.page_content = re.sub(r'<[^>]+>', ' ', document.page_content)
+            document.set_page_content(re.sub(r'<[^>]+>', ' ', document.get_page_content()))
             return document
         except Exception as e:
             logger.error(f"Error removing HTML tags: {e}")
@@ -65,7 +65,7 @@ class ConfluenceCleanerService:
                 '&Egrave;' : 'È',
             }
             for entity, char in replacements.items():
-                document.page_content = document.page_content.replace(entity, char)
+                document.set_page_content(document.get_page_content().replace(entity, char))
             return document
         except Exception as e:
             logger.error(f"Error replacing HTML entities: {e}")
