@@ -53,6 +53,7 @@ class GitHubRepository:
             return log, commit_entities
         except Exception as e:
             logger.error(f"Error fetching commits for repository {self.__github_repo.full_name}: {e}")
+            italy_tz = pytz.timezone('Europe/Rome')
             log = PlatformLog(LoadingItems.GitHubCommits, datetime.now(italy_tz), False)
             return log, []
 
@@ -83,5 +84,6 @@ class GitHubRepository:
             return log, file_entities
         except Exception as e:
             logger.error(f"Error fetching files for repository {self.__github_repo.full_name}: {e}")
+            italy_tz = pytz.timezone('Europe/Rome')
             log = PlatformLog(LoadingItems.GitHubFiles, datetime.now(italy_tz), False)
             return log, []

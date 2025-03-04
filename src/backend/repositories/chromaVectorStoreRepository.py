@@ -109,6 +109,7 @@ class ChromaVectorStoreRepository:
             return log
         except Exception as e:
             logger.error(f"Error loading documents into Chroma vector store: {e}")
+            italy_tz = pytz.timezone('Europe/Rome')
             log = VectorStoreLog(
                 timestamp=datetime.now(italy_tz),
                 outcome=False,

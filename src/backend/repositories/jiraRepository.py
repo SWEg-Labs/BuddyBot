@@ -82,5 +82,6 @@ class JiraRepository:
             return log, issues
         except requests.RequestException as e:
             logger.error(f"Error fetching Jira issues: {e}")
+            italy_tz = pytz.timezone('Europe/Rome')
             log = PlatformLog(LoadingItems.JiraIssues, datetime.now(italy_tz), False)
             return log, []

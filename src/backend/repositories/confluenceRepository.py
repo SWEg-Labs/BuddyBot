@@ -84,5 +84,6 @@ class ConfluenceRepository:
             return log, pages
         except requests.RequestException as e:
             logger.error(f"Error fetching Confluence pages: {e}")
+            italy_tz = pytz.timezone('Europe/Rome')
             log = PlatformLog(LoadingItems.ConfluencePages, datetime.now(italy_tz), False)
             raise
