@@ -30,7 +30,7 @@ try:
     '''
 
     # Inizializza cron
-    cron = CronTab(user=True)
+    cron = CronTab(tabfile=crontab_path)
 
     # Ottiene il controller per il caricamento dei file
     cron_dependencies = dependency_injection_cron()
