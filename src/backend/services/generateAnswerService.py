@@ -3,6 +3,7 @@ from models.answer import Answer
 from models.header import Header
 from models.document import Document
 from ports.generateAnswerPort import GenerateAnswerPort
+from utils.logger import logger
 
 class GenerateAnswerService:
     """
@@ -22,7 +23,8 @@ class GenerateAnswerService:
             self.__header = header
             self.__generate_answer_port = generate_answer_port
         except Exception as e:
-            print(f"An error occurred during initialization: {e}")
+            logger.info(f"An error occurred during initialization: {e}")
+            raise e
 
     def generate_answer(self, user_input: Question, relevant_docs: list[Document]) -> Answer:
         """
@@ -37,4 +39,5 @@ class GenerateAnswerService:
             answer = self.__generate_answer_port.generate_answer(user_input, relevant_docs, self.__header)
             return answer
         except Exception as e:
-            print(f"An error occurred while generating the answer: {e}")
+            logger.info(f"An error occurred while generating the answer: {e}")
+            raise e
