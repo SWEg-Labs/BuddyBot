@@ -74,7 +74,7 @@ def initialize_chroma() -> ChromaVectorStoreAdapter:
         chroma_client.heartbeat()  # Verifica connessione
         chroma_collection_name = "buddybot-vector-store"
         chroma_collection = chroma_client.get_or_create_collection(name=chroma_collection_name)  # Crea o ottieni una collezione esistente
-        chroma_vector_store_repository = ChromaVectorStoreRepository(chroma_client, chroma_collection_name, chroma_collection)
+        chroma_vector_store_repository = ChromaVectorStoreRepository(chroma_collection)
         max_chunk_size = 41666  # 42 KB
         chroma_vector_store_adapter = ChromaVectorStoreAdapter(max_chunk_size, chroma_vector_store_repository)
         logger.info("ChromaDB collection loaded")

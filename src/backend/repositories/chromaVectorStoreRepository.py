@@ -21,21 +21,17 @@ class ChromaVectorStoreRepository:
         Exception: If an error occurs during initialization or while interacting with the vector store.
     """
 
-    def __init__(self, chroma_client: chromadb.HttpClient, collection_name: str, collection: chromadb.Collection):
+    def __init__(self, collection: chromadb.Collection):
         """ 
         Initializes the ChromaVectorStoreRepository by connecting to the Chroma server and setting up the collection.
 
         Args:
-            chroma_client (chromadb.HttpClient): The client used to connect to the Chroma server.
-            collection_name (str): The name of the collection to be used.
-            collection (chromadb.Collection): The collection object to be used.
+            collection (chromadb.Collection): The collection object to interact with Chroma.
 
         Raises: 
             Exception: If an error occurs during initialization. 
         """
         try:
-            self.__client = chroma_client
-            self.__collection_name = collection_name
             self.__collection = collection
         except Exception as e:
             logger.error(f"Error initializing Chroma vector store: {e}")
