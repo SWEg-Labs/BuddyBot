@@ -47,17 +47,13 @@ class LangChainAdapter:
             for doc in relevant_docs:
                 doc.set_page_content(f"Metadata: {doc.get_metadata()}\nContent: {doc.get_page_content()}")
 
-            def count_tokens(text: str) -> int:
-                # Approssimazione: circa 1 token per ogni 4 caratteri.
-                return max(1, len(text) // 4)
-
             # Inizializza il conteggio dei token con header e user_input (in quest'ordine)
-            total_tokens = count_tokens(header) + count_tokens(user_input)
+            total_tokens = self.__count_tokens(header) + self.__count_tokens(user_input)
             filtered_docs = []
 
             # Aggiungi i documenti uno ad uno finché il limite non viene superato.
             for doc in relevant_docs:
-                doc_tokens = count_tokens(doc.get_page_content())
+                doc_tokens = self.__count_tokens(doc.get_page_content())
                 if total_tokens + doc_tokens >= self.__max_num_tokens:
                     break
                 filtered_docs.append(doc)
@@ -84,3 +80,20 @@ class LangChainAdapter:
     #def get_next_possible_questions(self, question_answer_couple: QuestionAnswerCouple, header: Header) -> PossibleQuestions:
         # Implement the logic to get the next possible questions based on question_answer_couple and header
     #    pass
+
+    def __count_tokens(self, text: str) -> int:
+        """
+        Calculates the approximate number of tokens based on the provided text.
+        Approximation: roughly 1 token every 3.7 characters.
+        Args:
+            text (str): The text for which to calculate the number of tokens.
+        Returns:
+            int: The approximate number of tokens.
+        Raises:
+            Exception: If an error occurs during token calculation.
+        """
+        try:
+            return max(1, int(len(text) / 3.7))
+        except Exception as e:
+            print(f"Errore nel calcolo dei token: {e}")
+            raise e
