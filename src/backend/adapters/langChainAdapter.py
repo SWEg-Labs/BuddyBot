@@ -11,13 +11,15 @@ class LangChainAdapter:
     adapting the input parameters to the format expected by the LangChainRepository and 
     generating answers based on user input and relevant documents.
     """
-    def __init__(self, langchain_repository: LangChainRepository):
+    def __init__(self, max_num_tokens: int, langchain_repository: LangChainRepository):
         """
         Initialize the LangChainAdapter with a LangChainRepository instance.
         Args:
+            max_num_tokens (int): The maximum number of tokens allowed for the LLM.
             langchain_repository (LangChainRepository): An instance of LangChainRepository used to generate answers.
         """
         try:
+            self.__max_num_tokens = max_num_tokens
             self.__langchain_repository = langchain_repository
         except Exception as e:
             print(f"An error occurred during initialization: {e}")
@@ -38,11 +40,36 @@ class LangChainAdapter:
         try:
             # Adapt the parameters to the format expected by LangChainRepository
             user_input = user_input.get_content()
+            header = header.get_content()
+
+            # Aggiorna page_content di ogni documento con metadati e contenuto completo
+            # Perchè create_stuff_documents_chain fornisce al chatbot solo il campo page_content di ogni documento
+            for doc in relevant_docs:
+                doc.set_page_content(f"Metadata: {doc.get_metadata()}\nContent: {doc.get_page_content()}")
+
+            def count_tokens(text: str) -> int:
+                # Approssimazione: circa 1 token per ogni 4 caratteri.
+                return max(1, len(text) // 4)
+
+            # Inizializza il conteggio dei token con header e user_input (in quest'ordine)
+            total_tokens = count_tokens(header) + count_tokens(user_input)
+            filtered_docs = []
+
+            # Aggiungi i documenti uno ad uno finché il limite non viene superato.
+            for doc in relevant_docs:
+                doc_tokens = count_tokens(doc.get_page_content())
+                if total_tokens + doc_tokens >= self.__max_num_tokens:
+                    break
+                filtered_docs.append(doc)
+                total_tokens += doc_tokens
+
+            relevant_docs = filtered_docs
+
+            # Converti i documenti in un formato accettato da LangChainRepository
             relevant_docs = [
                 LangChainDocumentEntity(page_content=doc.get_page_content(), metadata=doc.get_metadata())
                 for doc in relevant_docs
             ]
-            header = header.get_content()
 
             # Call the generate_answer method of LangChainRepository
             generated_answer = self.__langchain_repository.generate_answer(user_input, relevant_docs, header)

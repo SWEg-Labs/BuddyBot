@@ -51,7 +51,8 @@ def initialize_langchain() -> LangChainAdapter:
             model_name=model_name,
         )
         langchain_repository = LangChainRepository(llm)
-        langchain_adapter = LangChainAdapter(langchain_repository)
+        max_num_tokens = 128000
+        langchain_adapter = LangChainAdapter(max_num_tokens, langchain_repository)
         logger.info(f"LLM model loaded: {model_name}")
         return langchain_adapter
     except Exception as e:

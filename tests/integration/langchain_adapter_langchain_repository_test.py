@@ -11,8 +11,9 @@ from entities.langChainDocumentEntity import LangChainDocumentEntity
 
 def test_generate_answer_calls_repository_method():
     # Arrange
+    max_num_tokens = 128000
     mock_langchain_repository = MagicMock(spec=LangChainRepository)
-    langchain_adapter = LangChainAdapter(mock_langchain_repository)
+    langchain_adapter = LangChainAdapter(max_num_tokens, mock_langchain_repository)
     user_input = Question("test question")
     relevant_docs = [
         Document(page_content="doc1", metadata={"distance": 0.5}),
@@ -20,8 +21,8 @@ def test_generate_answer_calls_repository_method():
     ]
     header = Header("test header")
     langchain_relevant_docs = [
-        LangChainDocumentEntity(page_content="doc1", metadata={"distance": 0.5}),
-        LangChainDocumentEntity(page_content="doc2", metadata={"distance": 0.75}),
+        LangChainDocumentEntity(page_content="Metadata: {'distance': 0.5}\nContent: doc1", metadata={"distance": 0.5}),
+        LangChainDocumentEntity(page_content="Metadata: {'distance': 0.75}\nContent: doc2", metadata={"distance": 0.75}),
     ]
     expected_answer = Answer("test answer")
     mock_langchain_repository.generate_answer.return_value = "test answer"

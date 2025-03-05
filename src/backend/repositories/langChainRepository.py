@@ -44,11 +44,6 @@ class LangChainRepository:
             Exception: If an error occurs while processing the user input.
         """
         try:
-            # Aggiorna page_content di ogni documento con metadati e contenuto completo
-            # Perchè create_stuff_documents_chain fornisce al chatbot solo il campo page_content di ogni documento
-            for doc in relevant_docs:
-                doc.set_page_content(f"Metadata: {doc.get_metadata()}\nContent: {doc.get_page_content()}")
-
             # Crea un PromptTemplate per il modello AI
             prompt = ChatPromptTemplate.from_messages(
                 [("user", "{header}\n\n\n{user_input}\n\n\n{context}")]
