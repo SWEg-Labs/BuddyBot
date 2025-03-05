@@ -12,6 +12,7 @@ from controllers.chatController import ChatController
 from controllers.loadFilesController import LoadFilesController
 from controllers.saveMessageController import SaveMessageController
 from controllers.getMessagesController import GetMessagesController
+from controllers.getNextPossibleQuestionsController import GetNextPossibleQuestionsController
 from services.similaritySearchService import SimilaritySearchService
 from services.generateAnswerService import GenerateAnswerService
 from services.chatService import ChatService
@@ -19,6 +20,7 @@ from services.confluenceCleanerService import ConfluenceCleanerService
 from services.loadFilesService import LoadFilesService
 from services.saveMessageService import SaveMessageService
 from services.getMessagesService import GetMessagesService
+from services.getNextPossibleQuestionsService import GetNextPossibleQuestionsService
 from adapters.chromaVectorStoreAdapter import ChromaVectorStoreAdapter
 from adapters.langChainAdapter import LangChainAdapter
 from adapters.gitHubAdapter import GitHubAdapter
@@ -281,7 +283,27 @@ def dependency_injection_frontend() -> dict[str, object]:
 
         # ==================== 9. Architettura della generazione di domande per proseguire la conversazione ====================
 
-        # ...
+        get_next_possible_questions_header = Header("""
+            Sei un assistente virtuale esperto che risponde a domande in italiano.
+            Il tuo contesto riguarda codice, issues e documentazione di un'azienda informatica, provenienti rispettivamente da
+            GitHub, Jira e Confluence.
+            Sei nel bel mezzo di una conversazione, nella quale un utente dell'azienda ti ha già posto una domanda e tu hai già
+            fornito una risposta, le quali costituiscono il tuo contesto di partenza.
+            Adesso tu devi generare ***quantity*** possibili domande per proseguire la conversazione, che verranno poi rese
+            disponibili all'utente perché abbia la possibilità di cliccarle per appunto proseguire proficuamente la conversazione
+            con te, chatbot assistente.
+            Genera queste domande basandoti esclusivamente sui dati forniti come contesto (domanda e risposta), non hai la
+            possibilità di cercare su internet.
+            Il tuo compito è dedurre che cosa desiderava l'utente, e proporgli domande simili, mantenendo sempre il contesto
+            informatico cui sei vincolato. Se non hai idee, proponi delle domande generiche basate su GitHub, Jira e Confluence.
+            Fornisci dunque una lista di ***quantity*** domande, intervallate fra di loro da tre underscore (___), in questo formato:
+            Chi ha risolto la issue BUD-240?___Cosa ha detto il cliente sulle metriche di qualità?___Qual è il codice della funzione per prelevare i dati dal database?
+            Sta attento che le domande siano esattamente ***quantity***, e soprattutto devono essere gli unici caratteri del tuo
+            messaggio di risposta, non devi scrivere nient'altro, perchè serve prelevare le domande usando un'espressione regolare,
+            così da farle visualizzare bene all'utente.
+        """)
+        get_next_possible_questions_service = GetNextPossibleQuestionsService(get_next_possible_questions_header, langchain_adapter)
+        get_next_possible_questions_controller = GetNextPossibleQuestionsController(get_next_possible_questions_service)
 
 
 
@@ -290,7 +312,7 @@ def dependency_injection_frontend() -> dict[str, object]:
             # "get_last_load_outcome_controller": get_last_load_outcome_controller,
             "save_message_controller": save_message_controller,
             "get_messages_controller": get_messages_controller,
-            # "get_next_possible_questions_controller": get_next_possible_questions_controller
+            "get_next_possible_questions_controller": get_next_possible_questions_controller
         }
     except Exception as e:
         logger.error(f"Error during frontend dependencies initialization: {e}")

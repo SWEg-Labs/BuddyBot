@@ -28,19 +28,25 @@ def test_get_next_possible_questions_calls_use_case_method():
     )
     quantity = Quantity(question_answer_quantity["quantity"])
 
-    expected_possible_questions = NextPossibleQuestions(
-        quantity=3,
+    possible_questions = NextPossibleQuestions(
+        num_questions=3,
         possible_questions = [
             PossibleQuestion("next_question_1"),
             PossibleQuestion("next_question_2"),
             PossibleQuestion("next_question_3")
         ],
     )
-    mock_use_case.get_next_possible_questions.return_value = expected_possible_questions
+    mock_use_case.get_next_possible_questions.return_value = possible_questions
+
+    expected_result = {
+        "question 1": "next_question_1",
+        "question 2": "next_question_2",
+        "question 3": "next_question_3"
+    }
 
     # Act
     result = controller.get_next_possible_questions(question_answer_quantity)
 
     # Assert
     mock_use_case.get_next_possible_questions.assert_called_once_with(question_answer_couple, quantity)
-    assert result == expected_possible_questions
+    assert result == expected_result

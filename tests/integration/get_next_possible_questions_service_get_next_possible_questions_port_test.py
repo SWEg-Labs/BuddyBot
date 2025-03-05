@@ -14,8 +14,9 @@ from ports.getNextPossibleQuestionsPort import GetNextPossibleQuestionsPort
 
 def test_get_next_possible_questions_calls_port_method():
     # Arrange
+    header = Header("test header with ***quantity*** questions requested")
     mock_port = MagicMock(spec=GetNextPossibleQuestionsPort)
-    service = GetNextPossibleQuestionsService(get_next_possible_questions_port=mock_port)
+    service = GetNextPossibleQuestionsService(header=header, get_next_possible_questions_port=mock_port)
 
     # Creazione degli input di test
     question_answer_couple = QuestionAnswerCouple(
@@ -23,11 +24,10 @@ def test_get_next_possible_questions_calls_port_method():
         Answer("test answer")
     )
     quantity = Quantity(3)
-
-    header = Header(f"test header with {quantity.get_value()} questions requested")
+    called_header = Header("test header with 3 questions requested")
 
     expected_possible_questions = NextPossibleQuestions(
-        quantity=3,
+        num_questions=3,
         possible_questions = [
             PossibleQuestion("next_question_1"),
             PossibleQuestion("next_question_2"),
@@ -40,5 +40,5 @@ def test_get_next_possible_questions_calls_port_method():
     result = service.get_next_possible_questions(question_answer_couple, quantity)
 
     # Assert
-    mock_port.get_next_possible_questions.assert_called_once_with(question_answer_couple, header)
+    mock_port.get_next_possible_questions.assert_called_once_with(question_answer_couple, called_header)
     assert result == expected_possible_questions

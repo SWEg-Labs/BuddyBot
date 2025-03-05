@@ -53,8 +53,9 @@ def test_get_next_possible_questions_calls_repository_method():
     header = Header("test header with 3 questions requested")
 
     expected_repo_response = (
-        "^^^&;_Chi ha risolto la issue BUD-240?&;_Cosa ha detto il cliente sulle metriche di qualità?&;_"
-        "Qual è il codice della funzione per prelevare i dati dal database?&;_^^^"
+        "Chi ha risolto la issue BUD-240?___"
+        "Cosa ha detto il cliente sulle metriche di qualità?___"
+        "Qual è il codice della funzione per prelevare i dati dal database?"
     )
     mock_langchain_repository.get_next_possible_questions.return_value = expected_repo_response
 

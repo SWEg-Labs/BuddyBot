@@ -2,10 +2,16 @@ from models.question import Question
 from models.answer import Answer
 from models.header import Header
 from models.document import Document
+from models.questionAnswerCouple import QuestionAnswerCouple
+from models.nextPossibleQuestions import NextPossibleQuestions
+from models.possibleQuestion import PossibleQuestion
 from entities.langChainDocumentEntity import LangChainDocumentEntity
+from ports.generateAnswerPort import GenerateAnswerPort
+from ports.getNextPossibleQuestionsPort import GetNextPossibleQuestionsPort
 from repositories.langChainRepository import LangChainRepository
+from utils.logger import logger
 
-class LangChainAdapter:
+class LangChainAdapter(GenerateAnswerPort, GetNextPossibleQuestionsPort):
     """
     Adapter class for integrating with the LangChainRepository. This class is responsible for
     adapting the input parameters to the format expected by the LangChainRepository and 
@@ -22,7 +28,8 @@ class LangChainAdapter:
             self.__max_num_tokens = max_num_tokens
             self.__langchain_repository = langchain_repository
         except Exception as e:
-            print(f"An error occurred during initialization: {e}")
+            logger.error(f"An error occurred during initialization: {e}")
+            raise e
 
     def generate_answer(self, user_input: Question, relevant_docs: list[Document], header: Header) -> Answer:
         """
@@ -75,11 +82,42 @@ class LangChainAdapter:
 
             return answer
         except Exception as e:
-            print(f"An error occurred: {e}")
+            logger.error(f"An error occured in generate_answer of LangChainAdapter: {e}")
+            raise e
 
-    #def get_next_possible_questions(self, question_answer_couple: QuestionAnswerCouple, header: Header) -> PossibleQuestions:
-        # Implement the logic to get the next possible questions based on question_answer_couple and header
-    #    pass
+    def get_next_possible_questions(self, question_answer_couple: QuestionAnswerCouple, header: Header) -> NextPossibleQuestions:
+        """
+        Retrieves the next possible questions based on the provided question-answer couple and header.
+        Args:
+            question_answer_couple (QuestionAnswerCouple): The question-answer couple.
+            header (Header): The header information.
+        Returns:
+            NextPossibleQuestions: The next possible questions.
+        Raises:
+            Exception: If there is an error during the retrieval process.
+        """
+        try:
+            # Extract content from question and answer
+            question_content = question_answer_couple.get_question().get_content()
+            answer_content = question_answer_couple.get_answer().get_content()
+            
+            # Call the repository method to get the next possible questions
+            repo_response = self.__langchain_repository.get_next_possible_questions(
+                [question_content, answer_content],
+                header.get_content()
+            )
+            
+            # Parse the repository response to create NextPossibleQuestions object
+            questions = repo_response.split("___")
+            questions = [q.strip() for q in questions if q.strip()]
+            
+            possible_questions = [PossibleQuestion(q) for q in questions]
+            next_possible_questions = NextPossibleQuestions(num_questions=len(possible_questions), possible_questions=possible_questions)
+            
+            return next_possible_questions
+        except Exception as e:
+            logger.error(f"An error occured in get_next_possible_questions of LangChainAdapter: {e}")
+            raise e
 
     def __count_tokens(self, text: str) -> int:
         """
@@ -95,5 +133,5 @@ class LangChainAdapter:
         try:
             return max(1, int(len(text) / 3.7))
         except Exception as e:
-            print(f"Errore nel calcolo dei token: {e}")
+            logger.error(f"An error occurred during token calculation: {e}")
             raise e
