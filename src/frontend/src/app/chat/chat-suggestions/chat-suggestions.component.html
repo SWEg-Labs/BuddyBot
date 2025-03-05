@@ -1,0 +1,33 @@
+<div class="suggestions">
+    <ng-container *ngIf="!loadError; else errorTemplate">
+      <ng-container *ngIf="showInitial; else cont">
+        <!-- SUGGERIMENTI INIZIALI -->
+        <button
+          class="suggestion-btn"
+          *ngFor="let s of initialSuggestions"
+          (click)="onSuggestionClick(s)"
+        >
+          {{ s }}
+        </button>
+      </ng-container>
+  
+      <ng-template #cont>
+        <!-- SUGGERIMENTI CONTINUAZIONE -->
+        <button
+          class="suggestion-btn"
+          *ngFor="let s of continuationSuggestions"
+          (click)="onSuggestionClick(s)"
+        >
+          {{ s }}
+        </button>
+      </ng-template>
+    </ng-container>
+  
+    <!-- SE ERRORE, MOSTRO MESSAGGIO ALTERNATIVO -->
+    <ng-template #errorTemplate>
+      <div class="error-message">
+        Impossibile caricare i suggerimenti. Riprova più tardi!
+      </div>
+    </ng-template>
+  </div>
+  

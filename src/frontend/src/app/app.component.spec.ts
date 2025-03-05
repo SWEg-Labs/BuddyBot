@@ -1,29 +1,43 @@
 import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
+import { ChatService } from './chat/chat.service';
+import { of } from 'rxjs';
 
 describe('AppComponent', () => {
+  let chatServiceSpy: jasmine.SpyObj<ChatService>;
+
   beforeEach(async () => {
+    // Arrange
+    chatServiceSpy = jasmine.createSpyObj('ChatService', [
+      'sendMessage',
+      'getLastMessageTimestamp',
+      'getContinuationSuggestions',
+      'getInitialSuggestions',
+      'checkFileUpdates',
+    ], {
+      isUpdated$: of(true)
+    });
+
+    chatServiceSpy.getInitialSuggestions.and.returnValue(of(['Ini1', 'Ini2']));
+    chatServiceSpy.getContinuationSuggestions.and.returnValue(of(['Cont1', 'Cont2']));
+
     await TestBed.configureTestingModule({
       imports: [AppComponent],
+      providers: [
+        { provide: ChatService, useValue: chatServiceSpy }
+      ]
     }).compileComponents();
   });
 
-  it('should create the app', () => {
+  // ------------------- Unit -------------------
+  it('should create the AppComponent instance successfully', () => {
+    // Arrange
     const fixture = TestBed.createComponent(AppComponent);
+
+    // Act
     const app = fixture.componentInstance;
+
+    // Assert
     expect(app).toBeTruthy();
-  });
-
-  it(`should have the 'my-chat-frontend' title`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app).toEqual('my-chat-frontend');
-  });
-
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, my-chat-frontend');
   });
 });

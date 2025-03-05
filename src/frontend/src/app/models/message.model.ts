@@ -1,5 +1,8 @@
-export interface IMessage {
+import { SafeHtml } from "@angular/platform-browser";
+
+export interface Message {
     sender: string;
-    text: string;
+    text: SafeHtml;
+    copied?: boolean;
   }
   

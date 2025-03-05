@@ -1,0 +1,12 @@
+<div class="chat-badge" (click)="onToggleStatus()">
+    <ng-container *ngIf="isUpdated; else notUp">
+      <span class="icon updated">✔︎</span>
+      <span class="label">Aggiornato</span>
+    </ng-container>
+  
+    <ng-template #notUp>
+      <span class="icon not-updated">⚠</span>
+      <span class="label">Da aggiornare</span>
+    </ng-template>
+  </div>
+  

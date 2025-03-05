@@ -1,0 +1,19 @@
+.chat-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+  
+    .icon.updated {
+      color: #2ecc71;
+    }
+    .icon.not-updated {
+      color: #e74c3c;
+    }
+  
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+  

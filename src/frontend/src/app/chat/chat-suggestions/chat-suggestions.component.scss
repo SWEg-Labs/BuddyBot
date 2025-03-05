@@ -1,0 +1,22 @@
+.suggestions {
+    display: flex;
+    gap: 0.5rem;
+    background-color: transparent;
+    padding: 0.5rem;
+    justify-content: center;
+  
+    .suggestion-btn {
+      padding: 0.5rem 1rem;
+      background-color: grey;
+      color: #fff;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+  
+      &:hover {
+        background-color: #666;
+      }
+    }
+  }
+  

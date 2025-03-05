@@ -1,26 +1,23 @@
 <div class="chat-container">
-  <!-- Header -->
+  <!-- HEADER -->
   <app-chat-header></app-chat-header>
 
-  <!-- Area messaggi -->
+  <!-- MESSAGGI -->
   <app-chat-messages
-    #messagesComponent
     [messages]="messages"
     [isLoading]="isLoading"
     (isScrolledUp)="onScrollChange($event)"
   ></app-chat-messages>
 
-  <!-- Barra di input -->
-  <app-chat-input
-    (sendMessage)="onSendMessage($event)"
-    [isLoading]="isLoading"
-  ></app-chat-input>
+  <!-- SUGGERIMENTI -->
+  <app-chat-suggestions
+    [lastMessageTimestamp]="lastMessageTime"
+    (suggestionClicked)="onSuggestionClicked($event)"
+  ></app-chat-suggestions>
 
-  <!-- Azioni -->
-  <app-chat-actions
+  <!-- INPUT -->
+  <app-chat-input
     [isLoading]="isLoading"
-    (jira)="updateJira()"
-    (github)="updateGithub()"
-    (confluence)="updateConfluence()"
-  ></app-chat-actions>
+    (sendMessage)="onSendMessage($event)"
+  ></app-chat-input>
 </div>

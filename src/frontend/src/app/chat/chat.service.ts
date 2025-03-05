@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import {HttpClient } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root', 
 })
 export class ChatService {
   private apiUrl = 'http://localhost:5000/api/chat';
@@ -11,21 +11,35 @@ export class ChatService {
   private apiloadGithub = 'http://localhost:5000/api/github/load';
   private apiLoadConfluence = 'http://localhost:5000/api/confluence/load';
 
+  private isUpdatedSubject = new BehaviorSubject<boolean>(true);
+  public isUpdated$ = this.isUpdatedSubject.asObservable();
+  private apiBaseUrl = 'http://localhost:5000'; 
+
+  private lastMessageTimestamp: number = Date.now();
+
   constructor(private http: HttpClient) {}
 
+  checkFileUpdates(): void {
+    this.isUpdatedSubject.next(!this.isUpdatedSubject.value);
+  }
+
+  getLastMessageTimestamp(): number {
+    return this.lastMessageTimestamp;
+  }
+  setLastMessageTimestamp(time: number) {
+    this.lastMessageTimestamp = time;
+  }
+
   sendMessage(message: string): Observable<{ response: string }> {
+    this.setLastMessageTimestamp(Date.now());
     return this.http.post<{ response: string }>(this.apiUrl, { message });
   }
 
-  loadJira(): Observable<{ response: string }> {
-    return this.http.get<{ response: string }>(this.apiLoadJira, {});
+  getInitialSuggestions(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiBaseUrl}/api/chat/suggestions/initial`);
   }
 
-  loadGithub(): Observable<{ response: string }> {
-    return this.http.get<{ response: string }>(this.apiloadGithub, {});
-  }
-
-  loadConfluence(): Observable<{ response: string }> {
-    return this.http.get<{ response: string }>(this.apiLoadConfluence, {});
+  getContinuationSuggestions(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiBaseUrl}/api/chat/suggestions/continuation`);
   }
 }

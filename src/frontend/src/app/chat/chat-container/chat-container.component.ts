@@ -1,15 +1,15 @@
-import { Component, OnInit, ViewChild  } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-
+import { DomSanitizer} from '@angular/platform-browser';
+import { ChatService } from '../chat.service';
+import { Message } from '../../models/message.model';
 import { ChatHeaderComponent } from '../chat-header/chat-header.component';
 import { ChatMessagesComponent } from '../chat-messages/chat-messages.component';
+import { ChatSuggestionsComponent } from '../chat-suggestions/chat-suggestions.component';
 import { ChatInputComponent } from '../chat-input/chat-input.component';
-import { ChatActionsComponent } from '../chat-actions/chat-actions.component';
-
-import { ChatService } from '../chat.service';
-import { IMessage } from '../../models/message.model';
+import DOMPurify from 'dompurify';
 
 @Component({
   standalone: true,
@@ -22,22 +22,23 @@ import { IMessage } from '../../models/message.model';
     MatIconModule,
     ChatHeaderComponent,
     ChatMessagesComponent,
+    ChatSuggestionsComponent,
     ChatInputComponent,
-    ChatActionsComponent
-  ],
+  ]
 })
 export class ChatContainerComponent implements OnInit {
-  messages: IMessage[] = [];
-  userInput: string = '';
-  isLoading: boolean = false;
-  showScrollToBottom: boolean = false;
+  messages: Message[] = [];
+  isLoading = false;
+  showScrollToBottom = false;
+
   @ViewChild(ChatMessagesComponent) messagesComponent!: ChatMessagesComponent;
 
+  constructor(private chatService: ChatService, private sanitizer: DomSanitizer) {}
 
-  constructor(private chatService: ChatService) {}
+  ngOnInit(): void {}
 
-  ngOnInit(): void {
-    // Eventuali inizializzazioni
+  get lastMessageTime(): number {
+    return this.chatService.getLastMessageTimestamp();
   }
 
   onScrollChange(isScrolledUp: boolean): void {
@@ -47,106 +48,59 @@ export class ChatContainerComponent implements OnInit {
   onSendMessage(message: string) {
     const text = message.trim();
     if (!text) return;
-  
     this.messages.push({ sender: 'Utente', text });
+    this.messagesComponent.scrollToBottom();
+  
     this.isLoading = true;
-  
-    setTimeout(() => this.scrollToBottom(), 0);
-  
     this.chatService.sendMessage(text).subscribe({
-      next: (res: { response: string }) => {
-        this.messages.push({ sender: 'Bot', text: this.formatResponse(res.response) });
+      next: (res) => {
+        const rawFormatted = this.formatResponse(res.response);
+        const sanitized = this.sanitizer.bypassSecurityTrustHtml(rawFormatted);
+        this.messages.push({ sender: 'Bot', text: sanitized });
         this.isLoading = false;
-  
-        setTimeout(() => this.scrollToBottom(), 0);
+        this.messagesComponent.scrollToBottom();
       },
-      error: (err) => {
-        console.error('Errore nella risposta', err);
+      error: () => {
         this.messages.push({ sender: 'Bot', text: 'C’è stato un errore!' });
         this.isLoading = false;
-  
-        setTimeout(() => this.scrollToBottom(), 0);
-      },
+        this.messagesComponent.scrollToBottom();
+      }
     });
   }
   
-  
 
-
-  updateJira() {
-    this.isLoading = true;
-    this.chatService.loadJira().subscribe({
-      next: (res: { response: string }) => {
-        this.messages.push({ sender: 'Bot', text: this.formatResponse(`Jira: ${res.response}`) });
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Errore Jira', err);
-        this.messages.push({ sender: 'Bot', text: 'Errore nel caricamento di Jira!' });
-        this.isLoading = false;
-
-       // Scrolla al fondo dopo aver ricevuto la risposta
-      this.scrollToBottom();
-      },
-    });
+  onSuggestionClicked(suggestion: string) {
+    this.onSendMessage(suggestion);
   }
 
-  updateGithub() {
-    this.isLoading = true;
-    this.chatService.loadGithub().subscribe({
-      next: (res: { response: string }) => {
-        this.messages.push({ sender: 'Bot', text: this.formatResponse(`GitHub: ${res.response}`) });
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Errore GitHub', err);
-        this.messages.push({ sender: 'Bot', text: 'Errore nel caricamento di GitHub!' });
-        this.isLoading = false;
-
-      // Scrolla al fondo dopo aver ricevuto la risposta
-      this.scrollToBottom();
-      },
-    });
-  }
-
-  updateConfluence() {
-    this.isLoading = true;
-    this.chatService.loadConfluence().subscribe({
-      next: (res: { response: string }) => {
-        this.messages.push({ sender: 'Bot', text: this.formatResponse(`Confluence: ${res.response}`) });
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Errore Confluence', err);
-        this.messages.push({ sender: 'Bot', text: 'Errore nel caricamento di Confluence!' });
-        this.isLoading = false;
-
-      // Scrolla al fondo dopo aver ricevuto la risposta
-      this.scrollToBottom();
-      },
-    });
-  }
-
-  /**
-   * Formattazione generica: grassetto con **testo**, link cliccabili e line break
-   */
   private formatResponse(response: string): string {
-    return response
-      // Titoli: ### Titolo -> <h3>Titolo</h3>
+    const codeRegex = /```(\w+)?([\s\S]*?)```/g;
+    let formatted = response.replace(codeRegex, (match, maybeLang, codeBlock) => {
+      const trimmed = codeBlock.replace(/^\n+|\n+$/g, '');
+      const escapedCode = trimmed
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+      return `
+        <div class="code-container">
+          <mat-icon _ngcontent-ng-c4071621763 title="Copia il codice" class="mat-icon notranslate material-icons mat-ligature-font mat-icon-no-color copy-snippet-icon" aria-hidden="true" data-mat-icon-type="font">content_copy</mat-icon>
+          <pre class="snippet-content">${escapedCode}</pre>
+        </div>
+      `;
+    });
+  
+    formatted = formatted
       .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-      // Grassetto: **testo** -> <strong>testo</strong>
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      // Link in formato cliccabile: http(s):// -> <a href="...">...</a>
       .replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>')
-      // Newline: \n -> <br>
       .replace(/\n/g, '<br>');
+  
+    return formatted;
   }
   
+
   scrollToBottom(): void {
     if (this.messagesComponent) {
       this.messagesComponent.scrollToBottom();
     }
-  }  
-
-  
+  }
 }
