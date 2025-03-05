@@ -27,7 +27,7 @@ class GitHubRepository:
             self.__github_repo = github_repo
         except Exception as e:
             logger.error(f"Error initializing GitHubRepository: {e}")
-            raise
+            raise e
 
     def load_github_commits(self) -> Tuple[PlatformLog, List[CommitEntity]]:
         """

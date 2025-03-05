@@ -25,7 +25,7 @@ class PostgresRepository:
             self.__conn = conn
         except psycopg2.Error as e:
             logger.error(f"An error occurred while initializing the PostgresRepository: {e}")
-            self.__conn = None
+            raise e
 
     def __execute_query(self, query: str, params: Optional[Tuple] = None, fetch_one: bool = False, fetch_all: bool = False) -> tuple | list | None:
         '''

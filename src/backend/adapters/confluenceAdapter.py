@@ -25,7 +25,7 @@ class ConfluenceAdapter(ConfluencePort):
             self.__confluence_repository = confluence_repository
         except Exception as e:
             logger.error(f"Error initializing ConfluenceAdapter: {e}")
-            raise
+            raise e
 
     def load_confluence_pages(self) -> Tuple[PlatformLog, List[Document]]:
         """
@@ -86,4 +86,4 @@ class ConfluenceAdapter(ConfluencePort):
             return platform_log, documents
         except Exception as e:
             logger.error(f"Error adapting Confluence pages: {e}")
-            raise
+            raise e

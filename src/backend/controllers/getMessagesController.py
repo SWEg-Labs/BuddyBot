@@ -23,7 +23,7 @@ class GetMessagesController:
             self.__get_messages_use_case = get_messages_use_case
         except Exception as e:
             logger.error(f"An error occurred while initializing GetMessagesController: {e}")
-            raise
+            raise e
 
     def get_messages(self, quantity: dict[str, int]) -> List[MessageBaseModel]:
         """
@@ -46,4 +46,4 @@ class GetMessagesController:
             return return_list
         except Exception as e:
             logger.error(f"An error occurred while retrieving messages: {e}")
-            return []
+            raise e

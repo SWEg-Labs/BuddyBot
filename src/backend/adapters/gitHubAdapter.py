@@ -26,7 +26,7 @@ class GitHubAdapter(GitHubPort):
             self.__github_repository = github_repository
         except Exception as e:
             logger.error(f"Error initializing GitHubAdapter: {e}")
-            raise
+            raise e
 
     def load_github_commits(self) -> Tuple[PlatformLog, List[Document]]:
         """
@@ -75,7 +75,7 @@ class GitHubAdapter(GitHubPort):
             return log, documents
         except Exception as e:
             logger.error(f"Error while adapting GitHub commits: {e}")
-            raise
+            raise e
 
     def load_github_files(self) -> Tuple[PlatformLog, List[Document]]:
         """
@@ -109,4 +109,4 @@ class GitHubAdapter(GitHubPort):
             return log, documents
         except Exception as e:
             logger.error(f"Error while adapting GitHub files: {e}")
-            raise
+            raise e

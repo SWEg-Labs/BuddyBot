@@ -25,7 +25,7 @@ class JiraAdapter(JiraPort):
             self.__jira_repository = jira_repository
         except Exception as e:
             logger.error(f"An error occurred while initializing JiraAdapter: {e}")
-            raise
+            raise e
 
     def load_jira_issues(self) -> Tuple[PlatformLog, List[Document]]:
         """
@@ -64,4 +64,4 @@ class JiraAdapter(JiraPort):
             return platform_log, documents
         except Exception as e:
             logger.error(f"An error occurred while adapting Jira issues: {e}")
-            raise
+            raise e

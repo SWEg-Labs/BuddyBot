@@ -106,7 +106,7 @@ class ChromaVectorStoreAdapter(SimilaritySearchPort, LoadFilesInVectorStorePort)
             return chroma_documents
         except Exception as e:
             logger.error(f"Error in splitting Documents: {e}")
-            return []
+            raise e
 
     def similarity_search(self, user_input: Question) -> list[Document]:
         """

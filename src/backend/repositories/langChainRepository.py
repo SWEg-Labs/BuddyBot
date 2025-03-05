@@ -24,6 +24,7 @@ class LangChainRepository:
             self.__llm = llm
         except Exception as e:
             logger.error(f"Error initializing ChatService: {e}")
+            raise e
 
     def generate_answer(self, user_input: str, relevant_docs: list[LangChainDocumentEntity], header: str) -> str:
         """
@@ -65,7 +66,7 @@ class LangChainRepository:
             return response
         except Exception as e:
             logger.error(f"Error getting the answer: {e}")
-            raise
+            raise e
 
     def get_next_possible_questions(self, question_answer_couple: list[str], header: str) -> str:
         """
@@ -102,4 +103,4 @@ class LangChainRepository:
             return response
         except Exception as e:
             logger.error(f"Error getting next possible questions: {e}")
-            raise
+            raise e

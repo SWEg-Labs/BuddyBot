@@ -48,7 +48,7 @@ class LoadFilesService(LoadFilesUseCase):
             self.__save_loading_attempt_in_db_port = save_loading_attempt_in_db_port
         except Exception as e:
             logger.error(f"Error initializing LoadFilesService: {e}")
-            raise
+            raise e
 
     def load(self):
         """
@@ -75,7 +75,7 @@ class LoadFilesService(LoadFilesUseCase):
             self.save_loading_attempt_in_txt(loading_attempt)
         except Exception as e:
             logger.error(f"Error in load method: {e}")
-            raise
+            raise e
 
     def load_github_commits(self) -> Tuple[PlatformLog, List[Document]]:
         """
@@ -87,7 +87,7 @@ class LoadFilesService(LoadFilesUseCase):
             return self.__github_port.load_github_commits()
         except Exception as e:
             logger.error(f"Error loading GitHub commits: {e}")
-            raise
+            raise e
 
     def load_github_files(self) -> Tuple[PlatformLog, List[Document]]:
         """
@@ -99,7 +99,7 @@ class LoadFilesService(LoadFilesUseCase):
             return self.__github_port.load_github_files()
         except Exception as e:
             logger.error(f"Error loading GitHub files: {e}")
-            raise
+            raise e
 
     def load_jira_issues(self) -> Tuple[PlatformLog, List[Document]]:
         """
@@ -111,7 +111,7 @@ class LoadFilesService(LoadFilesUseCase):
             return self.__jira_port.load_jira_issues()
         except Exception as e:
             logger.error(f"Error loading Jira issues: {e}")
-            raise
+            raise e
 
     def load_confluence_pages(self) -> Tuple[PlatformLog, List[Document]]:
         """
@@ -123,7 +123,7 @@ class LoadFilesService(LoadFilesUseCase):
             return self.__confluence_port.load_confluence_pages()
         except Exception as e:
             logger.error(f"Error loading Confluence pages: {e}")
-            raise
+            raise e
 
     def clean_confluence_pages(self, pages: List[Document]) -> List[Document]:
         """
@@ -137,7 +137,7 @@ class LoadFilesService(LoadFilesUseCase):
             return self.__confluence_cleaner_service.clean_confluence_pages(pages)
         except Exception as e:
             logger.error(f"Error cleaning Confluence pages: {e}")
-            raise
+            raise e
 
     def load_in_vector_store(self, documents: List[Document]) -> VectorStoreLog:
         """
@@ -151,7 +151,7 @@ class LoadFilesService(LoadFilesUseCase):
             return self.__load_files_in_vector_store_port.load(documents)
         except Exception as e:
             logger.error(f"Error loading documents in vector store: {e}")
-            raise
+            raise e
 
     def save_loading_attempt_in_db(self, loading_attempt: LoadingAttempt) -> DbSaveOperationResponse:
         """
@@ -165,7 +165,7 @@ class LoadFilesService(LoadFilesUseCase):
             return self.__save_loading_attempt_in_db_port.save_loading_attempt(loading_attempt)
         except Exception as e:
             logger.error(f"Error saving loading attempt in DB: {e}")
-            raise
+            raise e
 
     def save_loading_attempt_in_txt(self, loading_attempt: LoadingAttempt):
         """
@@ -189,4 +189,4 @@ class LoadFilesService(LoadFilesUseCase):
             file_logger.info(log_message)
         except Exception as e:
             logger.error(f"Error saving loading attempt in TXT: {e}")
-            raise
+            raise e

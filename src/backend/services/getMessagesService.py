@@ -25,7 +25,7 @@ class GetMessagesService(GetMessagesUseCase):
             self.__get_messages_port = get_messages_port
         except Exception as e:
             logger.error(f"Failed to initialize GetMessagesService: {e}")
-            raise
+            raise e
 
     def get_messages(self, quantity: Quantity) -> List[Message]:
         """
@@ -41,4 +41,4 @@ class GetMessagesService(GetMessagesUseCase):
             return self.__get_messages_port.get_messages(quantity)
         except Exception as e:
             logger.error(f"Failed to retrieve messages: {e}")
-            raise
+            raise e
