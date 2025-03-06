@@ -123,7 +123,11 @@ class ChromaVectorStoreAdapter(SimilaritySearchPort, LoadFilesInVectorStorePort)
                     document = query_result_entity.get_documents()[i][j]
                     metadata = query_result_entity.get_metadatas()[i][j]
                     distance = query_result_entity.get_distances()[i][j]
-                    
+
+                    # Salta il documento se è nullo
+                    if document is None:
+                        continue
+
                     # Aggiungi la distanza come metadato
                     metadata["distance"] = distance
 

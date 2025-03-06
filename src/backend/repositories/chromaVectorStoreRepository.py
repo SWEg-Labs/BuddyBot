@@ -58,7 +58,7 @@ class ChromaVectorStoreRepository:
             # Initialize counters
             num_modified_items = 0
             num_deleted_items = 0
-            
+
             # Check and delete existing documents with the same IDs
             for doc_id in ids:
                 try:
@@ -72,12 +72,12 @@ class ChromaVectorStoreRepository:
                 except Exception as e:
                     logger.error(f"Error checking document existence: {e}")
                     raise e
-            
+
             # Check for documents in collection that are not in the current batch
             try:
                 all_docs = self.__collection.get()
                 all_ids = all_docs.get('ids', []) if all_docs else []
-                
+
                 for existing_id in all_ids:
                     if existing_id not in ids:
                         # This document is not in the new batch, delete it
