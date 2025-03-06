@@ -9,7 +9,6 @@ describe('ChatHeaderComponent', () => {
   let chatServiceSpy: jasmine.SpyObj<ChatService>;
 
   beforeEach(async () => {
-    // Arrange
     chatServiceSpy = jasmine.createSpyObj('ChatService', [
       'checkFileUpdates'
     ], {
@@ -25,15 +24,19 @@ describe('ChatHeaderComponent', () => {
   });
 
   beforeEach(() => {
-    // Act
     fixture = TestBed.createComponent(ChatHeaderComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  // ------------------- Unit -------------------
-  it('should create the ChatHeaderComponent instance successfully', () => {
-    // Assert
+  // Test di Unità
+  it('deve creare correttamente l’istanza di ChatHeaderComponent', () => {
     expect(component).toBeTruthy();
+  });
+
+  // Test di Unità
+  it('deve contenere il badge di aggiornamento nel template', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('app-chat-badge')).toBeTruthy();
   });
 });

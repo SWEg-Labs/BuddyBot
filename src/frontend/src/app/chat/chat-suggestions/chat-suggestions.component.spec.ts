@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ChatSuggestionsComponent } from './chat-suggestions.component';
 import { ChatService } from '../chat.service';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 describe('ChatSuggestionsComponent', () => {
   let component: ChatSuggestionsComponent;
@@ -9,14 +9,14 @@ describe('ChatSuggestionsComponent', () => {
   let chatServiceSpy: jasmine.SpyObj<ChatService>;
 
   beforeEach(async () => {
-    // Arrange
-    chatServiceSpy = jasmine.createSpyObj('ChatService', [
-      'getContinuationSuggestions'
-    ]);
-    chatServiceSpy.getContinuationSuggestions.and.returnValue(of(['Cont1', 'Cont2']));
+    chatServiceSpy = jasmine.createSpyObj<ChatService>(
+      'ChatService',
+      ['getContinuationSuggestions']
+    );
+    chatServiceSpy.getContinuationSuggestions.and.returnValue(of([]));
 
     await TestBed.configureTestingModule({
-      imports: [ ChatSuggestionsComponent ],
+      imports: [ChatSuggestionsComponent],
       providers: [
         { provide: ChatService, useValue: chatServiceSpy }
       ]
@@ -24,44 +24,45 @@ describe('ChatSuggestionsComponent', () => {
   });
 
   beforeEach(() => {
-    // Act
     fixture = TestBed.createComponent(ChatSuggestionsComponent);
     component = fixture.componentInstance;
   });
 
-  // ------------------- Unit -------------------
-  it('should create the ChatSuggestionsComponent instance successfully', () => {
-    // Arrange
+  // Test di Unità
+  it('deve creare correttamente l’istanza di ChatSuggestionsComponent', () => {
+    component.lastMessageTimestamp = Date.now() - 6 * 60 * 1000;
     fixture.detectChanges();
-
-    // Assert
     expect(component).toBeTruthy();
   });
 
-  // -------------- Integration -----------------
-  it('should call chatService.getContinuationSuggestions() if lastMessageTimestamp is within 5 minutes', () => {
-    // Arrange
-    component.lastMessageTimestamp = Date.now();
-
-    // Act
-    fixture.detectChanges(); // ngOnInit
-
-    // Assert
-    expect(component.showInitial).toBeFalse();
-    expect(component.continuationSuggestions).toEqual(['Cont1', 'Cont2']);
-    expect(chatServiceSpy.getContinuationSuggestions).toHaveBeenCalled();
+  // Test di Unità
+  it('deve mostrare i suggerimenti iniziali se lastMessageTimestamp è più vecchio di 5 minuti', () => {
+    component.lastMessageTimestamp = Date.now() - 6 * 60 * 1000;
+    fixture.detectChanges();
+    expect(component.showInitial).toBeTrue();
   });
 
-  // ------------------- Unit -------------------
-  it('should emit suggestionClicked when onSuggestionClick() is invoked', () => {
-    // Arrange
+  // Test di Integrazione
+  it('deve caricare i suggerimenti di continuazione se lastMessageTimestamp è recente', () => {
+    chatServiceSpy.getContinuationSuggestions.and.returnValue(of(['Cont1', 'Cont2']));
+    component.lastMessageTimestamp = Date.now();
+    fixture.detectChanges();
+    expect(component.showInitial).toBeFalse();
+    expect(component.continuationSuggestions).toEqual(['Cont1', 'Cont2']);
+  });
+
+  // Test di Integrazione
+  it('deve gestire un errore di caricamento suggerimenti', () => {
+    chatServiceSpy.getContinuationSuggestions.and.returnValue(throwError(() => new Error('Errore')));
+    component.lastMessageTimestamp = Date.now();
+    fixture.detectChanges();
+    expect(component.loadError).toBeTrue();
+  });
+
+  // Test di Unità
+  it('deve emettere suggestionClicked quando viene cliccato un suggerimento', () => {
     spyOn(component.suggestionClicked, 'emit');
-    const suggestion = 'Prova';
-
-    // Act
-    component.onSuggestionClick(suggestion);
-
-    // Assert
+    component.onSuggestionClick('Prova');
     expect(component.suggestionClicked.emit).toHaveBeenCalledWith('Prova');
   });
 });

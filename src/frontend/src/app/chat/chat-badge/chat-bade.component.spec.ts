@@ -9,9 +9,7 @@ describe('ChatBadgeComponent', () => {
   let chatServiceSpy: jasmine.SpyObj<ChatService>;
 
   beforeEach(async () => {
-    // Arrange
     chatServiceSpy = jasmine.createSpyObj('ChatService', ['checkFileUpdates'], {
-      isUpdated$: of(true)
     });
 
     await TestBed.configureTestingModule({
@@ -23,26 +21,34 @@ describe('ChatBadgeComponent', () => {
   });
 
   beforeEach(() => {
-    // Act
+    chatServiceSpy.isUpdated$ = of(true);
     fixture = TestBed.createComponent(ChatBadgeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  // ------------------- Unit -------------------
-  it('should create the ChatBadgeComponent instance successfully', () => {
-    // Assert
+  // Test di Unità
+  it('deve creare correttamente l’istanza di ChatBadgeComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  // -------------- Integration -----------------
-  it('should call chatService.checkFileUpdates() when onToggleStatus() is invoked', () => {
-    // Arrange
+  // Test di Unità
+  it('deve impostare isUpdated quando cambia la variabile in ChatService', () => {
+    expect(component.isUpdated).toBeTrue();
+  });
 
-    // Act
+  // Test di Unità
+  it('deve chiamare checkFileUpdates() in onToggleStatus()', () => {
     component.onToggleStatus();
-
-    // Assert
     expect(chatServiceSpy.checkFileUpdates).toHaveBeenCalled();
+  });
+
+  // Test di Unità
+  it('deve cambiare isUpdated al cambio di valore in isUpdated$', () => {
+    chatServiceSpy.isUpdated$ = of(false);
+    fixture = TestBed.createComponent(ChatBadgeComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+    expect(component.isUpdated).toBeFalse();
   });
 });

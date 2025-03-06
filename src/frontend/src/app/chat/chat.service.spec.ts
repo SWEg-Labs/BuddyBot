@@ -7,72 +7,84 @@ describe('ChatService', () => {
   let httpMock: HttpTestingController;
 
   beforeEach(() => {
-    // ------------------- Unit -------------------
-    // Arrange
+    // Test di Unità
+    // Prepara
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [ChatService]
     });
+
     service = TestBed.inject(ChatService);
     httpMock = TestBed.inject(HttpTestingController);
   });
 
   afterEach(() => {
-    // Assert: verifica che non siano rimaste richieste pendenti
     httpMock.verify();
   });
 
-  // ------------------- Unit -------------------
-  it('should create the ChatService instance successfully', () => {
-    // Arrange (già fatto in beforeEach)
-    // Act & Assert
+  // Test di Unità
+  it('deve creare correttamente l’istanza di ChatService', () => {
+    // Esegui e Verifica
     expect(service).toBeTruthy();
   });
 
-  // ------------------- Unit -------------------
-  it('should correctly invert isUpdatedSubject when checkFileUpdates() is called', () => {
-    // Arrange
+  // Test di Unità
+  it('deve invertire correttamente isUpdatedSubject quando viene chiamato checkFileUpdates()', () => {
+    // Prepara
     let currentValue!: boolean;
     service.isUpdated$.subscribe(value => (currentValue = value));
-    const initialValue = currentValue;
+    const valoreIniziale = currentValue;
 
-    // Act
+    // Esegui
     service.checkFileUpdates();
 
-    // Assert
-    expect(currentValue).toBe(!initialValue);
+    // Verifica
+    expect(currentValue).toBe(!valoreIniziale);
   });
 
-  // -------------- Integration -----------------
-  it('should call the GET /api/chat/suggestions/initial endpoint and handle the response in getInitialSuggestions()', () => {
-    // Arrange
+  // Test di Unità
+  it('deve restituire il valore corretto di lastMessageTimestamp', () => {
+    // Prepara
+    const now = Date.now();
+
+    // Esegui
+    service.setLastMessageTimestamp(now);
+
+    // Verifica
+    expect(service.getLastMessageTimestamp()).toBe(now);
+  });
+
+  // Test di Integrazione
+  it('deve chiamare l’endpoint GET /api/chat/suggestions/initial e gestire la risposta in getInitialSuggestions()', () => {
     const mockSuggestions = ['Suggerimento 1', 'Suggerimento 2'];
     let result: string[] = [];
-
-    // Act
     service.getInitialSuggestions().subscribe(res => (result = res));
     const req = httpMock.expectOne('http://localhost:5000/api/chat/suggestions/initial');
     req.flush(mockSuggestions);
-
-    // Assert
     expect(req.request.method).toBe('GET');
     expect(result).toEqual(mockSuggestions);
   });
 
-  // -------------- Integration -----------------
-  it('should call the POST /api/chat endpoint in sendMessage() and return the server response', () => {
-    // Arrange
+  // Test di Integrazione
+  it('deve chiamare l’endpoint GET /api/chat/suggestions/continuation e gestire la risposta in getContinuationSuggestions()', () => {
+    const mockSuggestions = ['Cont1', 'Cont2'];
+    let result: string[] = [];
+    service.getContinuationSuggestions().subscribe(res => (result = res));
+    const req = httpMock.expectOne('http://localhost:5000/api/chat/suggestions/continuation');
+    req.flush(mockSuggestions);
+    expect(req.request.method).toBe('GET');
+    expect(result).toEqual(mockSuggestions);
+  });
+
+  // Test di Integrazione
+  it('deve chiamare l’endpoint POST /api/chat in sendMessage() e restituire la risposta del server', () => {
     const fakeReply = { response: 'Risposta dal server' };
     let actualReply: string | undefined;
-
-    // Act
     service.sendMessage('Hello').subscribe(res => {
       actualReply = res.response;
     });
     const req = httpMock.expectOne('http://localhost:5000/api/chat');
     req.flush(fakeReply);
-
-    // Assert
     expect(req.request.method).toBe('POST');
     expect(actualReply).toBe('Risposta dal server');
   });

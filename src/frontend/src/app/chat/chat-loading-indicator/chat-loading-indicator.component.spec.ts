@@ -6,34 +6,26 @@ describe('ChatLoadingIndicatorComponent', () => {
   let fixture: ComponentFixture<ChatLoadingIndicatorComponent>;
 
   beforeEach(async () => {
-    // Arrange
     await TestBed.configureTestingModule({
       imports: [ ChatLoadingIndicatorComponent ]
     }).compileComponents();
   });
 
   beforeEach(() => {
-    // Act
     fixture = TestBed.createComponent(ChatLoadingIndicatorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  // ------------------- Unit -------------------
-  it('should create the ChatLoadingIndicatorComponent instance successfully', () => {
-    // Assert
+  // Test di Unità
+  it('deve creare correttamente l’istanza di ChatLoadingIndicatorComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  // ------------------- Unit -------------------
-  it('should contain an image with the rotating-logo class', () => {
-    // Arrange
+  // Test di Unità
+  it('deve contenere un’immagine con la classe rotating-logo', () => {
     const compiled = fixture.nativeElement as HTMLElement;
-
-    // Act
     const img = compiled.querySelector('img.rotating-logo');
-
-    // Assert
     expect(img).toBeTruthy();
   });
 });
