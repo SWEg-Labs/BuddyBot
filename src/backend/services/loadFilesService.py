@@ -73,7 +73,7 @@ class LoadFilesService(LoadFilesUseCase):
 
             db_save_operation_response = self.save_loading_attempt_in_db(loading_attempt)
             if not db_save_operation_response.get_success():
-                raise Exception("Failed to save loading attempt in the database: Connection to the database failed."
+                raise Exception("Failed to save loading attempt in the database: Connection to the database failed. "
                                 "Details: " + db_save_operation_response.get_message())
 
             self.save_loading_attempt_in_txt(loading_attempt)
