@@ -63,6 +63,7 @@ class ConfluenceAdapter(ConfluencePort):
                             and page.get_version().get("by").get("displayName") is not None
                             else "/"
                         ),
+                        "item_type": "Confluence Page",
                         "creation_date": (
                             page.get_version().get("when")
                             if page.get_version().get("when") is not None

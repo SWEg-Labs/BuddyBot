@@ -53,6 +53,7 @@ class LangChainRepository:
             print("relevant_docs : ")
             for i, doc in enumerate(relevant_docs, start=1):
                 print(f"\nDocumento {i}:\n{doc.get_page_content()}")
+            print("\n\n\n\n")
 
             # Esegue la catena per ottenere una risposta
             response = rag_chain.invoke({

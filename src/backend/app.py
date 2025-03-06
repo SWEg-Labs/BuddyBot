@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Union
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
