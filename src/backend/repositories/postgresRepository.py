@@ -23,7 +23,7 @@ class PostgresRepository:
         '''
         try:
             self.__conn = conn
-        except psycopg2.Error as e:
+        except Exception as e:
             logger.error(f"An error occurred while initializing the PostgresRepository: {e}")
             raise e
 
@@ -49,7 +49,7 @@ class PostgresRepository:
                 if fetch_all:
                     return cur.fetchall()
                 self.__conn.commit()  # Commit solo per operazioni di scrittura
-        except psycopg2.Error as e:
+        except Exception as e:
             logger.error(f"An error occurred while executing the query: {e}")
             raise e
 
@@ -89,9 +89,12 @@ class PostgresRepository:
             return PostgresSaveOperationResponse(success=True, message="Message saved successfully in the Postgres database.")
 
         except psycopg2.Error as e:
-            message = f"An error occurred while saving the message in the Postgres database: {e}"
+            message = f"A connection error occurred while saving the message in the Postgres database: {e}"
             logger.error(message)
             return PostgresSaveOperationResponse(success=False, message=message)
+        except Exception as e:
+            logger.error(f"An error occurred while saving the message in the Postgres database: {e}")
+            raise e
 
     def get_messages(self, quantity: int) -> list[PostgresMessage]:
         '''
@@ -116,7 +119,7 @@ class PostgresRepository:
 
             return [PostgresMessage(content=message[0], timestamp=message[1], sender=message[2]) for message in messages]
 
-        except psycopg2.Error as e:
+        except Exception as e:
             message = f"An error occurred while retrieving the messages from the Postgres database: {e}"
             logger.error(message)
             raise e
@@ -212,6 +215,9 @@ class PostgresRepository:
             return PostgresSaveOperationResponse(success=True, message="Loading attempt saved successfully in the Postgres database.")
 
         except psycopg2.Error as e:
-            message = f"An error occurred while saving the loading attempt in the Postgres database: {e}"
+            message = f"A connection error occurred while saving the loading attempt in the Postgres database: {e}"
             logger.error(message)
             return PostgresSaveOperationResponse(success=False, message=message)
+        except Exception as e:
+            logger.error(f"An error occurred while saving the loading attempt in the Postgres database: {e}")
+            raise e

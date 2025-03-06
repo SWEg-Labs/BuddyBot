@@ -71,7 +71,10 @@ class LoadFilesService(LoadFilesUseCase):
             platform_logs = [github_commits_log, github_files_log, jira_issues_log, confluence_pages_log]
             loading_attempt = LoadingAttempt(platform_logs, vector_store_log, starting_timestamp)
 
-            self.save_loading_attempt_in_db(loading_attempt)
+            db_save_operation_response = self.save_loading_attempt_in_db(loading_attempt)
+            if not db_save_operation_response.get_success():
+                raise Exception("Failed to save loading attempt in the database: Connection to the database failed.")
+
             self.save_loading_attempt_in_txt(loading_attempt)
         except Exception as e:
             logger.error(f"Error in load method of LoadFilesService: {e}")
