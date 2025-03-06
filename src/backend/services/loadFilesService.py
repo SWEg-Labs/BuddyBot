@@ -74,7 +74,7 @@ class LoadFilesService(LoadFilesUseCase):
             self.save_loading_attempt_in_db(loading_attempt)
             self.save_loading_attempt_in_txt(loading_attempt)
         except Exception as e:
-            logger.error(f"Error in load method: {e}")
+            logger.error(f"Error in load method of LoadFilesService: {e}")
             raise e
 
     def load_github_commits(self) -> Tuple[PlatformLog, List[Document]]:

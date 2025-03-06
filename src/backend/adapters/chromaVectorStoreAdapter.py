@@ -43,15 +43,8 @@ class ChromaVectorStoreAdapter(SimilaritySearchPort, LoadFilesInVectorStorePort)
             result = self.__chroma_vector_store_repository.load(chroma_documents)
             return result
         except Exception as e:
-            logger.error(f"Error in adapting Documents to load: {e}")
-            italy_tz = pytz.timezone('Europe/Rome')
-            return VectorStoreLog(
-                timestamp=datetime.now(italy_tz),
-                outcome=False,
-                num_added_items=0,
-                num_modified_items=0,
-                num_deleted_items=0
-            )
+            logger.error(f"Error in adapting documents to load: {e}")
+            raise e
 
     def __split(self, documents: list[Document]) -> list[ChromaDocumentEntity]:
         """
@@ -135,5 +128,5 @@ class ChromaVectorStoreAdapter(SimilaritySearchPort, LoadFilesInVectorStorePort)
 
             return relevant_docs
         except Exception as e:
-            logger.error(f"Error in ChromaVectorStoreAdapter: {e}")
+            logger.error(f"Error in adapting documents for similarity_search: {e}")
             raise e
