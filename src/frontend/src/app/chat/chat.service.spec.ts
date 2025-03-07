@@ -7,8 +7,6 @@ describe('ChatService', () => {
   let httpMock: HttpTestingController;
 
   beforeEach(() => {
-    // Test di Unità
-    // Prepara
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [ChatService]
