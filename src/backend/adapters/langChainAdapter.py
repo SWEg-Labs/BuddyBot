@@ -122,7 +122,7 @@ class LangChainAdapter(GenerateAnswerPort, GetNextPossibleQuestionsPort):
     def __count_tokens(self, text: str) -> int:
         """
         Calculates the approximate number of tokens based on the provided text.
-        Approximation: roughly 1 token every 3.5 characters.
+        Approximation: roughly 1 token every 3 characters.
         Args:
             text (str): The text for which to calculate the number of tokens.
         Returns:
@@ -131,7 +131,7 @@ class LangChainAdapter(GenerateAnswerPort, GetNextPossibleQuestionsPort):
             Exception: If an error occurs during token calculation.
         """
         try:
-            return max(1, int(len(text) / 3.5))
+            return max(1, int(len(text) / 3))
         except Exception as e:
             logger.error(f"An error occurred during token calculation: {e}")
             raise e
