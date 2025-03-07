@@ -29,15 +29,13 @@ describe('AppComponent', () => {
     }).compileComponents();
   });
 
-  // ------------------- Unit -------------------
-  it('should create the AppComponent instance successfully', () => {
-    // Arrange
+  // Test di Unità
+  it('Verifica che venga creata correttamente un’istanza di AppComponent', () => {
+    // Act
     const fixture = TestBed.createComponent(AppComponent);
 
-    // Act
-    const app = fixture.componentInstance;
-
     // Assert
+    const app = fixture.componentInstance;
     expect(app).toBeTruthy();
   });
 });

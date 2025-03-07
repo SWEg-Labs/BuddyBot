@@ -23,61 +23,77 @@ describe('ChatService', () => {
   });
 
   // Test di Unità
-  it('deve creare correttamente l’istanza di ChatService', () => {
-    // Esegui e Verifica
+  it('Verifica che venga creata correttamente un’istanza di ChatService', () => {
+    // Assert
     expect(service).toBeTruthy();
   });
 
   // Test di Unità
-  it('deve invertire correttamente isUpdatedSubject quando viene chiamato checkFileUpdates()', () => {
-    // Prepara
+  it('Verifica che, alla chiamata del metodo checkFileUpdates di ChatService, venga invertita correttamente la variabile '+
+    'booleana isUpdatedSubject', () => {
+    // Arrange
     let currentValue!: boolean;
     service.isUpdated$.subscribe(value => (currentValue = value));
     const valoreIniziale = currentValue;
 
-    // Esegui
+    // Act
     service.checkFileUpdates();
 
-    // Verifica
+    // Assert
     expect(currentValue).toBe(!valoreIniziale);
   });
 
   // Test di Unità
-  it('deve restituire il valore corretto di lastMessageTimestamp', () => {
-    // Prepara
+  it('Verifica che ChatService restituisca il valore corretto di lastMessageTimestamp', () => {
+    // Arrange
     const now = Date.now();
 
-    // Esegui
+    // Act
     service.setLastMessageTimestamp(now);
 
-    // Verifica
+    // Assert
     expect(service.getLastMessageTimestamp()).toBe(now);
   });
 
+
+  // DA RIMUOVERE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // Test di Integrazione
-  it('deve chiamare l’endpoint GET /api/chat/suggestions/initial e gestire la risposta in getInitialSuggestions()', () => {
+  it('Verifica il metodo getInitialSuggestions di ChatService chiami l’endpoint GET /api/chat/suggestions/initial '+
+    'e ne gestisca la risposta', () => {
+    // Arrange
     const mockSuggestions = ['Suggerimento 1', 'Suggerimento 2'];
     let result: string[] = [];
     service.getInitialSuggestions().subscribe(res => (result = res));
     const req = httpMock.expectOne('http://localhost:5000/api/chat/suggestions/initial');
+
+    // Act
     req.flush(mockSuggestions);
+
+    // Assert
     expect(req.request.method).toBe('GET');
     expect(result).toEqual(mockSuggestions);
   });
+  
 
   // Test di Integrazione
-  it('deve chiamare l’endpoint GET /api/chat/suggestions/continuation e gestire la risposta in getContinuationSuggestions()', () => {
+  it('Verifica il metodo getContinuationSuggestions di ChatService chiami l’endpoint GET /api/chat/suggestions/continuation '+
+    'e ne gestisca la risposta', () => {
+    // Arrange
     const mockSuggestions = ['Cont1', 'Cont2'];
     let result: string[] = [];
     service.getContinuationSuggestions().subscribe(res => (result = res));
     const req = httpMock.expectOne('http://localhost:5000/api/chat/suggestions/continuation');
+
+    // Act
     req.flush(mockSuggestions);
+
+    // Assert
     expect(req.request.method).toBe('GET');
     expect(result).toEqual(mockSuggestions);
   });
 
   // Test di Integrazione
-  it('deve chiamare l’endpoint POST /api/chat in sendMessage() e restituire la risposta del server', () => {
+  it('Verifica il metodo sendMessage di ChatService chiami l’endpoint POST /api/chat e ne gestisca la risposta', () => {
     const fakeReply = { response: 'Risposta dal server' };
     let actualReply: string | undefined;
     service.sendMessage('Hello').subscribe(res => {

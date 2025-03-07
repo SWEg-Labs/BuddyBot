@@ -29,40 +29,71 @@ describe('ChatSuggestionsComponent', () => {
   });
 
   // Test di Unità
-  it('deve creare correttamente l’istanza di ChatSuggestionsComponent', () => {
+  it('Verifica che venga creata correttamente un’istanza di ChatSuggestionsComponent', () => {
+    // Arrange
     component.lastMessageTimestamp = Date.now() - 6 * 60 * 1000;
+
+    // Act
     fixture.detectChanges();
+
+    // Assert
     expect(component).toBeTruthy();
   });
 
+  // DA RIMUOVERE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // Test di Unità
-  it('deve mostrare i suggerimenti iniziali se lastMessageTimestamp è più vecchio di 5 minuti', () => {
+  it('Verifica che, se la variabile lastMessageTimestamp di ChatSuggestionsComponent contiene un timestamp più vecchio di 5 minuti, '+
+    'vengano mostrati i suggerimenti iniziali', () => {
+    // Arrange
     component.lastMessageTimestamp = Date.now() - 6 * 60 * 1000;
+
+    // Act
     fixture.detectChanges();
+
+    // Assert
     expect(component.showInitial).toBeTrue();
   });
 
+  // DA SOSTITUIRE CON UN TEST DIVERSO PER LA CONTINUAZIONE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // Test di Integrazione
-  it('deve caricare i suggerimenti di continuazione se lastMessageTimestamp è recente', () => {
+  it('Verifica che, se la variabile lastMessageTimestamp di ChatSuggestionsComponent contiene un timestamp recente di massimo 5 minuti' +
+    'venga chiamato ChatService per caricare i suggerimenti di continuazione', () => {
+    // Arrange
     chatServiceSpy.getContinuationSuggestions.and.returnValue(of(['Cont1', 'Cont2']));
     component.lastMessageTimestamp = Date.now();
+
+    // Act
     fixture.detectChanges();
+
+    // Assert
     expect(component.showInitial).toBeFalse();
     expect(component.continuationSuggestions).toEqual(['Cont1', 'Cont2']);
   });
 
   // Test di Integrazione
-  it('deve gestire un errore di caricamento suggerimenti', () => {
+  it('Verifica che, se ChatService segnala un errore di caricamento suggerimenti, ChatSuggestionsComponent stampi'+
+    'un messaggio di errore', () => {
+    // Arrange
     chatServiceSpy.getContinuationSuggestions.and.returnValue(throwError(() => new Error('Errore')));
     component.lastMessageTimestamp = Date.now();
+
+    // Act
     fixture.detectChanges();
+
+    // Assert
     expect(component.loadError).toBeTrue();
   });
 
   // Test di Unità
-  it('deve emettere suggestionClicked quando viene cliccato un suggerimento', () => {
+  it('Verifica che, quando l’utente clicca un suggerimento, in ChatSuggestionsComponent venga emesso l’evento ' +
+    'suggestionClicked', () => {
+    // Arrange
     spyOn(component.suggestionClicked, 'emit');
+
+    // Act
     component.onSuggestionClick('Prova');
+
+    // Assert
     expect(component.suggestionClicked.emit).toHaveBeenCalledWith('Prova');
   });
 });

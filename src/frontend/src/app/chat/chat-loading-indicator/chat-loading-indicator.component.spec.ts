@@ -18,12 +18,15 @@ describe('ChatLoadingIndicatorComponent', () => {
   });
 
   // Test di Unità
-  it('deve creare correttamente l’istanza di ChatLoadingIndicatorComponent', () => {
+  it('Verifica che venga creata correttamente un’istanza di ChatLoadingIndicatorComponent', () => {
+    // Assert
     expect(component).toBeTruthy();
   });
 
   // Test di Unità
-  it('deve contenere un’immagine con la classe rotating-logo', () => {
+  it('Verifica che l’istanza di ChatLoadingIndicatorComponent contenga nel template HTML un’immagine con la classe CSS ' +
+    'rotating-logo', () => {
+    // Assert
     const compiled = fixture.nativeElement as HTMLElement;
     const img = compiled.querySelector('img.rotating-logo');
     expect(img).toBeTruthy();

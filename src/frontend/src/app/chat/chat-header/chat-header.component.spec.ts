@@ -30,12 +30,14 @@ describe('ChatHeaderComponent', () => {
   });
 
   // Test di Unità
-  it('deve creare correttamente l’istanza di ChatHeaderComponent', () => {
+  it('Verifica che venga creata correttamente un’istanza di ChatHeaderComponent', () => {
+    // Assert
     expect(component).toBeTruthy();
   });
 
   // Test di Unità
-  it('deve contenere il badge di aggiornamento nel template', () => {
+  it('Verifica che ChatHeaderComponent contenga il badge di aggiornamento nel proprio template HTML', () => {
+    // Assert
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('app-chat-badge')).toBeTruthy();
   });

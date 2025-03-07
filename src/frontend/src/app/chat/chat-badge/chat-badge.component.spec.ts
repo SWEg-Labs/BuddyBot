@@ -28,27 +28,39 @@ describe('ChatBadgeComponent', () => {
   });
 
   // Test di Unità
-  it('deve creare correttamente l’istanza di ChatBadgeComponent', () => {
+  it('Verifica che venga creata correttamente un’istanza di ChatBadgeComponent', () => {
+    // Assert
     expect(component).toBeTruthy();
   });
 
   // Test di Unità
-  it('deve impostare isUpdated quando cambia la variabile in ChatService', () => {
+  it('Verifica che isUpdated di ChatBadgeComponent venga impostato inizialmente al valore true', () => {
+    // Assert
     expect(component.isUpdated).toBeTrue();
+
   });
 
   // Test di Unità
-  it('deve chiamare checkFileUpdates() in onToggleStatus()', () => {
+  it('Verifica che onToggleStatus() di ChatBadgeComponent chiami checkFileUpdates() di chatServiceSpy', () => {
+    // Act
     component.onToggleStatus();
+
+    // Assert
     expect(chatServiceSpy.checkFileUpdates).toHaveBeenCalled();
   });
 
   // Test di Unità
-  it('deve cambiare isUpdated al cambio di valore in isUpdated$', () => {
+  it('Verifica che, al cambio di valore di isUpdated$ di chatServiceSpy, isUpdated di ChatBadgeComponent si aggiorni ' +
+    'correttamente', () => {
+    // Arrange
     chatServiceSpy.isUpdated$ = of(false);
     fixture = TestBed.createComponent(ChatBadgeComponent);
     component = fixture.componentInstance;
+
+    // Act
     fixture.detectChanges();
+
+    // Assert
     expect(component.isUpdated).toBeFalse();
   });
 });

@@ -41,24 +41,39 @@ describe('ChatContainerComponent', () => {
   });
 
   // Test di Unità
-  it('deve creare correttamente l’istanza di ChatContainerComponent', () => {
+  it('Verifica che venga creata correttamente un’istanza di ChatContainerComponent', () => {
+    // Assert
     expect(component).toBeTruthy();
   });
 
   // Test di Unità
-  it('deve impostare showScrollToBottom correttamente in base all’evento di scroll', () => {
+  it('Verifica che, alla chiamata dell’evento onScrollChange di ChatContainerComponent, la variabile showScrollToBottom venga ' +
+    'impostata correttamente', () => {
+    // Act
     component.onScrollChange(true);
+
+    // Assert
     expect(component.showScrollToBottom).toBeTrue();
+
+    // Act
     component.onScrollChange(false);
+
+    // Assert
     expect(component.showScrollToBottom).toBeFalse();
   });
 
   // Test di Integrazione
-  it('deve inviare un messaggio, impostare isLoading e aggiungere risposta del bot', fakeAsync(() => {
+  it('Verifica che, alla chiamata del metodo onSendMessage di ChatContainerComponent, venga inviato un messaggio, '
+    + 'venga impostato isLoading a true e venga recepita la risposta del bot proveniente da ChatService', fakeAsync(() => {
+    // Arrange
     chatServiceSpy.sendMessage.and.returnValue(
       of({ response: 'RispostaBot' }).pipe(delay(50))
     );
+
+    // Act
     component.onSendMessage('Ciao');
+
+    // Assert
     expect(component.messages[0].text).toBe('Ciao');
     expect(component.isLoading).toBeTrue();
     tick(50);
@@ -67,28 +82,43 @@ describe('ChatContainerComponent', () => {
   }));
 
   // Test di Unità
-  it('deve ignorare l’invio di messaggi vuoti', () => {
+  it('Verifica che, alla chiamata del metodo onSendMessage di ChatContainerComponent venga ignorato l’invio di messaggi vuoti', () => {
+    // Act
     component.onSendMessage('   ');
+
+    // Assert
     expect(component.messages.length).toBe(0);
   });
 
   // Test di Integrazione
-  it('deve gestire l’errore in caso di invio messaggio fallito', fakeAsync(() => {
+  it('Verifica che, alla chiamata del metodo onSendMessage di ChatContainerComponent, se ChatService segnala' +
+    'un errore di rete, venga stampando un messaggio di errore', fakeAsync(() => {
+    // Arrange
     chatServiceSpy.sendMessage.and.returnValue(
       new Observable(subscriber => {
         subscriber.error('Errore di rete');
       })
     );
+
+    // Act
     component.onSendMessage('Test');
+
+    // Assert
     tick();
     expect(component.messages[1].text).toBe('C’è stato un errore!');
     expect(component.isLoading).toBeFalse();
   }));
 
   // Test di Unità
-  it('deve inoltrare correttamente un suggerimento al metodo onSendMessage', () => {
+  it('Verifica che, alla chiamata dell’evento onSuggestionClicked di ChatContainerComponent, venga inoltrato correttamente il ' +
+    'suggerimento corrispondente al metodo onSendMessage', () => {
+    // Arrange
     spyOn(component, 'onSendMessage');
+
+    // Act
     component.onSuggestionClicked('Suggerimento');
+
+    // Assert
     expect(component.onSendMessage).toHaveBeenCalledWith('Suggerimento');
   });
 });
