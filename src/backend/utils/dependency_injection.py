@@ -238,9 +238,9 @@ def dependency_injection_frontend() -> dict[str, object]:
                   Se possibile rispondi con un elenco puntato o numerato.
                   Se la domanda ti chiede informazioni allora tu cercale nel contesto e forniscile.
                   Al termine del messaggio, fornisci l'url del documento o dei documenti da cui hai tratto la risposta
-                  (non del primo documento che vedi, bensì quello da cui hai tratto la risposta), presente
-                  come metadato. Presenta i link come elenco puntato, introdotto sempre dalla scritta precisa "Link utili:".
-                  Se il metadato url non è presente in nessuno dei documenti, rispondi con "Link non trovati".
+                  (non del primo documento che vedi, bensì quello/i da cui hai tratto la risposta), presente
+                  come metadato. Presenta i link come elenco puntato, introdotto sempre dalla scritta precisa "Link correlati:".
+                  Se il metadato url non è presente in nessuno dei documenti, rispondi con "Non sono stati trovati link correlati".
                   Se non riesci a trovare la risposta nei documenti forniti, ma la domanda è comunque legata all'informatica,
                   rispondi con "Informazione non trovata".
                   Se l'utente è uscito dal contesto informatico, rispondi con "La domanda è fuori contesto".
