@@ -34,6 +34,7 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort, SaveMessagePort, GetMessagesPo
             self.__repository = repository
         except Exception as e:
             logger.error(f"Error initializing PostgresAdapter: {e}")
+            raise e
 
     def save_message(self, message: Message) -> DbSaveOperationResponse:
         """
@@ -50,8 +51,8 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort, SaveMessagePort, GetMessagesPo
             postgres_response = self.__repository.save_message(postgres_message)
             return self.__dsor_converter(postgres_response)
         except Exception as e:
-            logger.error(f"Error in save_message: {e}")
-            return DbSaveOperationResponse(success=False, message=str(e))
+            logger.error(f"Error in save_message of PostgresAdapter: {e}")
+            raise e
 
     def get_messages(self, quantity: Quantity) -> List[Message]:
         """
@@ -67,7 +68,7 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort, SaveMessagePort, GetMessagesPo
             postgres_messages = self.__repository.get_messages(quantity.get_value())
             return [self.__message_converter(pm) for pm in postgres_messages]
         except Exception as e:
-            logger.error(f"Error in get_messages: {e}")
+            logger.error(f"Error in get_messages of PostgresAdapter: {e}")
             raise e
 
     def save_loading_attempt(self, loading_attempt: LoadingAttempt) -> DbSaveOperationResponse:
@@ -85,8 +86,8 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort, SaveMessagePort, GetMessagesPo
             postgres_response = self.__repository.save_loading_attempt(postgres_loading_attempt)
             return self.__dsor_converter(postgres_response)
         except Exception as e:
-            logger.error(f"Error in save_loading_attempt: {e}")
-            return DbSaveOperationResponse(success=False, message=str(e))
+            logger.error(f"Error in save_loading_attempt of PostgresAdapter: {e}")
+            raise e
 
     def __dsor_converter(self, psor: PostgresSaveOperationResponse) -> DbSaveOperationResponse:
         """
@@ -101,8 +102,8 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort, SaveMessagePort, GetMessagesPo
         try:
             return DbSaveOperationResponse(success=psor.get_success(), message=psor.get_message())
         except Exception as e:
-            logger.error(f"Error in dsor_converter: {e}")
-            return DbSaveOperationResponse(success=False, message=str(e))
+            logger.error(f"Error in dsor_converter of PostgresAdapter: {e}")
+            raise e
 
     def __postgres_message_converter(self, message: Message) -> PostgresMessage:
         """
@@ -121,7 +122,7 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort, SaveMessagePort, GetMessagesPo
                 sender=PostgresMessageSender(message.get_sender().value)
             )
         except Exception as e:
-            logger.error(f"Error in postgres_message_converter: {e}")
+            logger.error(f"Error in postgres_message_converter of PostgresAdapter: {e}")
             raise e
 
     def __message_converter(self, postgres_message: PostgresMessage) -> Message:
@@ -141,7 +142,7 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort, SaveMessagePort, GetMessagesPo
                 sender=MessageSender[postgres_message.get_sender().name]
             )
         except Exception as e:
-            logger.error(f"Error in message_converter: {e}")
+            logger.error(f"Error in message_converter of PostgresAdapter: {e}")
             raise e
 
     def __postgres_loading_attempt_converter(self, loading_attempt: LoadingAttempt) -> PostgresLoadingAttempt:
@@ -175,5 +176,5 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort, SaveMessagePort, GetMessagesPo
                 starting_timestamp=loading_attempt.get_starting_timestamp()
             )
         except Exception as e:
-            logger.error(f"Error in postgres_loading_attempt_converter: {e}")
+            logger.error(f"Error in postgres_loading_attempt_converter of PostgresAdapter: {e}")
             raise e

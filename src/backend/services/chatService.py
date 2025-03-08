@@ -32,6 +32,7 @@ class ChatService(ChatUseCase):
             self.__generate_answer_service = generate_answer_service
         except Exception as e:
             logger.error(f"Error initializing ChatService: {e}")
+            raise e
 
     def get_answer(self, user_input: Question) -> Answer:
         """
@@ -49,7 +50,7 @@ class ChatService(ChatUseCase):
             return answer
         except Exception as e:
             logger.error(f"Error in get_answer: {e}")
-            raise
+            raise e
 
     def similarity_search(self, user_input: Question) -> list[Document]:
         """
@@ -65,7 +66,7 @@ class ChatService(ChatUseCase):
             return self.__similarity_search_service.similarity_search(user_input)
         except Exception as e:
             logger.error(f"Error in similarity_search: {e}")
-            raise
+            raise e
 
     def generate_answer(self, user_input: Question, relevant_docs: list[Document]) -> Answer:
         """
@@ -82,4 +83,4 @@ class ChatService(ChatUseCase):
             return self.__generate_answer_service.generate_answer(user_input, relevant_docs)
         except Exception as e:
             logger.error(f"Error in generate_answer: {e}")
-            raise
+            raise e

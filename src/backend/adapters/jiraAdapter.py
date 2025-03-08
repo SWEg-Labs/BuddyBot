@@ -25,7 +25,7 @@ class JiraAdapter(JiraPort):
             self.__jira_repository = jira_repository
         except Exception as e:
             logger.error(f"An error occurred while initializing JiraAdapter: {e}")
-            raise
+            raise e
 
     def load_jira_issues(self) -> Tuple[PlatformLog, List[Document]]:
         """
@@ -51,6 +51,7 @@ class JiraAdapter(JiraPort):
                                     if issue.get_priority() and issue.get_priority().get("name") is not None else "/",
                         "type": issue.get_issuetype().get("name")
                                 if issue.get_issuetype() and issue.get_issuetype().get("name") is not None else "/",
+                        "item_type": "Jira Issue",
                         "creation_date": issue.get_created()
                                         if issue.get_created() is not None else "/",
                         "url": (f"{self.__jira_repository.get_base_url()}/browse/{issue.get_key()}"
@@ -64,4 +65,4 @@ class JiraAdapter(JiraPort):
             return platform_log, documents
         except Exception as e:
             logger.error(f"An error occurred while adapting Jira issues: {e}")
-            raise
+            raise e

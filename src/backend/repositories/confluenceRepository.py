@@ -34,7 +34,7 @@ class ConfluenceRepository:
             self.__headers = headers
         except Exception as e:
             logger.error(f"Error initializing ConfluenceRepository: {e}")
-            raise
+            raise e
 
     def get_base_url(self) -> str:
         """
@@ -86,4 +86,7 @@ class ConfluenceRepository:
             logger.error(f"Error fetching Confluence pages: {e}")
             italy_tz = pytz.timezone('Europe/Rome')
             log = PlatformLog(LoadingItems.ConfluencePages, datetime.now(italy_tz), False)
-            raise
+            return log, []
+        except Exception as e:
+            logger.error(f"Error loading Confluence pages: {e}")
+            raise e
