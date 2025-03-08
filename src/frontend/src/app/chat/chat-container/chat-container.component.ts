@@ -9,7 +9,6 @@ import { ChatHeaderComponent } from '../chat-header/chat-header.component';
 import { ChatMessagesComponent } from '../chat-messages/chat-messages.component';
 import { ChatSuggestionsComponent } from '../chat-suggestions/chat-suggestions.component';
 import { ChatInputComponent } from '../chat-input/chat-input.component';
-import DOMPurify from 'dompurify';
 
 @Component({
   standalone: true,
@@ -33,7 +32,7 @@ export class ChatContainerComponent implements OnInit {
 
   @ViewChild(ChatMessagesComponent) messagesComponent!: ChatMessagesComponent;
 
-  constructor(private chatService: ChatService, private sanitizer: DomSanitizer) {}
+  constructor(private readonly chatService: ChatService, private readonly sanitizer: DomSanitizer) {}
 
   ngOnInit(): void {}
 
