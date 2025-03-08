@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Union
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -29,6 +29,7 @@ frontend_dependencies = dependency_injection_frontend()
 chat_controller = frontend_dependencies["chat_controller"]
 save_message_controller = frontend_dependencies["save_message_controller"]
 get_messages_controller = frontend_dependencies["get_messages_controller"]
+get_next_possible_questions_controller = frontend_dependencies["get_next_possible_questions_controller"]
 
 
 @app.post("/api/chat", summary="Send a messagge to the chatbot", response_model=Dict[str, str])
@@ -50,6 +51,26 @@ async def chat(request: Request) -> Dict[str, str] | JSONResponse:
         return await chat_controller.get_answer(request)
     except Exception as e:
         error_message = f"Error processing chat request: {e}"
+        logger.error(error_message)
+        return JSONResponse(content={"status": "error", "message": error_message}, status_code=500)
+    
+
+@app.post("/api/get_next_possible_questions", summary="Get the next possible questions based on the last question and the last answer",
+          response_model=Dict[str, str])
+async def get_next_possible_questions(question_answer_quantity: Dict[str, Union[str, int]]) -> Dict[str, str] | JSONResponse:
+    """
+    Retrieves the next possible questions based on the provided question-answer-quantity data.
+    Args:
+        question_answer_quantity (Dict[str, Union[str, int]]): A dictionary containing the question, answer, and quantity.
+    Returns:
+        Union[Dict[str, str], JSONResponse]: 
+            - If successful, returns a dictionary containing the next possible questions.
+            - If an error occurs, returns a JSONResponse with error details and 500 status code
+    """
+    try:
+        return get_next_possible_questions_controller.get_next_possible_questions(question_answer_quantity)
+    except Exception as e:
+        error_message = f"Error getting the next possible questions: {e}"
         logger.error(error_message)
         return JSONResponse(content={"status": "error", "message": error_message}, status_code=500)
 

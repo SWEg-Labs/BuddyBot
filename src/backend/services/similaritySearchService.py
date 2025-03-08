@@ -23,7 +23,7 @@ class SimilaritySearchService:
             self.__similarity_search_port = similarity_search_port
         except Exception as e:
             logger.error(f"Error initializing SimilaritySearchService: {e}")
-            raise
+            raise e
 
     def similarity_search(self, user_input: Question) -> list[Document]:
         """
@@ -63,3 +63,4 @@ class SimilaritySearchService:
             return relevant_docs
         except Exception as e:
             logger.error(f"Error in similarity search service: {e}")
+            raise e

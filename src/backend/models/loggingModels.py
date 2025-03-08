@@ -2,10 +2,10 @@ from enum import Enum
 from datetime import datetime
 
 class LoadingItems(Enum):
-    GitHubCommits = "GitHubCommits"
-    GitHubFiles = "GitHubFiles"
-    JiraIssues = "JiraIssues"
-    ConfluencePages = "ConfluencePages"
+    GitHubCommits = "GitHub Commits"
+    GitHubFiles = "GitHub Files"
+    JiraIssues = "Jira Issues"
+    ConfluencePages = "Confluence Pages"
 
 class PlatformLog:
     def __init__(self, loading_items: LoadingItems, timestamp: datetime, outcome: bool):
