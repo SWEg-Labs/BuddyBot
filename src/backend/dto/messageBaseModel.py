@@ -2,7 +2,7 @@ from enum import Enum
 from datetime import datetime
 from pydantic import BaseModel
 
-class MessageSenderBaseModel(Enum):
+class MessageSenderBaseModel(str, Enum):
     USER = "User"
     CHATBOT = "Chatbot"
 
