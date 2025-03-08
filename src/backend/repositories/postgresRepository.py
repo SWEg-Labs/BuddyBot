@@ -4,6 +4,7 @@ from typing import Optional, Tuple
 from entities.loggingEntities import PostgresLoadingAttempt
 from entities.postgresSaveOperationResponse import PostgresSaveOperationResponse
 from entities.postgresMessage import PostgresMessage
+from entities.postgresLastLoadOutcome import PostgresLastLoadOutcome
 from utils.logger import logger
 
 class PostgresRepository:
@@ -220,4 +221,37 @@ class PostgresRepository:
             return PostgresSaveOperationResponse(success=False, message=message)
         except Exception as e:
             logger.error(f"An error occurred while saving the loading attempt in the Postgres database: {e}")
+            raise e
+        
+    def get_last_load_outcome(self) -> PostgresLastLoadOutcome:
+        '''
+        Retrieves the outcome of the most recent loading attempt from the PostgreSQL database.
+        Returns:
+            PostgresLastLoadOutcome: The outcome of the most recent loading attempt.
+        Raises:
+            psycopg2.Error: If an error occurs while retrieving the outcome from the PostgreSQL database.
+        '''
+        try:
+            get_last_load_outcome_query = """
+            SELECT outcome
+            FROM loading_attempts
+            ORDER BY ending_timestamp DESC
+            LIMIT 1;
+            """
+            result = self.__execute_query(get_last_load_outcome_query, fetch_one=True)
+            
+            if result is None:
+                return PostgresLastLoadOutcome.ERROR
+            
+            outcome = result[0]
+            if outcome:
+                return PostgresLastLoadOutcome.TRUE
+            else:
+                return PostgresLastLoadOutcome.FALSE
+
+        except psycopg2.Error as e:
+            logger.error(f"A connection error occurred while retrieving the last load outcome from the Postgres database: {e}")
+            return PostgresLastLoadOutcome.ERROR
+        except Exception as e:
+            logger.error(f"An error occurred while retrieving the last load outcome from the Postgres database: {e}")
             raise e
