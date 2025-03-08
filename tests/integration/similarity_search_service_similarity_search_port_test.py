@@ -5,6 +5,7 @@ from models.documentConstraints import DocumentConstraints
 from services.similaritySearchService import SimilaritySearchService
 from ports.similaritySearchPort import SimilaritySearchPort
 
+
 # Verifica che il metodo similarity_search di SimilaritySearchService chiami il metodo similarity_search di SimilaritySearchPort
 
 def test_similarity_search_calls_port_method():

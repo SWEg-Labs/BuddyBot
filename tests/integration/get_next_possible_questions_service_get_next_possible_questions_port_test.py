@@ -10,6 +10,7 @@ from models.header import Header
 from services.getNextPossibleQuestionsService import GetNextPossibleQuestionsService
 from ports.getNextPossibleQuestionsPort import GetNextPossibleQuestionsPort
 
+
 # Verifica che il metodo get_next_possible_questions di GetNextPossibleQuestionsService chiami il metodo get_next_possible_questions di GetNextPossibleQuestionsPort
 
 def test_get_next_possible_questions_calls_port_method():

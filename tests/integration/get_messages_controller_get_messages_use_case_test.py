@@ -6,6 +6,7 @@ from models.message import Message, MessageSender
 from controllers.getMessagesController import GetMessagesController
 from use_cases.getMessagesUseCase import GetMessagesUseCase
 
+
 # Verifica che il metodo get_messages di GetMessagesController chiami il metodo get_messages di GetMessagesUseCase
 
 def test_get_messages_calls_use_case_method():

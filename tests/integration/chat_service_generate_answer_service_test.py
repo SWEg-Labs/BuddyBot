@@ -6,6 +6,7 @@ from models.question import Question
 from models.answer import Answer
 from models.document import Document
 
+
 # Verifica che il metodo generate_answer di ChatService chiami il metodo generate_answer di GenerateAnswerService
 
 def test_chat_service_calls_generate_answer_service():
