@@ -5,9 +5,11 @@ from models.loggingModels import LoadingAttempt, LoadingItems, PlatformLog, Vect
 from models.dbSaveOperationResponse import DbSaveOperationResponse
 from models.message import Message, MessageSender
 from models.quantity import Quantity
+from models.lastLoadOutcome import LastLoadOutcome
 from entities.loggingEntities import PostgresLoadingAttempt, PostgresLoadingItems, PostgresPlatformLog, PostgresVectorStoreLog
 from entities.postgresSaveOperationResponse import PostgresSaveOperationResponse
 from entities.postgresMessage import PostgresMessage, PostgresMessageSender
+from entities.postgresLastLoadOutcome import PostgresLastLoadOutcome
 from adapters.postgresAdapter import PostgresAdapter
 from repositories.postgresRepository import PostgresRepository
 
@@ -116,3 +118,22 @@ def test_save_loading_attempt_calls_repository_method():
     # Assert
     mock_postgres_repository.save_loading_attempt.assert_called_once_with(postgres_loading_attempt)
     assert result == expected_response
+
+
+# Verifica che il metodo get_last_load_outcome di PostgresAdapter chiami il metodo get_last_load_outcome di PostgresRepository
+
+def test_get_last_load_outcome_calls_repository_method():
+    # Arrange
+    mock_postgres_repository = MagicMock(spec=PostgresRepository)
+    postgres_adapter = PostgresAdapter(mock_postgres_repository)
+
+    postgres_outcome = PostgresLastLoadOutcome.TRUE
+    mock_postgres_repository.get_last_load_outcome.return_value = postgres_outcome
+    expected_outcome = LastLoadOutcome.TRUE
+
+    # Act
+    result = postgres_adapter.get_last_load_outcome()
+
+    # Assert
+    mock_postgres_repository.get_last_load_outcome.assert_called_once()
+    assert result == expected_outcome
