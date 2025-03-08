@@ -1,5 +1,5 @@
 from models.lastLoadOutcome import LastLoadOutcome
-from useCases.getLastLoadOutcomeUseCase import GetLastLoadOutcomeUseCase
+from use_cases.getLastLoadOutcomeUseCase import GetLastLoadOutcomeUseCase
 from ports.getLastLoadOutcomePort import GetLastLoadOutcomePort
 from utils.logger import logger
 
