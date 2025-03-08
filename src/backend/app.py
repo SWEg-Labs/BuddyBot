@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from dto.messageDTO import MessageDTO
+from dto.lastLoadOutcomeDTO import LastLoadOutcomeDTO
 from utils.dependency_injection import dependency_injection_frontend
 from utils.logger import logger
 
@@ -27,6 +28,7 @@ app.add_middleware(
 
 frontend_dependencies = dependency_injection_frontend()
 chat_controller = frontend_dependencies["chat_controller"]
+get_last_load_outcome_controller = frontend_dependencies["get_last_load_outcome_controller"]
 save_message_controller = frontend_dependencies["save_message_controller"]
 get_messages_controller = frontend_dependencies["get_messages_controller"]
 get_next_possible_questions_controller = frontend_dependencies["get_next_possible_questions_controller"]
@@ -109,6 +111,23 @@ async def get_messages(quantity: dict[str, int]) -> List[MessageDTO] | JSONRespo
         return get_messages_controller.get_messages(quantity)
     except Exception as e:
         error_message = f"Error getting the previous messages: {e}"
+        logger.error(error_message)
+        return JSONResponse(content={"status": "error", "message": error_message}, status_code=500)
+
+
+@app.post("/api/get_last_load_outcome", summary="Get the last load outcome", response_model=LastLoadOutcomeDTO)
+async def get_last_load_outcome() -> LastLoadOutcomeDTO | JSONResponse:
+    """
+    Retrieves the last load outcome.
+    Returns:
+        Union[LastLoadOutcomeDTO, JSONResponse]: 
+            - If successful, returns a LastLoadOutcomeDTO object containing the last load outcome.
+            - If an error occurs, returns a JSONResponse with error details and 500 status code
+    """
+    try:
+        return get_last_load_outcome_controller.get_last_load_outcome()
+    except Exception as e:
+        error_message = f"Error getting the last load outcome: {e}"
         logger.error(error_message)
         return JSONResponse(content={"status": "error", "message": error_message}, status_code=500)
 
