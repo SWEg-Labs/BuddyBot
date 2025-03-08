@@ -3,7 +3,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
-from dto.messageBaseModel import MessageBaseModel
+from dto.messageDTO import MessageDTO
 from utils.dependency_injection import dependency_injection_frontend
 from utils.logger import logger
 
@@ -76,11 +76,11 @@ async def get_next_possible_questions(question_answer_quantity: Dict[str, Union[
 
 
 @app.post("/api/save_message", summary="Save a message to the Postgres database", response_model=dict[str, bool | str])
-async def save_message(message: MessageBaseModel) -> dict[str, bool | str] | JSONResponse:
+async def save_message(message: MessageDTO) -> dict[str, bool | str] | JSONResponse:
     """
     Save a message to the Postgres database.
     Args:
-        message (MessageBaseModel): The message to save.
+        message (MessageDTO): The message to save.
     Returns:
         Union[dict[str, bool | str], JSONResponse]: 
             - If successful, returns a dictionary containing the operation status.
@@ -94,15 +94,15 @@ async def save_message(message: MessageBaseModel) -> dict[str, bool | str] | JSO
         return JSONResponse(content={"status": "error", "message": error_message}, status_code=500)
 
 
-@app.post("/api/get_messages", summary="Get messages from the Postgres database", response_model=List[MessageBaseModel])
-async def get_messages(quantity: dict[str, int]) -> List[MessageBaseModel] | JSONResponse:
+@app.post("/api/get_messages", summary="Get messages from the Postgres database", response_model=List[MessageDTO])
+async def get_messages(quantity: dict[str, int]) -> List[MessageDTO] | JSONResponse:
     """
     Retrieves a specified quantity of messages from the chat history.
     Args:
         quantity (dict[str, int]): A dictionary containing the number of messages to retrieve as value
     Returns:
-        Union[List[MessageBaseModel], JSONResponse]: 
-            - If successful, returns a list of MessageBaseModel objects containing the messages
+        Union[List[MessageDTO], JSONResponse]: 
+            - If successful, returns a list of MessageDTO objects containing the messages
             - If an error occurs, returns a JSONResponse with error details and 500 status code
     """
     try:
