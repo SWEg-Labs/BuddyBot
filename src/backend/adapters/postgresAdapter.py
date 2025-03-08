@@ -69,6 +69,10 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort, SaveMessagePort, GetMessagesPo
         """
         try:
             postgres_messages = self.__repository.get_messages(quantity.get_value())
+
+            if not postgres_messages:
+                return []
+
             return [self.__message_converter(pm) for pm in postgres_messages]
         except Exception as e:
             logger.error(f"Error in get_messages of PostgresAdapter: {e}")

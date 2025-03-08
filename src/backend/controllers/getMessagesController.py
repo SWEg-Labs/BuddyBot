@@ -39,6 +39,10 @@ class GetMessagesController:
         try:
             quantity_value = list(quantity.values())[0]
             message_list = self.__get_messages_use_case.get_messages(Quantity(quantity_value))
+
+            if not message_list:
+                return []
+
             return_list = []
             for message in message_list:
                 return_list.append(MessageDTO(content=message.get_content(), timestamp=message.get_timestamp(),

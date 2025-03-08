@@ -116,6 +116,9 @@ class PostgresRepository:
             """
             messages = self.__execute_query(get_messages_query, params=(quantity,), fetch_all=True)
 
+            if messages is None:
+                return []
+
             logger.info("Messages retrieved successfully from the Postgres database.")
 
             return [PostgresMessage(content=message[0], timestamp=message[1], sender=message[2]) for message in messages]
@@ -239,10 +242,12 @@ class PostgresRepository:
             LIMIT 1;
             """
             result = self.__execute_query(get_last_load_outcome_query, fetch_one=True)
-            
+
             if result is None:
                 return PostgresLastLoadOutcome.ERROR
-            
+
+            logger.info("Last load outcome retrieved successfully from the Postgres database.")
+
             outcome = result[0]
             if outcome:
                 return PostgresLastLoadOutcome.TRUE
