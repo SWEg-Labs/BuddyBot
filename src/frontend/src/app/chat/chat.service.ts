@@ -7,9 +7,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 })
 export class ChatService {
   private apiUrl = 'http://localhost:5000/api/chat';
-  private apiLoadJira = 'http://localhost:5000/api/jira/load';
-  private apiloadGithub = 'http://localhost:5000/api/github/load';
-  private apiLoadConfluence = 'http://localhost:5000/api/confluence/load';
+
 
   private isUpdatedSubject = new BehaviorSubject<boolean>(true);
   public isUpdated$ = this.isUpdatedSubject.asObservable();

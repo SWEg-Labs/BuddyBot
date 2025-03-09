@@ -39,21 +39,7 @@ describe('ChatSuggestionsComponent', () => {
     // Assert
     expect(component).toBeTruthy();
   });
-
-  // DA RIMUOVERE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  // Test di Unità
-  it('Verifica che, se la variabile lastMessageTimestamp di ChatSuggestionsComponent contiene un timestamp più vecchio di 5 minuti, '+
-    'vengano mostrati i suggerimenti iniziali', () => {
-    // Arrange
-    component.lastMessageTimestamp = Date.now() - 6 * 60 * 1000;
-
-    // Act
-    fixture.detectChanges();
-
-    // Assert
-    expect(component.showInitial).toBeTrue();
-  });
-
+  
   // DA SOSTITUIRE CON UN TEST DIVERSO PER LA CONTINUAZIONE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // Test di Integrazione
   it('Verifica che, se la variabile lastMessageTimestamp di ChatSuggestionsComponent contiene un timestamp recente di massimo 5 minuti' +
