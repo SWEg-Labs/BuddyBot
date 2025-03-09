@@ -3,8 +3,8 @@ from services.similaritySearchService import SimilaritySearchService
 from services.chatService import ChatService
 from services.generateAnswerService import GenerateAnswerService
 from models.question import Question
-from models.answer import Answer
 from models.document import Document
+
 
 # Verifica che il metodo similarity_search di ChatService chiami il metodo similarity_search di SimilaritySearchService
 

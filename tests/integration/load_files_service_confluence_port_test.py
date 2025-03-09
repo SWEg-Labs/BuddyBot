@@ -11,6 +11,7 @@ from ports.confluencePort import ConfluencePort
 from ports.loadFilesInVectorStorePort import LoadFilesInVectorStorePort
 from ports.saveLoadingAttemptInDbPort import SaveLoadingAttemptInDbPort
 
+
 # Verifica che il metodo load_confluence_pages di LoadFilesService chiami il metodo load_confluence_pages di ConfluencePort
 
 def test_load_confluence_pages_calls_port_method():

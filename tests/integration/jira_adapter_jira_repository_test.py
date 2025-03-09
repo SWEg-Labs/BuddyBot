@@ -7,6 +7,7 @@ from adapters.jiraAdapter import JiraAdapter
 from repositories.jiraRepository import JiraRepository
 from entities.issueEntity import IssueEntity
 
+
 # Verifica che il metodo load_jira_issues di JiraAdapter chiami il metodo load_jira_issues di JiraRepository
 
 def test_load_jira_issues_calls_repository_method():

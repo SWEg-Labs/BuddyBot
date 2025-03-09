@@ -5,6 +5,7 @@ from models.quantity import Quantity
 from services.getMessagesService import GetMessagesService
 from ports.getMessagesPort import GetMessagesPort
 
+
 # Verifica che il metodo get_messages di GetMessagesService chiami il metodo get_messages di GetMessagesPort
 
 def test_get_messages_calls_port_method():
