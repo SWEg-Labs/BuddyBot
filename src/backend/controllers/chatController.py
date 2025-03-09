@@ -9,6 +9,7 @@ class ChatController:
     """
     Controller class to manage chat interactions.
     """
+
     def __init__(self, chat_use_case: ChatUseCase):
         """
         Initializes the ChatController with the given chat use case.
@@ -16,6 +17,8 @@ class ChatController:
             chat_use_case (ChatUseCase): The use case to process chat interactions.
         """
         try:
+            if chat_use_case is None:
+                raise ValueError("chat_use_case cannot be None")
             self.__chat_use_case = chat_use_case
         except Exception as e:
             logger.error(f"Error initializing ChatController: {e}")
