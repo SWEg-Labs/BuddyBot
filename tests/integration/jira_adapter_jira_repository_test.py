@@ -7,6 +7,7 @@ from adapters.jiraAdapter import JiraAdapter
 from repositories.jiraRepository import JiraRepository
 from entities.issueEntity import IssueEntity
 
+
 # Verifica che il metodo load_jira_issues di JiraAdapter chiami il metodo load_jira_issues di JiraRepository
 
 def test_load_jira_issues_calls_repository_method():
@@ -31,6 +32,7 @@ def test_load_jira_issues_calls_repository_method():
                     "assignee": "John Doe",
                     "priority": "High",
                     "type": "Bug",
+                    "item_type": "Jira Issue",
                     "creation_date": "2025-02-28T12:34:56.000+0000",
                     "url": "https://jira.example.com/browse/PROJ-1", # issue_url = f"{self.__jira_repository.base_url}/browse/{issue.key}"
                     "id": "PROJ-1",

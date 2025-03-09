@@ -1,4 +1,4 @@
-from dto.messageBaseModel import MessageBaseModel
+from dto.messageDTO import MessageDTO
 from models.message import Message, MessageSender
 from use_cases.saveMessageUseCase import SaveMessageUseCase
 from utils.logger import logger
@@ -22,13 +22,13 @@ class SaveMessageController:
             self.__save_message_use_case = save_message_use_case
         except Exception as e:
             logger.error(f"Failed to initialize SaveMessagesController: {e}")
-            raise
+            raise e
 
-    def save(self, message: MessageBaseModel) -> dict[str, bool | str]:
+    def save(self, message: MessageDTO) -> dict[str, bool | str]:
         """
         Saves a message using the SaveMessageUseCase and returns the result.
         Args:
-            message (MessageBaseModel): The message to be saved.
+            message (MessageDTO): The message to be saved.
         Returns:
             dict: A dictionary containing the success status and message of the save operation.
         Raises:
@@ -42,7 +42,7 @@ class SaveMessageController:
             )
             db_save_operation_response = self.__save_message_use_case.save(message)
             result = {"success": db_save_operation_response.get_success(), "message": db_save_operation_response.get_message()}
+            return result
         except Exception as e:
             logger.error(f"Failed to save message: {e}")
-            result = {"success": False, "message": str(e)}
-        return result
+            raise e

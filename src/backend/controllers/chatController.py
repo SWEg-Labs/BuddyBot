@@ -47,5 +47,5 @@ class ChatController:
 
             return {"response": response}
         except Exception as e:
-            logger.error(f"Error fetching response: {e}")
+            logger.error(f"Error fetching response of ChatController: {e}")
             raise e

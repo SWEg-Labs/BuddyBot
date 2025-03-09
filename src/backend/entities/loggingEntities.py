@@ -2,10 +2,10 @@ from enum import Enum
 from datetime import datetime
 
 class PostgresLoadingItems(Enum):
-    GitHubCommits = "GitHubCommits"
-    GitHubFiles = "GitHubFiles"
-    JiraIssues = "JiraIssues"
-    ConfluencePages = "ConfluencePages"
+    GitHubCommits = "GitHub Commits"
+    GitHubFiles = "GitHub Files"
+    JiraIssues = "Jira Issues"
+    ConfluencePages = "Confluence Pages"
 
 class PostgresPlatformLog:
     def __init__(self, postgres_loading_items: PostgresLoadingItems, timestamp: datetime, outcome: bool):

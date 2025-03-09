@@ -35,7 +35,7 @@ class JiraRepository:
             self.__headers = headers
         except Exception as e:
             logger.error(f"Error initializing JiraRepository: {e}")
-            raise
+            raise e
 
     def get_base_url(self) -> str:
         return self.__base_url
@@ -85,3 +85,6 @@ class JiraRepository:
             italy_tz = pytz.timezone('Europe/Rome')
             log = PlatformLog(LoadingItems.JiraIssues, datetime.now(italy_tz), False)
             return log, []
+        except Exception as e:
+            logger.error(f"Error loading Jira issues: {e}")
+            raise e

@@ -27,8 +27,12 @@ class ChromaVectorStoreAdapter(SimilaritySearchPort, LoadFilesInVectorStorePort)
             max_chunk_size (int): Maximum size of each document chunk.
             chroma_vector_store_repository (ChromaVectorStoreRepository): Repository for interacting with the Chroma vector store.
         """
-        self.__max_chunk_size = max_chunk_size
-        self.__chroma_vector_store_repository = chroma_vector_store_repository
+        try:
+            self.__max_chunk_size = max_chunk_size
+            self.__chroma_vector_store_repository = chroma_vector_store_repository
+        except Exception as e:
+            logger.error(f"Error in initializing ChromaVectorStoreAdapter: {e}")
+            raise e
 
     def load(self, documents: list[Document]) -> VectorStoreLog:
         """
@@ -43,15 +47,8 @@ class ChromaVectorStoreAdapter(SimilaritySearchPort, LoadFilesInVectorStorePort)
             result = self.__chroma_vector_store_repository.load(chroma_documents)
             return result
         except Exception as e:
-            logger.error(f"Error in adapting Documents to load: {e}")
-            italy_tz = pytz.timezone('Europe/Rome')
-            return VectorStoreLog(
-                timestamp=datetime.now(italy_tz),
-                outcome=False,
-                num_added_items=0,
-                num_modified_items=0,
-                num_deleted_items=0
-            )
+            logger.error(f"Error in adapting documents to load: {e}")
+            raise e
 
     def __split(self, documents: list[Document]) -> list[ChromaDocumentEntity]:
         """
@@ -106,7 +103,7 @@ class ChromaVectorStoreAdapter(SimilaritySearchPort, LoadFilesInVectorStorePort)
             return chroma_documents
         except Exception as e:
             logger.error(f"Error in splitting Documents: {e}")
-            return []
+            raise e
 
     def similarity_search(self, user_input: Question) -> list[Document]:
         """
@@ -126,7 +123,11 @@ class ChromaVectorStoreAdapter(SimilaritySearchPort, LoadFilesInVectorStorePort)
                     document = query_result_entity.get_documents()[i][j]
                     metadata = query_result_entity.get_metadatas()[i][j]
                     distance = query_result_entity.get_distances()[i][j]
-                    
+
+                    # Salta il documento se è nullo
+                    if document is None:
+                        continue
+
                     # Aggiungi la distanza come metadato
                     metadata["distance"] = distance
 
@@ -135,5 +136,5 @@ class ChromaVectorStoreAdapter(SimilaritySearchPort, LoadFilesInVectorStorePort)
 
             return relevant_docs
         except Exception as e:
-            logger.error(f"Error in ChromaVectorStoreAdapter: {e}")
+            logger.error(f"Error in adapting documents for similarity_search: {e}")
             raise e

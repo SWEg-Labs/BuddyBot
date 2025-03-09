@@ -5,6 +5,7 @@ from models.dbSaveOperationResponse import DbSaveOperationResponse
 from services.saveMessageService import SaveMessageService
 from ports.saveMessagePort import SaveMessagePort
 
+
 # Verifica che il metodo save di SaveMessageService chiami il metodo save_message di SaveMessagePort
 
 def test_save_calls_port_method():

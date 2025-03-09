@@ -26,7 +26,7 @@ class GitHubAdapter(GitHubPort):
             self.__github_repository = github_repository
         except Exception as e:
             logger.error(f"Error initializing GitHubAdapter: {e}")
-            raise
+            raise e
 
     def load_github_commits(self) -> Tuple[PlatformLog, List[Document]]:
         """
@@ -64,6 +64,7 @@ class GitHubAdapter(GitHubPort):
                             )
                             for file in (commit.get_files() if commit.get_files() is not None else [])
                         ],
+                        "item_type": "GitHub Commit",
                         "url": commit.get_url()
                         if commit.get_url() is not None
                         else "/",
@@ -75,7 +76,7 @@ class GitHubAdapter(GitHubPort):
             return log, documents
         except Exception as e:
             logger.error(f"Error while adapting GitHub commits: {e}")
-            raise
+            raise e
 
     def load_github_files(self) -> Tuple[PlatformLog, List[Document]]:
         """
@@ -99,6 +100,7 @@ class GitHubAdapter(GitHubPort):
                                 "type": file.get_type() if file.get_type() is not None else "/",
                                 "name": file.get_name() if file.get_name() is not None else "/",
                                 "path": file.get_path() if file.get_path() is not None else "/",
+                                "item_type": "GitHub File",
                                 "url": file.get_html_url() if file.get_html_url() is not None else "/",
                                 "id": file.get_sha() if file.get_sha() is not None else "/",
                             },
@@ -109,4 +111,4 @@ class GitHubAdapter(GitHubPort):
             return log, documents
         except Exception as e:
             logger.error(f"Error while adapting GitHub files: {e}")
-            raise
+            raise e

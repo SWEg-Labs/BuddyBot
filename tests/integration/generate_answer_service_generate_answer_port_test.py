@@ -6,6 +6,7 @@ from models.header import Header
 from models.question import Question
 from models.answer import Answer
 
+
 # Verifica che il metodo generate_answer di GenerateAnswerService chiami il metodo generate_answer di GenerateAnswerPort
 
 def test_generate_answer_calls_port_method():

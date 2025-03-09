@@ -21,4 +21,4 @@ class LoadFilesController:
             self.__load_files_use_case.load()
         except Exception as e:
             logger.error(f"Error loading files: {e}")
-            raise
+            raise e

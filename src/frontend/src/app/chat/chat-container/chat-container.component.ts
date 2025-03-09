@@ -35,8 +35,8 @@ export class ChatContainerComponent implements OnInit {
   @ViewChild(ChatMessagesComponent) messagesComponent!: ChatMessagesComponent;
 
   constructor(
-    private chatService: ChatService,
-    private sanitizer: DomSanitizer,
+    private readonly chatService: ChatService,
+    private readonly sanitizer: DomSanitizer,
     private databaseService: DatabaseService
   ) {}
 

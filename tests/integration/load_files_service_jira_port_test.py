@@ -11,6 +11,7 @@ from ports.confluencePort import ConfluencePort
 from ports.loadFilesInVectorStorePort import LoadFilesInVectorStorePort
 from ports.saveLoadingAttemptInDbPort import SaveLoadingAttemptInDbPort
 
+
 # Verifica che il metodo load_jira_issues di LoadFilesService chiami il metodo load_jira_issues di JiraPort
 
 def test_load_jira_issues_calls_port_method():

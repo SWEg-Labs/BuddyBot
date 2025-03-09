@@ -21,25 +21,21 @@ class ChromaVectorStoreRepository:
         Exception: If an error occurs during initialization or while interacting with the vector store.
     """
 
-    def __init__(self, chroma_client: chromadb.HttpClient, collection_name: str, collection: chromadb.Collection):
+    def __init__(self, collection: chromadb.Collection):
         """ 
         Initializes the ChromaVectorStoreRepository by connecting to the Chroma server and setting up the collection.
 
         Args:
-            chroma_client (chromadb.HttpClient): The client used to connect to the Chroma server.
-            collection_name (str): The name of the collection to be used.
-            collection (chromadb.Collection): The collection object to be used.
+            collection (chromadb.Collection): The collection object to interact with Chroma.
 
         Raises: 
             Exception: If an error occurs during initialization. 
         """
         try:
-            self.__client = chroma_client
-            self.__collection_name = collection_name
             self.__collection = collection
         except Exception as e:
             logger.error(f"Error initializing Chroma vector store: {e}")
-            raise
+            raise e
 
     def load(self, documents: list[ChromaDocumentEntity]) -> VectorStoreLog:
         """
@@ -62,7 +58,7 @@ class ChromaVectorStoreRepository:
             # Initialize counters
             num_modified_items = 0
             num_deleted_items = 0
-            
+
             # Check and delete existing documents with the same IDs
             for doc_id in ids:
                 try:
@@ -75,12 +71,13 @@ class ChromaVectorStoreRepository:
                         logger.info(f"Deleted existing document with ID: {doc_id} for update")
                 except Exception as e:
                     logger.error(f"Error checking document existence: {e}")
-            
+                    raise e
+
             # Check for documents in collection that are not in the current batch
             try:
                 all_docs = self.__collection.get()
                 all_ids = all_docs.get('ids', []) if all_docs else []
-                
+
                 for existing_id in all_ids:
                     if existing_id not in ids:
                         # This document is not in the new batch, delete it
@@ -89,6 +86,7 @@ class ChromaVectorStoreRepository:
                         logger.info(f"Deleted obsolete document with ID: {existing_id}")
             except Exception as e:
                 logger.error(f"Error checking for obsolete documents: {e}")
+                raise e
 
             self.__collection.add(
                 ids=ids,
@@ -150,4 +148,4 @@ class ChromaVectorStoreRepository:
             return query_result_entity
         except Exception as e:
             logger.error(f"Error performing similarity search: {e}")
-            raise
+            raise e

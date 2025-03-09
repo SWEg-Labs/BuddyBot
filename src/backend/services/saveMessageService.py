@@ -24,7 +24,7 @@ class SaveMessageService(SaveMessageUseCase):
             self.__save_message_port = save_message_port
         except Exception as e:
             logger.error(f"Failed to initialize SaveMessageService: {e}")
-            raise
+            raise e
 
     def save(self, message: Message) -> DbSaveOperationResponse:
         """
@@ -40,4 +40,4 @@ class SaveMessageService(SaveMessageUseCase):
             return self.__save_message_port.save_message(message)
         except Exception as e:
             logger.error(f"Failed to save message: {e}")
-            raise
+            raise e

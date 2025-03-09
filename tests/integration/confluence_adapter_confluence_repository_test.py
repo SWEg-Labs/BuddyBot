@@ -6,6 +6,7 @@ from adapters.confluenceAdapter import ConfluenceAdapter
 from repositories.confluenceRepository import ConfluenceRepository
 from entities.pageEntity import PageEntity
 
+
 # Verifica che il metodo load_confluence_pages del ConfluenceAdapter chiami il metodo load_confluence_pages del ConfluenceRepository
 
 def test_load_confluence_pages_calls_repository_method():
@@ -28,6 +29,7 @@ def test_load_confluence_pages_calls_repository_method():
                     "title": "Example Page",
                     "space": "Space Name",
                     "created_by": "John Doe",
+                    "item_type": "Confluence Page",
                     "creation_date": "2025-02-28T12:34:56.000+0000",
                     "url": "https://confluence.example.com/spaces/SPACEKEY/pages/12345/Example+Page", # Unione dei due campi dentro "links"
                     "id": "12345",

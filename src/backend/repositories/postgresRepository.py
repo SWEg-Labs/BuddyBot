@@ -4,6 +4,7 @@ from typing import Optional, Tuple
 from entities.loggingEntities import PostgresLoadingAttempt
 from entities.postgresSaveOperationResponse import PostgresSaveOperationResponse
 from entities.postgresMessage import PostgresMessage
+from entities.postgresLastLoadOutcome import PostgresLastLoadOutcome
 from utils.logger import logger
 
 class PostgresRepository:
@@ -23,9 +24,9 @@ class PostgresRepository:
         '''
         try:
             self.__conn = conn
-        except psycopg2.Error as e:
+        except Exception as e:
             logger.error(f"An error occurred while initializing the PostgresRepository: {e}")
-            self.__conn = None
+            raise e
 
     def __execute_query(self, query: str, params: Optional[Tuple] = None, fetch_one: bool = False, fetch_all: bool = False) -> tuple | list | None:
         '''
@@ -49,7 +50,7 @@ class PostgresRepository:
                 if fetch_all:
                     return cur.fetchall()
                 self.__conn.commit()  # Commit solo per operazioni di scrittura
-        except psycopg2.Error as e:
+        except Exception as e:
             logger.error(f"An error occurred while executing the query: {e}")
             raise e
 
@@ -89,9 +90,12 @@ class PostgresRepository:
             return PostgresSaveOperationResponse(success=True, message="Message saved successfully in the Postgres database.")
 
         except psycopg2.Error as e:
-            message = f"An error occurred while saving the message in the Postgres database: {e}"
+            message = f"A connection error occurred while saving the message in the Postgres database: {e}"
             logger.error(message)
             return PostgresSaveOperationResponse(success=False, message=message)
+        except Exception as e:
+            logger.error(f"An error occurred while saving the message in the Postgres database: {e}")
+            raise e
 
     def get_messages(self, quantity: int) -> list[PostgresMessage]:
         '''
@@ -112,11 +116,14 @@ class PostgresRepository:
             """
             messages = self.__execute_query(get_messages_query, params=(quantity,), fetch_all=True)
 
+            if messages is None:
+                return []
+
             logger.info("Messages retrieved successfully from the Postgres database.")
 
             return [PostgresMessage(content=message[0], timestamp=message[1], sender=message[2]) for message in messages]
 
-        except psycopg2.Error as e:
+        except Exception as e:
             message = f"An error occurred while retrieving the messages from the Postgres database: {e}"
             logger.error(message)
             raise e
@@ -212,6 +219,44 @@ class PostgresRepository:
             return PostgresSaveOperationResponse(success=True, message="Loading attempt saved successfully in the Postgres database.")
 
         except psycopg2.Error as e:
-            message = f"An error occurred while saving the loading attempt in the Postgres database: {e}"
+            message = f"A connection error occurred while saving the loading attempt in the Postgres database: {e}"
             logger.error(message)
             return PostgresSaveOperationResponse(success=False, message=message)
+        except Exception as e:
+            logger.error(f"An error occurred while saving the loading attempt in the Postgres database: {e}")
+            raise e
+        
+    def get_last_load_outcome(self) -> PostgresLastLoadOutcome:
+        '''
+        Retrieves the outcome of the most recent loading attempt from the PostgreSQL database.
+        Returns:
+            PostgresLastLoadOutcome: The outcome of the most recent loading attempt.
+        Raises:
+            psycopg2.Error: If an error occurs while retrieving the outcome from the PostgreSQL database.
+        '''
+        try:
+            get_last_load_outcome_query = """
+            SELECT outcome
+            FROM loading_attempts
+            ORDER BY ending_timestamp DESC
+            LIMIT 1;
+            """
+            result = self.__execute_query(get_last_load_outcome_query, fetch_one=True)
+
+            if result is None:
+                return PostgresLastLoadOutcome.ERROR
+
+            logger.info("Last load outcome retrieved successfully from the Postgres database.")
+
+            outcome = result[0]
+            if outcome:
+                return PostgresLastLoadOutcome.TRUE
+            else:
+                return PostgresLastLoadOutcome.FALSE
+
+        except psycopg2.Error as e:
+            logger.error(f"A connection error occurred while retrieving the last load outcome from the Postgres database: {e}")
+            return PostgresLastLoadOutcome.ERROR
+        except Exception as e:
+            logger.error(f"An error occurred while retrieving the last load outcome from the Postgres database: {e}")
+            raise e

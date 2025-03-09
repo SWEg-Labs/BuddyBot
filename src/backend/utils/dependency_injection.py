@@ -12,6 +12,8 @@ from controllers.chatController import ChatController
 from controllers.loadFilesController import LoadFilesController
 from controllers.saveMessageController import SaveMessageController
 from controllers.getMessagesController import GetMessagesController
+from controllers.getNextPossibleQuestionsController import GetNextPossibleQuestionsController
+from controllers.getLastLoadOutcomeController import GetLastLoadOutcomeController
 from services.similaritySearchService import SimilaritySearchService
 from services.generateAnswerService import GenerateAnswerService
 from services.chatService import ChatService
@@ -19,6 +21,8 @@ from services.confluenceCleanerService import ConfluenceCleanerService
 from services.loadFilesService import LoadFilesService
 from services.saveMessageService import SaveMessageService
 from services.getMessagesService import GetMessagesService
+from services.getNextPossibleQuestionsService import GetNextPossibleQuestionsService
+from services.getLastLoadOutcomeService import GetLastLoadOutcomeService
 from adapters.chromaVectorStoreAdapter import ChromaVectorStoreAdapter
 from adapters.langChainAdapter import LangChainAdapter
 from adapters.gitHubAdapter import GitHubAdapter
@@ -51,7 +55,8 @@ def initialize_langchain() -> LangChainAdapter:
             model_name=model_name,
         )
         langchain_repository = LangChainRepository(llm)
-        langchain_adapter = LangChainAdapter(langchain_repository)
+        max_num_tokens = 128000
+        langchain_adapter = LangChainAdapter(max_num_tokens, langchain_repository)
         logger.info(f"LLM model loaded: {model_name}")
         return langchain_adapter
     except Exception as e:
@@ -73,7 +78,7 @@ def initialize_chroma() -> ChromaVectorStoreAdapter:
         chroma_client.heartbeat()  # Verifica connessione
         chroma_collection_name = "buddybot-vector-store"
         chroma_collection = chroma_client.get_or_create_collection(name=chroma_collection_name)  # Crea o ottieni una collezione esistente
-        chroma_vector_store_repository = ChromaVectorStoreRepository(chroma_client, chroma_collection_name, chroma_collection)
+        chroma_vector_store_repository = ChromaVectorStoreRepository(chroma_collection)
         max_chunk_size = 41666  # 42 KB
         chroma_vector_store_adapter = ChromaVectorStoreAdapter(max_chunk_size, chroma_vector_store_repository)
         logger.info("ChromaDB collection loaded")
@@ -228,17 +233,21 @@ def dependency_injection_frontend() -> dict[str, object]:
         # Tipi di supporto
         document_constraints = DocumentConstraints(1.2, 0.3)
         generate_answer_header = Header("""Sei un assistente virtuale esperto che risponde a domande in italiano.
-                    Di seguito di verrà fornita una domanda dall'utente e un contesto, e riguarderanno 
-                    codice, issues o documentazione di un'azienda informatica, provenienti rispettivamente da GitHub, Jira e Confluence.
-                    Rispondi alla domanda basandoti esclusivamente sui dati forniti come contesto,
-                    dando una spiegazione dettagliata ed esaustiva della risposta data.
-                    Se possibile rispondi con un elenco puntato o numerato.
-                    Se la domanda ti chiede informazioni allora tu cercale nel contesto e forniscile.
-                    Se non riesci a trovare la risposta nei documenti forniti, ma la domanda è comunque legata all'informatica,
-                    rispondi con "Informazione non trovata".
-                    Se l'utente è uscito dal contesto informatico, rispondi con "La domanda è fuori contesto".
-                    """)
-        
+                  Di seguito di verrà fornita una domanda dall'utente e un contesto, e riguarderanno 
+                  codice, issues o documentazione di un'azienda informatica, provenienti rispettivamente da GitHub, Jira e Confluence.
+                  Rispondi alla domanda basandoti esclusivamente sui dati forniti come contesto,
+                  dando una spiegazione dettagliata ed esaustiva della risposta data.
+                  Se possibile rispondi con un elenco puntato o numerato.
+                  Se la domanda ti chiede informazioni allora tu cercale nel contesto e forniscile.
+                  Al termine del messaggio, fornisci l'url del documento o dei documenti da cui hai tratto la risposta
+                  (attenzione, non l'url dei primi documenti che vedi, bensì di quelli da cui hai tratto la risposta), presente
+                  come metadato. Presenta i link come elenco puntato, introdotto sempre dalla scritta precisa "Link correlati:".
+                  Se il metadato url non è presente in nessuno dei documenti, rispondi con "Non sono stati trovati link correlati".
+                  Se non riesci a trovare la risposta nei documenti forniti, ma la domanda è comunque legata all'informatica,
+                  rispondi con "Informazione non trovata".
+                  Se l'utente è uscito dal contesto informatico, rispondi con "La domanda è fuori contesto".
+                  """)
+
         # LangChain
         langchain_adapter = initialize_langchain()
 
@@ -253,26 +262,24 @@ def dependency_injection_frontend() -> dict[str, object]:
 
 
 
+        # Postgres
+        postgres_adapter = initialize_postgres()
+
+
         # ========= 6. Architettura backend dell'aggiornamento del badge di segnalazione esito aggiornamento automatico ==========
 
-        # ...
-
+        get_last_load_outcome_service = GetLastLoadOutcomeService(postgres_adapter)
+        get_last_load_outcome_controller = GetLastLoadOutcomeController(get_last_load_outcome_service)
 
 
         # =========================== 7. Architettura del salvataggio dei messaggi nello storico ============================
 
-        # Postgres
-        postgres_adapter = initialize_postgres()
-        
-        # Catena di save_message
         save_message_service = SaveMessageService(postgres_adapter)
         save_message_controller = SaveMessageController(save_message_service)
 
 
-
         # ============================= 8. Architettura del recupero dei messaggi dallo storico =============================
 
-        # Catena di get_messages
         get_messages_service = GetMessagesService(postgres_adapter)
         get_messages_controller = GetMessagesController(get_messages_service)
 
@@ -280,16 +287,36 @@ def dependency_injection_frontend() -> dict[str, object]:
 
         # ==================== 9. Architettura della generazione di domande per proseguire la conversazione ====================
 
-        # ...
+        get_next_possible_questions_header = Header("""
+            Sei un assistente virtuale esperto che risponde a domande in italiano.
+            Il tuo contesto riguarda codice, issues e documentazione di un'azienda informatica, provenienti rispettivamente da
+            GitHub, Jira e Confluence.
+            Sei nel bel mezzo di una conversazione, nella quale un utente dell'azienda ti ha già posto una domanda e tu hai già
+            fornito una risposta, le quali costituiscono il tuo contesto di partenza.
+            Adesso tu devi generare ***quantity*** possibili domande per proseguire la conversazione, che verranno poi rese
+            disponibili all'utente perché abbia la possibilità di cliccarle per appunto proseguire proficuamente la conversazione
+            con te, chatbot assistente.
+            Genera queste domande basandoti esclusivamente sui dati forniti come contesto (domanda e risposta), non hai la
+            possibilità di cercare su internet.
+            Il tuo compito è dedurre che cosa desiderava l'utente, e proporgli domande simili, mantenendo sempre il contesto
+            informatico cui sei vincolato. Se non hai idee, proponi delle domande generiche basate su GitHub, Jira e Confluence.
+            Fornisci dunque una lista di ***quantity*** domande, intervallate fra di loro da tre underscore (___), in questo formato:
+            Chi ha risolto la issue BUD-240?___Cosa ha detto il cliente sulle metriche di qualità?___Qual è il codice della funzione per prelevare i dati dal database?
+            Sta attento che le domande siano esattamente ***quantity***, e soprattutto devono essere gli unici caratteri del tuo
+            messaggio di risposta, non devi scrivere nient'altro, perchè serve prelevare le domande usando un'espressione regolare,
+            così da farle visualizzare bene all'utente.
+        """)
+        get_next_possible_questions_service = GetNextPossibleQuestionsService(get_next_possible_questions_header, langchain_adapter)
+        get_next_possible_questions_controller = GetNextPossibleQuestionsController(get_next_possible_questions_service)
 
 
 
         return {
             "chat_controller": chat_controller,
-            # "get_last_load_outcome_controller": get_last_load_outcome_controller,
+            "get_last_load_outcome_controller": get_last_load_outcome_controller,
             "save_message_controller": save_message_controller,
             "get_messages_controller": get_messages_controller,
-            # "get_next_possible_questions_controller": get_next_possible_questions_controller
+            "get_next_possible_questions_controller": get_next_possible_questions_controller
         }
     except Exception as e:
         logger.error(f"Error during frontend dependencies initialization: {e}")
