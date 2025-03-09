@@ -8,6 +8,7 @@ from ports.confluencePort import ConfluencePort
 from ports.loadFilesInVectorStorePort import LoadFilesInVectorStorePort
 from ports.saveLoadingAttemptInDbPort import SaveLoadingAttemptInDbPort
 
+
 # Verifica che il metodo clean_confluence_pages di LoadFilesService chiami il metodo clean_confluence_pages di ConfluenceCleanerService
 
 def test_clean_confluence_pages_calls_cleaner_service_method():

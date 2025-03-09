@@ -13,6 +13,7 @@ from controllers.loadFilesController import LoadFilesController
 from controllers.saveMessageController import SaveMessageController
 from controllers.getMessagesController import GetMessagesController
 from controllers.getNextPossibleQuestionsController import GetNextPossibleQuestionsController
+from controllers.getLastLoadOutcomeController import GetLastLoadOutcomeController
 from services.similaritySearchService import SimilaritySearchService
 from services.generateAnswerService import GenerateAnswerService
 from services.chatService import ChatService
@@ -21,6 +22,7 @@ from services.loadFilesService import LoadFilesService
 from services.saveMessageService import SaveMessageService
 from services.getMessagesService import GetMessagesService
 from services.getNextPossibleQuestionsService import GetNextPossibleQuestionsService
+from services.getLastLoadOutcomeService import GetLastLoadOutcomeService
 from adapters.chromaVectorStoreAdapter import ChromaVectorStoreAdapter
 from adapters.langChainAdapter import LangChainAdapter
 from adapters.gitHubAdapter import GitHubAdapter
@@ -260,26 +262,24 @@ def dependency_injection_frontend() -> dict[str, object]:
 
 
 
+        # Postgres
+        postgres_adapter = initialize_postgres()
+
+
         # ========= 6. Architettura backend dell'aggiornamento del badge di segnalazione esito aggiornamento automatico ==========
 
-        # ...
-
+        get_last_load_outcome_service = GetLastLoadOutcomeService(postgres_adapter)
+        get_last_load_outcome_controller = GetLastLoadOutcomeController(get_last_load_outcome_service)
 
 
         # =========================== 7. Architettura del salvataggio dei messaggi nello storico ============================
 
-        # Postgres
-        postgres_adapter = initialize_postgres()
-        
-        # Catena di save_message
         save_message_service = SaveMessageService(postgres_adapter)
         save_message_controller = SaveMessageController(save_message_service)
 
 
-
         # ============================= 8. Architettura del recupero dei messaggi dallo storico =============================
 
-        # Catena di get_messages
         get_messages_service = GetMessagesService(postgres_adapter)
         get_messages_controller = GetMessagesController(get_messages_service)
 
@@ -313,7 +313,7 @@ def dependency_injection_frontend() -> dict[str, object]:
 
         return {
             "chat_controller": chat_controller,
-            # "get_last_load_outcome_controller": get_last_load_outcome_controller,
+            "get_last_load_outcome_controller": get_last_load_outcome_controller,
             "save_message_controller": save_message_controller,
             "get_messages_controller": get_messages_controller,
             "get_next_possible_questions_controller": get_next_possible_questions_controller

@@ -9,6 +9,7 @@ from models.possibleQuestion import PossibleQuestion
 from controllers.getNextPossibleQuestionsController import GetNextPossibleQuestionsController
 from use_cases.getNextPossibleQuestionsUseCase import GetNextPossibleQuestionsUseCase
 
+
 # Verifica che il metodo get_next_possible_questions di GetNextPossibleQuestionsController chiami il metodo get_next_possible_questions di GetNextPossibleQuestionsUseCase
 
 def test_get_next_possible_questions_calls_use_case_method():

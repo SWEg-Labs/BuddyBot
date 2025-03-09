@@ -4,16 +4,19 @@ from models.dbSaveOperationResponse import DbSaveOperationResponse
 from models.loggingModels import LoadingAttempt
 from models.quantity import Quantity
 from models.message import Message, MessageSender
+from models.lastLoadOutcome import LastLoadOutcome
 from entities.postgresSaveOperationResponse import PostgresSaveOperationResponse
 from entities.loggingEntities import PostgresLoadingAttempt, PostgresPlatformLog, PostgresVectorStoreLog, PostgresLoadingItems
 from entities.postgresMessage import PostgresMessage, PostgresMessageSender
+from entities.postgresLastLoadOutcome import PostgresLastLoadOutcome
 from ports.saveLoadingAttemptInDbPort import SaveLoadingAttemptInDbPort
 from ports.saveMessagePort import SaveMessagePort
 from ports.getMessagesPort import GetMessagesPort
+from ports.getLastLoadOutcomePort import GetLastLoadOutcomePort
 from repositories.postgresRepository import PostgresRepository
 from utils.logger import logger
 
-class PostgresAdapter(SaveLoadingAttemptInDbPort, SaveMessagePort, GetMessagesPort):
+class PostgresAdapter(SaveLoadingAttemptInDbPort, SaveMessagePort, GetMessagesPort, GetLastLoadOutcomePort):
     """
     Adapter class for interacting with a PostgreSQL repository.
     This class provides methods to save and retrieve data, and convert responses
@@ -66,6 +69,10 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort, SaveMessagePort, GetMessagesPo
         """
         try:
             postgres_messages = self.__repository.get_messages(quantity.get_value())
+
+            if not postgres_messages:
+                return []
+
             return [self.__message_converter(pm) for pm in postgres_messages]
         except Exception as e:
             logger.error(f"Error in get_messages of PostgresAdapter: {e}")
@@ -87,6 +94,21 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort, SaveMessagePort, GetMessagesPo
             return self.__dsor_converter(postgres_response)
         except Exception as e:
             logger.error(f"Error in save_loading_attempt of PostgresAdapter: {e}")
+            raise e
+
+    def get_last_load_outcome(self) -> LastLoadOutcome:
+        """
+        Retrieve the last load outcome from the PostgreSQL repository.
+        Returns:
+            LastLoadOutcome: The last load outcome.
+        Raises:
+            Exception: If there is an error during the retrieval operation.
+        """
+        try:
+            postgres_outcome = self.__repository.get_last_load_outcome()
+            return self.__last_load_outcome_converter(postgres_outcome)
+        except Exception as e:
+            logger.error(f"Error in get_last_load_outcome of PostgresAdapter: {e}")
             raise e
 
     def __dsor_converter(self, psor: PostgresSaveOperationResponse) -> DbSaveOperationResponse:
@@ -177,4 +199,20 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort, SaveMessagePort, GetMessagesPo
             )
         except Exception as e:
             logger.error(f"Error in postgres_loading_attempt_converter of PostgresAdapter: {e}")
+            raise e
+        
+    def __last_load_outcome_converter(self, pllo: PostgresLastLoadOutcome) -> LastLoadOutcome:
+        """
+        Convert a PostgresLastLoadOutcome to a LastLoadOutcome.
+        Args:
+            pllo (PostgresLastLoadOutcome): The outcome from the PostgreSQL repository.
+        Returns:
+            LastLoadOutcome: The converted outcome.
+        Raises:
+            Exception: If there is an error during the conversion.
+        """
+        try:
+            return LastLoadOutcome[pllo.name]
+        except Exception as e:
+            logger.error(f"Error in last_load_outcome_converter of PostgresAdapter: {e}")
             raise e
