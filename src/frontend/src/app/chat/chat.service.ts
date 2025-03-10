@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { LastLoadOutcome } from '../models/LastLoadOutcome.model';
+import { tap, catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root', 
@@ -14,7 +15,7 @@ export class ChatService {
 
   private lastMessageTimestamp: number = Date.now();
 
-  private lastLoadOutcomeSubject = new BehaviorSubject<LastLoadOutcome | null>(null);
+  private lastLoadOutcomeSubject = new BehaviorSubject<boolean | null>(null);
   public lastLoadOutcome$ = this.lastLoadOutcomeSubject.asObservable();
 
 
@@ -41,24 +42,34 @@ export class ChatService {
     answer: string;
     quantity: number;
   }): Observable<Record<string, string>> {
-    return this.http.post<Record<string, string>>(
-      `${this.apiBaseUrl}/api/get_next_possible_questions`,
-      payload
-    );
+    console.log('Chiamata getContinuationSuggestions(), payload =', payload);
+
+    return this.http
+      .post<Record<string, string>>(
+        `${this.apiBaseUrl}/api/get_next_possible_questions`,
+        payload
+      )
+      .pipe(
+        tap((response) => {
+          console.log('Risposta da getContinuationSuggestions():', response);
+        }),
+        catchError((error) => {
+          console.error('Errore da getContinuationSuggestions():', error);
+          return throwError(() => error);
+        })
+      );
   }
 
   loadLastLoadOutcome(): void {
-    this.http.post<LastLoadOutcome>(`${this.apiBaseUrl}/api/get_last_load_outcome`, {})
+    this.http.post<boolean>(`${this.apiBaseUrl}/api/get_last_load_outcome`, {})
       .subscribe({
         next: (data) => {
           this.lastLoadOutcomeSubject.next(data);
+          console.log("lastOutcome: ", data);
         },
         error: (err) => {
           console.error('Errore nel recupero di get_last_load_outcome:', err);
-          this.lastLoadOutcomeSubject.next({
-            last_load_ok: false,
-            message: 'Errore nel recupero dell’ultimo caricamento'
-          });
+          this.lastLoadOutcomeSubject.next(false);
         }
       });
   }

@@ -31,8 +31,6 @@ export class ChatContainerComponent implements OnInit {
   messages: Message[] = [];
   isLoading = false;
   showScrollToBottom = false;
-
-  // Nuove proprietà
   lastUserQuestion = '';
   lastBotAnswer = '';
 
@@ -52,15 +50,27 @@ export class ChatContainerComponent implements OnInit {
   private loadOldMessages(quantity: number) {
     this.databaseService.getMessages(quantity).subscribe({
       next: (dbMessages: DbMessageModel[]) => {
-        this.messages = dbMessages.map((dbMsg) => {
+        dbMessages.sort((a, b) => {
+          return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime();
+        });
+          this.messages = dbMessages.map((dbMsg) => {
+          let mappedSender: string;
+          if (dbMsg.sender === 'USER') {
+            mappedSender = 'Utente';
+          } else if (dbMsg.sender === 'CHATBOT') {
+            mappedSender = 'Bot';
+          } else {
+            mappedSender = 'Utente';
+          }
           const rawFormatted = this.formatResponse(dbMsg.content);
           const sanitized = this.sanitizer.bypassSecurityTrustHtml(rawFormatted);
-          return {
-            sender: dbMsg.sender,
+            return {
+            sender: mappedSender, 
             text: sanitized,
-            copied: false
+            copied: false,
           };
         });
+  
         this.scrollToBottom();
       },
       error: (err) => {
@@ -68,6 +78,7 @@ export class ChatContainerComponent implements OnInit {
       }
     });
   }
+  
 
   onScrollChange(isScrolledUp: boolean): void {
     this.showScrollToBottom = isScrolledUp;
@@ -76,17 +87,20 @@ export class ChatContainerComponent implements OnInit {
   onSendMessage(message: string) {
     const text = message.trim();
     if (!text) return;
-
+  
     this.messages.push({ sender: 'Utente', text });
     this.messagesComponent.scrollToBottom();
-
+  
     this.lastUserQuestion = text;
     const userMsg = { 
       content: text, 
-      sender: 'User',
+      sender: 'USER',
       timestamp: new Date()
     };
-    
+  
+    console.log('Stiamo inviando:', text);
+    console.log('lastUserQuestion =', this.lastUserQuestion);
+  
     this.databaseService.saveMessage(userMsg).subscribe({
       next: (resp) => {
         console.log('Messaggio utente salvato correttamente', resp);
@@ -95,20 +109,22 @@ export class ChatContainerComponent implements OnInit {
         console.error('Errore nel salvataggio del messaggio utente:', err);
       },
     });
-
+    
     this.isLoading = true;
+  
     this.chatService.sendMessage(text).subscribe({
       next: (res) => {
         const rawFormatted = this.formatResponse(res.response);
         const sanitized = this.sanitizer.bypassSecurityTrustHtml(rawFormatted);
         this.messages.push({ sender: 'Bot', text: sanitized });
+        console.log('Risposta dal server:', res.response);
         this.lastBotAnswer = res.response;
+  
         const botMsg = { 
           content: res.response, 
-          sender: 'Chatbot',
+          sender: 'CHATBOT',
           timestamp: new Date()
         };
-        
         this.databaseService.saveMessage(botMsg).subscribe({
           next: (resp) => {
             console.log('Messaggio bot salvato correttamente', resp);
@@ -117,17 +133,34 @@ export class ChatContainerComponent implements OnInit {
             console.error('Errore nel salvataggio del messaggio bot:', err);
           },
         });
-
+  
         this.isLoading = false;
         this.messagesComponent.scrollToBottom();
       },
       error: () => {
         this.messages.push({ sender: 'Bot', text: 'C’è stato un errore!' });
+  
+        const botMsg = {
+          content: 'C’è stato un errore!',
+          sender: 'CHATBOT',
+          timestamp: new Date()
+        };
+        this.databaseService.saveMessage(botMsg).subscribe({
+          next: (resp) => {
+            console.log('Messaggio di errore del bot salvato correttamente', resp);
+          },
+          error: (err) => {
+            console.error('Errore nel salvataggio del messaggio di errore del bot:', err);
+          },
+        });
+  
         this.isLoading = false;
         this.messagesComponent.scrollToBottom();
       },
     });
   }
+  
+  
   onSuggestionClicked(suggestion: string) {
     this.onSendMessage(suggestion);
   }

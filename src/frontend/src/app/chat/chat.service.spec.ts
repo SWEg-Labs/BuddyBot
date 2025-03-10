@@ -61,13 +61,13 @@ describe('ChatService', () => {
     const mockSuggestions = ['Cont1', 'Cont2'];
     let result: string[] = [];
     service.getContinuationSuggestions().subscribe(res => (result = res));
-    const req = httpMock.expectOne('http://localhost:5000/api/chat/suggestions/continuation');
+    const req = httpMock.expectOne('http://localhost:5000/api/get_next_possible_questions');
 
     // Act
     req.flush(mockSuggestions);
 
     // Assert
-    expect(req.request.method).toBe('GET');
+    expect(req.request.method).toBe('POST');
     expect(result).toEqual(mockSuggestions);
   });
 

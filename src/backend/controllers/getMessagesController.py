@@ -46,7 +46,7 @@ class GetMessagesController:
             return_list = []
             for message in message_list:
                 return_list.append(MessageDTO(content=message.get_content(), timestamp=message.get_timestamp(),
-                                                    sender=MessageSenderDTO(message.get_sender().value)))
+                                                    sender=MessageSenderDTO(message.get_sender().value.upper())))
             return return_list
         except Exception as e:
             logger.error(f"An error occurred while retrieving messages: {e}")
