@@ -33,7 +33,7 @@ export class ChatSuggestionsComponent implements OnChanges {
     const payload = {
       question: this.question,
       answer: this.answer,
-      quantity: 5
+      quantity: 3
     };
     this.chatService.getContinuationSuggestions(payload).subscribe({
       next: (res) => {

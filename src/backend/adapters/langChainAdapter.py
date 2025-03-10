@@ -100,20 +100,31 @@ class LangChainAdapter(GenerateAnswerPort, GetNextPossibleQuestionsPort):
             # Extract content from question and answer
             question_content = question_answer_couple.get_question().get_content()
             answer_content = question_answer_couple.get_answer().get_content()
-            
+
             # Call the repository method to get the next possible questions
             repo_response = self.__langchain_repository.get_next_possible_questions(
                 [question_content, answer_content],
                 header.get_content()
             )
-            
+
             # Parse the repository response to create NextPossibleQuestions object
             questions = repo_response.split("___")
             questions = [q.strip() for q in questions if q.strip()]
-            
+
             possible_questions = [PossibleQuestion(q) for q in questions]
             next_possible_questions = NextPossibleQuestions(num_questions=len(possible_questions), possible_questions=possible_questions)
-            
+
+            # Create a formatted message for logging
+            message = (
+                f"Next Possible Questions:\n"
+                f"Header: {header.get_content()}\n"
+                f"Number of Questions: {next_possible_questions.get_num_questions()}\n"
+                f"Questions:\n" + "\n".join([f"- {pq.get_content()}" for pq in next_possible_questions.get_possible_questions()])
+            )
+
+            # Log the message
+            logger.info(message)
+
             return next_possible_questions
         except Exception as e:
             logger.error(f"An error occured in get_next_possible_questions of LangChainAdapter: {e}")
