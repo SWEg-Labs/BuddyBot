@@ -115,6 +115,47 @@ def initialize_postgres() -> PostgresAdapter:
             password=db_config["password"],
             dbname=db_config["dbname"]
         )
+
+        # Creazione delle tabelle necessarie
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS messages (
+                id SERIAL PRIMARY KEY,
+                content TEXT,
+                timestamp TIMESTAMP,
+                sender VARCHAR(50)
+            );
+            """)
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS loading_attempts (
+                id SERIAL PRIMARY KEY,
+                starting_timestamp TIMESTAMP,
+                ending_timestamp TIMESTAMP,
+                outcome BOOLEAN
+            );
+            """)
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS platform_logs (
+                id SERIAL PRIMARY KEY,
+                loading_attempt_id INTEGER REFERENCES loading_attempts(id),
+                loading_item VARCHAR(50),
+                timestamp TIMESTAMP,
+                outcome BOOLEAN
+            );
+            """)
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS vector_store_logs (
+                id SERIAL PRIMARY KEY,
+                loading_attempt_id INTEGER REFERENCES loading_attempts(id),
+                timestamp TIMESTAMP,
+                outcome BOOLEAN,
+                num_added_items INTEGER,
+                num_modified_items INTEGER,
+                num_deleted_items INTEGER
+            );
+            """)
+        conn.commit()
+
         postgres_repository = PostgresRepository(conn)
         postgres_adapter = PostgresAdapter(postgres_repository)
         logger.info("Postgres database loaded")
