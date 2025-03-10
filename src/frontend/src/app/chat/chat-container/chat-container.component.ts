@@ -32,6 +32,10 @@ export class ChatContainerComponent implements OnInit {
   isLoading = false;
   showScrollToBottom = false;
 
+  // Nuove proprietà
+  lastUserQuestion = '';
+  lastBotAnswer = '';
+
   @ViewChild(ChatMessagesComponent) messagesComponent!: ChatMessagesComponent;
 
   constructor(
@@ -42,13 +46,14 @@ export class ChatContainerComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadOldMessages(50);
+    this.chatService.loadLastLoadOutcome();
   }
 
   private loadOldMessages(quantity: number) {
     this.databaseService.getMessages(quantity).subscribe({
       next: (dbMessages: DbMessageModel[]) => {
         this.messages = dbMessages.map((dbMsg) => {
-          const rawFormatted = this.formatResponse(dbMsg.message);
+          const rawFormatted = this.formatResponse(dbMsg.content);
           const sanitized = this.sanitizer.bypassSecurityTrustHtml(rawFormatted);
           return {
             sender: dbMsg.sender,
@@ -64,10 +69,6 @@ export class ChatContainerComponent implements OnInit {
     });
   }
 
-  get lastMessageTime(): number {
-    return this.chatService.getLastMessageTimestamp();
-  }
-
   onScrollChange(isScrolledUp: boolean): void {
     this.showScrollToBottom = isScrolledUp;
   }
@@ -75,13 +76,17 @@ export class ChatContainerComponent implements OnInit {
   onSendMessage(message: string) {
     const text = message.trim();
     if (!text) return;
-  
-    // 1. Visualizzo immediatamente a schermo il messaggio dell'utente
+
     this.messages.push({ sender: 'Utente', text });
     this.messagesComponent.scrollToBottom();
-  
-    // 2. Salvo il messaggio dell'utente su DB
-    const userMsg = { message: text, sender: 'Utente' };
+
+    this.lastUserQuestion = text;
+    const userMsg = { 
+      content: text, 
+      sender: 'User',
+      timestamp: new Date()
+    };
+    
     this.databaseService.saveMessage(userMsg).subscribe({
       next: (resp) => {
         console.log('Messaggio utente salvato correttamente', resp);
@@ -90,18 +95,20 @@ export class ChatContainerComponent implements OnInit {
         console.error('Errore nel salvataggio del messaggio utente:', err);
       },
     });
-  
-    // 3. Chiedo la risposta al bot
+
     this.isLoading = true;
     this.chatService.sendMessage(text).subscribe({
       next: (res) => {
-        // 4. Aggiungo la risposta bot all'array messages
         const rawFormatted = this.formatResponse(res.response);
         const sanitized = this.sanitizer.bypassSecurityTrustHtml(rawFormatted);
         this.messages.push({ sender: 'Bot', text: sanitized });
-  
-        // 5. Salvo anche il messaggio del bot nel DB
-        const botMsg = { message: res.response, sender: 'Bot' };
+        this.lastBotAnswer = res.response;
+        const botMsg = { 
+          content: res.response, 
+          sender: 'Chatbot',
+          timestamp: new Date()
+        };
+        
         this.databaseService.saveMessage(botMsg).subscribe({
           next: (resp) => {
             console.log('Messaggio bot salvato correttamente', resp);
@@ -110,7 +117,7 @@ export class ChatContainerComponent implements OnInit {
             console.error('Errore nel salvataggio del messaggio bot:', err);
           },
         });
-  
+
         this.isLoading = false;
         this.messagesComponent.scrollToBottom();
       },
@@ -121,7 +128,6 @@ export class ChatContainerComponent implements OnInit {
       },
     });
   }
-
   onSuggestionClicked(suggestion: string) {
     this.onSendMessage(suggestion);
   }
@@ -133,28 +139,30 @@ export class ChatContainerComponent implements OnInit {
       const escapedCode = trimmed
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
+
       return `
         <div class="code-container">
           <mat-icon 
-            _ngcontent-ng-c4071621763 
-            title="Copia il codice" 
-            class="mat-icon notranslate material-icons mat-ligature-font mat-icon-no-color copy-snippet-icon" 
-            aria-hidden="true" 
-            data-mat-icon-type="font"
-          >
+            title="Copia il codice"
+            class="mat-icon copy-snippet-icon">
             content_copy
           </mat-icon>
           <pre class="snippet-content">${escapedCode}</pre>
-        </div>
-      `;
+        </div>`;
     });
-  
+
     formatted = formatted
       .replace(/^### (.+)$/gm, '<h3>$1</h3>')
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>')
       .replace(/\n/g, '<br>');
-  
+
+    const linkBlockRegex = /(Link correlati:(?:<br>.*?))(?=<br><br>|$)/gs;
+    formatted = formatted.replace(linkBlockRegex, (fullMatch) => {
+      const clean = fullMatch.replace(/<br>$/, '');
+      return `<div class="related-links-block">${clean}</div>`;
+    });
+
     return formatted;
   }
 

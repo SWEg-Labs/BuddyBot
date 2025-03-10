@@ -11,7 +11,8 @@
 
   <!-- SUGGERIMENTI -->
   <app-chat-suggestions
-    [lastMessageTimestamp]="lastMessageTime"
+    [question]="lastUserQuestion"
+    [answer]="lastBotAnswer"
     (suggestionClicked)="onSuggestionClicked($event)"
   ></app-chat-suggestions>
 

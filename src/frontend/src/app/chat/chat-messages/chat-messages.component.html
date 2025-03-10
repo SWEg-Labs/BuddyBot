@@ -5,16 +5,16 @@
     [ngClass]="{
       'user-message': msg.sender === 'Utente',
       'bot-message': msg.sender === 'Bot'
-    }">
+    }"
+  >
     <span
       *ngIf="msg.sender === 'Bot'"
       class="copy-icon"
       [ngClass]="{ 'copied': msg.copied }"
       [innerHTML]="msg.copied ? '✔' : '📋'"
       (click)="copyToClipboard(msg)"
-      title="Copia l'intero messaggio">
-    </span>
-    <span class="sender">{{ msg.sender }}:</span>
+      title="Copia l'intero messaggio"
+    ></span>
     <span class="text" [innerHTML]="msg.text"></span>
   </div>
   <div *ngIf="isLoading" class="message bot-message loading-placeholder">

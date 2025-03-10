@@ -16,15 +16,16 @@ describe('ChatContainerComponent', () => {
         'sendMessage',
         'getLastMessageTimestamp',
         'getContinuationSuggestions',
-        'getInitialSuggestions',
         'checkFileUpdates',
         'setLastMessageTimestamp'
       ]
     );
     chatServiceSpy.isUpdated$ = of(true);
     chatServiceSpy.getLastMessageTimestamp.and.returnValue(Date.now());
-    chatServiceSpy.getContinuationSuggestions.and.returnValue(of([]));
-    chatServiceSpy.getInitialSuggestions.and.returnValue(of([]));
+    chatServiceSpy.getContinuationSuggestions.and.returnValue(
+      of({ "Cont1": "Come stai?", "Cont2": "Hai altre domande?" })
+    );
+    
 
     await TestBed.configureTestingModule({
       imports: [ChatContainerComponent],

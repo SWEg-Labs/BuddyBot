@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChatService } from '../chat.service';
 
@@ -9,44 +9,44 @@ import { ChatService } from '../chat.service';
   styleUrls: ['./chat-suggestions.component.scss'],
   imports: [CommonModule]
 })
-export class ChatSuggestionsComponent implements OnInit {
-  @Input() lastMessageTimestamp!: number;
+export class ChatSuggestionsComponent implements OnChanges {
+  @Input() question: string = '';
+  @Input() answer: string = '';
   @Output() suggestionClicked = new EventEmitter<string>();
 
-  initialSuggestions: string[] = [];
   continuationSuggestions: string[] = [];
-  showInitial = true;
-
   loadError = false;
 
   constructor(private chatService: ChatService) {}
 
-  ngOnInit() {
-    this.checkTime();
-
-    if (!this.showInitial) {
-      this.chatService.getContinuationSuggestions().subscribe({
-        next: (suggestions) => {
-          this.continuationSuggestions = suggestions;
-        },
-        error: (err) => {
-          console.error('Errore nel caricamento dei consigli', err);
-          this.loadError = true;
-        }
-      });
+  ngOnChanges(changes: SimpleChanges): void {
+    if ((changes['question'] || changes['answer']) && this.canLoadSuggestions()) {
+      this.getContinuationSuggestions();
     }
   }
 
-  private checkTime() {
-    const now = Date.now();
-    const diff = now - this.lastMessageTimestamp;
-    const fiveMinutes = 5 * 60 * 1000;
-    this.showInitial = diff > fiveMinutes; 
+  private canLoadSuggestions(): boolean {
+    return this.question.trim().length > 0 && this.answer.trim().length > 0;
+  }
+
+  private getContinuationSuggestions() {
+    const payload = {
+      question: this.question,
+      answer: this.answer,
+      quantity: 5
+    };
+    this.chatService.getContinuationSuggestions(payload).subscribe({
+      next: (res) => {
+        this.continuationSuggestions = Object.values(res);
+      },
+      error: (err) => {
+        console.error('Errore nel caricamento delle suggestions', err);
+        this.loadError = true;
+      }
+    });
   }
 
   onSuggestionClick(text: string) {
-    console.log('Suggestion clicked:', text);
     this.suggestionClicked.emit(text);
   }
-  
 }

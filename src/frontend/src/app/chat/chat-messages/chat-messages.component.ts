@@ -78,17 +78,9 @@ export class ChatMessagesComponent implements AfterViewChecked, AfterViewInit {
     });
   }
 
-  
-
   private stripHtml(html: string): string {
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = html;
     return tempDiv.textContent || tempDiv.innerText || '';
-  }
-
-  private decodeHtml(html: string): string {
-    const txt = document.createElement('textarea');
-    txt.innerHTML = html;
-    return txt.value;
   }
 }

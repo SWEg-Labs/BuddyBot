@@ -7,10 +7,9 @@ import { Observable } from 'rxjs';
  * che corrisponde (o mappa) il backend.
  */
 export interface DbMessageModel {
-  id?: number;            // se il DB memorizza anche un id
-  message: string;        // testo del messaggio
-  sender: string;         // ad esempio "Utente" o "Bot"
-  created_at?: string;    // data/ora di creazione
+  content: string;
+  sender: string;
+  timestamp: Date;
 }
 
 @Injectable({
