@@ -45,7 +45,7 @@ def test_get_answer(chat_service, mock_similarity_search_service, mock_generate_
 
 # Verifica che il metodo get_answer di ChatService gestisca correttamente le eccezioni
 
-def test_get_answer_Exception(chat_service, mock_similarity_search_service, mock_generate_answer_service):
+def test_get_answer_exception(chat_service, mock_similarity_search_service, mock_generate_answer_service):
     # Arrange
     user_input = Question("What is AI?")
     mock_similarity_search_service.similarity_search.side_effect = Exception("Similarity search error")
@@ -61,7 +61,7 @@ def test_get_answer_Exception(chat_service, mock_similarity_search_service, mock
 
 # Verifica che il metodo similarity_search di ChatService gestisca correttamente le eccezioni
 
-def test_similarity_search_Exception(chat_service, mock_similarity_search_service):
+def test_similarity_search_exception(chat_service, mock_similarity_search_service):
     # Arrange
     user_input = Question("What is AI?")
     mock_similarity_search_service.similarity_search.side_effect = Exception("Similarity search error")
@@ -76,7 +76,7 @@ def test_similarity_search_Exception(chat_service, mock_similarity_search_servic
 
 # Verifica che il metodo generate_answer di ChatService gestisca correttamente le eccezioni
 
-def test_generate_answer_Exception(chat_service, mock_generate_answer_service):
+def test_generate_answer_exception(chat_service, mock_generate_answer_service):
     # Arrange
     user_input = Question("What is AI?")
     relevant_docs = [Document("AI is the simulation of human intelligence in machines.")]

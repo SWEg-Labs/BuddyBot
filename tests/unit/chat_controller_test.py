@@ -40,7 +40,7 @@ async def test_process_chat_empty_message(chat_controller, mock_request):
 # Verifica che il metodo get_answer di ChatController gestisca correttamente le eccezioni
 
 @pytest.mark.asyncio
-async def test_process_chat_raises_Exception(chat_controller, mock_chat_use_case, mock_request):
+async def test_process_chat_raises_exception(chat_controller, mock_chat_use_case, mock_request):
     # Arrange
     mock_request.json.return_value = {"message": "Hello"}
 
@@ -57,7 +57,7 @@ async def test_process_chat_raises_Exception(chat_controller, mock_chat_use_case
 
 # Verifica che il costruttore di ChatController gestisca correttamente le eccezioni
 
-#def test_chat_controller_constructor_raises_Exception():
+#def test_chat_controller_constructor_raises_exception():
     # Act
 #    with pytest.raises(ValueError) as exc_info:
 #        ChatController(chat_use_case=None)

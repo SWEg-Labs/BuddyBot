@@ -4,7 +4,6 @@ from utils.beartype_personalized import beartype_personalized
 
 @beartype_personalized
 class Document:
-    @beartype_personalized
     def __init__(self, page_content: str, metadata: Optional[dict] = None):
         self.__page_content = page_content
         self.__metadata = metadata if metadata is not None else {}

@@ -6,6 +6,7 @@ from services.chatService import ChatUseCase
 from utils.logger import logger
 from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class ChatController:
     """
     Controller class to manage chat interactions.
