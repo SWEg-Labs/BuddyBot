@@ -83,7 +83,7 @@ class LangChainRepository:
         try:
             # Crea un PromptTemplate per il modello AI
             prompt = ChatPromptTemplate.from_messages(
-            [("user", "{header}\n\n\n{question}\n{answer}")]
+            [("user", "{header}\n\n\n{context}")]
             )
 
             # Crea una catena RAG (Retrieval-Augmented Generation)
@@ -92,11 +92,16 @@ class LangChainRepository:
             prompt=prompt
             )
 
+            # Crea un documento per il testo della domanda e della risposta
+            question_answer_couple_documents = [
+                LangChainDocumentEntity(question_answer_couple[0]),
+                LangChainDocumentEntity(question_answer_couple[1])
+            ]
+
             # Esegue la catena per ottenere le prossime domande possibili
             response = rag_chain.invoke({
             "header": header,
-            "question": question_answer_couple[0],
-            "answer": question_answer_couple[1]
+            "context": question_answer_couple_documents
             })
 
             logger.info(f"Generated next possible questions: {response}")
