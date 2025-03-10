@@ -1,4 +1,4 @@
-from typing import Dict, Union
+from beartype.typing import Dict, Union
 
 from models.question import Question
 from models.answer import Answer
@@ -7,7 +7,9 @@ from models.questionAnswerCouple import QuestionAnswerCouple
 from models.nextPossibleQuestions import NextPossibleQuestions
 from use_cases.getNextPossibleQuestionsUseCase import GetNextPossibleQuestionsUseCase
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class GetNextPossibleQuestionsController:
     """
     Controller for handling the retrieval of the next possible questions based on the provided question-answer-quantity data.

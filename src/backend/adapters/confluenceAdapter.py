@@ -1,11 +1,13 @@
-from typing import List, Tuple
+from beartype.typing import List, Tuple
 
 from models.document import Document
 from models.loggingModels import PlatformLog
 from ports.confluencePort import ConfluencePort
 from repositories.confluenceRepository import ConfluenceRepository
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class ConfluenceAdapter(ConfluencePort):
     """
     Adapter class for interacting with Confluence through a repository.

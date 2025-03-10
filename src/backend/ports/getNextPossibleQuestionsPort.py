@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+
 from models.questionAnswerCouple import QuestionAnswerCouple
 from models.header import Header
 from models.nextPossibleQuestions import NextPossibleQuestions

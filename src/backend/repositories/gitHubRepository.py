@@ -1,13 +1,15 @@
 from github.Repository import Repository
 from datetime import datetime
 import pytz
-from typing import Tuple, List
+from beartype.typing import Tuple, List
 
 from models.loggingModels import PlatformLog, LoadingItems
 from entities.commitEntity import CommitEntity, CommitFileEntity
 from entities.fileEntity import FileEntity
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class GitHubRepository:
     """
     A repository class to interact with a GitHub repository using the provided GitHub API.

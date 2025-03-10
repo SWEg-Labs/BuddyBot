@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+
 from models.question import Question
 from models.answer import Answer
 

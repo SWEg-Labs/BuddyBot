@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from beartype.typing import List, Tuple
 from datetime import datetime
 import pytz
 
@@ -13,7 +13,9 @@ from ports.loadFilesInVectorStorePort import LoadFilesInVectorStorePort
 from ports.saveLoadingAttemptInDbPort import SaveLoadingAttemptInDbPort
 from services.confluenceCleanerService import ConfluenceCleanerService
 from utils.logger import logger, file_logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class LoadFilesService(LoadFilesUseCase):
     """
     Service class responsible for loading files from various platforms (GitHub, Jira, Confluence),

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Tuple, List
+from beartype.typing import Tuple, List
 
 from models.document import Document
 from models.loggingModels import PlatformLog

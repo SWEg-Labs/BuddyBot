@@ -2,7 +2,9 @@ from dto.messageDTO import MessageDTO
 from models.message import Message, MessageSender
 from use_cases.saveMessageUseCase import SaveMessageUseCase
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class SaveMessageController:
     """
     A controller class responsible for saving messages.

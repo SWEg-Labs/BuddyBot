@@ -1,3 +1,6 @@
+from utils.beartype_personalized import beartype_personalized
+
+@beartype_personalized
 class QueryResultEntity:
     def __init__(self, documents=None, metadatas=None, distances=None):
         self.__documents = documents if documents is not None else []
@@ -16,7 +19,7 @@ class QueryResultEntity:
     def __getitem__(self, key):
         return getattr(self, key)
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         return {
             "documents": self.__documents,
             "metadatas": self.__metadatas,

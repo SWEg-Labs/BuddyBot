@@ -1,11 +1,13 @@
-from typing import List, Tuple
+from beartype.typing import List, Tuple
 
 from models.document import Document
 from models.loggingModels import PlatformLog
 from ports.jiraPort import JiraPort
 from repositories.jiraRepository import JiraRepository
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class JiraAdapter(JiraPort):
     """
     Adapter class for interacting with Jira issues.

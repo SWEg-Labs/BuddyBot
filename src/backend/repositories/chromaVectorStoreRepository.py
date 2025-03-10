@@ -6,17 +6,17 @@ from entities.chromaDocumentEntity import ChromaDocumentEntity
 from entities.queryResultEntity import QueryResultEntity
 from utils.logger import logger
 from datetime import datetime
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class ChromaVectorStoreRepository:
     """
     A repository class for interacting with the Chroma vector store.
     This class provides methods to initialize the connection, load documents, and perform similarity searches.
-
     Attributes:
         client (chromadb.HttpClient): The client to connect to the Chroma server.
         collection_name (str): The name of the collection in the Chroma.
         collection (chromadb.Collection): The collection object to interact with the Chroma.
-
     Raises:
         Exception: If an error occurs during initialization or while interacting with the vector store.
     """

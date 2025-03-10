@@ -1,5 +1,8 @@
-from typing import Optional
+from beartype.typing import Optional
 
+from utils.beartype_personalized import beartype_personalized
+
+@beartype_personalized
 class ChromaDocumentEntity:
     def __init__(self, page_content: str, metadata: Optional[dict] = None):
         self.__page_content = page_content
@@ -12,7 +15,7 @@ class ChromaDocumentEntity:
         return self.__metadata
 
     def set_page_content(self, page_content: str):
-        self.page_content = page_content
+        self.__page_content = page_content
 
     def set_metadata(self, metadata: dict):
         self.__metadata = metadata
@@ -26,7 +29,7 @@ class ChromaDocumentEntity:
 
     def __repr__(self) -> str:
         return f"Document(page_content={self.__page_content!r}, metadata={self.__metadata!r})"
-    
+
     def __eq__(self, other) -> bool:
         if not isinstance(other, ChromaDocumentEntity):
             return False

@@ -10,13 +10,16 @@ from ports.generateAnswerPort import GenerateAnswerPort
 from ports.getNextPossibleQuestionsPort import GetNextPossibleQuestionsPort
 from repositories.langChainRepository import LangChainRepository
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class LangChainAdapter(GenerateAnswerPort, GetNextPossibleQuestionsPort):
     """
     Adapter class for integrating with the LangChainRepository. This class is responsible for
     adapting the input parameters to the format expected by the LangChainRepository and 
     generating answers based on user input and relevant documents.
     """
+
     def __init__(self, max_num_tokens: int, langchain_repository: LangChainRepository):
         """
         Initialize the LangChainAdapter with a LangChainRepository instance.
@@ -43,7 +46,6 @@ class LangChainAdapter(GenerateAnswerPort, GetNextPossibleQuestionsPort):
         Raises:
             Exception: If an error occurs during answer generation
         """
-
         try:
             # Adapt the parameters to the format expected by LangChainRepository
             user_input = user_input.get_content()

@@ -1,12 +1,14 @@
 import requests
 from datetime import datetime
 import pytz
-from typing import List, Tuple
+from beartype.typing import List, Tuple
 
 from models.loggingModels import PlatformLog, LoadingItems
 from entities.issueEntity import IssueEntity
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class JiraRepository:
     """
     A repository class for interacting with Jira API to fetch issues.

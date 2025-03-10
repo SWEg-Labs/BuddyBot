@@ -1,12 +1,14 @@
 import psycopg2
-from typing import Optional, Tuple
+from beartype.typing import Optional, Tuple
 
 from entities.loggingEntities import PostgresLoadingAttempt
 from entities.postgresSaveOperationResponse import PostgresSaveOperationResponse
 from entities.postgresMessage import PostgresMessage
 from entities.postgresLastLoadOutcome import PostgresLastLoadOutcome
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class PostgresRepository:
     '''
     A repository class for interacting with a PostgreSQL database.

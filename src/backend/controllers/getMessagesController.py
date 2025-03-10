@@ -1,10 +1,12 @@
-from typing import List
+from beartype.typing import List
 
 from dto.messageDTO import MessageDTO, MessageSenderDTO
 from models.quantity import Quantity
 from use_cases.getMessagesUseCase import GetMessagesUseCase
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class GetMessagesController:
     """
     Controller class to handle the retrieval of messages.

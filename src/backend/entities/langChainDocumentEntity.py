@@ -1,5 +1,8 @@
-from typing import Optional
+from beartype.typing import Optional
 
+from utils.beartype_personalized import beartype_personalized
+
+@beartype_personalized
 class LangChainDocumentEntity:
     def __init__(self, page_content: str, metadata: Optional[dict] = None):
         self.__page_content = page_content
@@ -8,7 +11,7 @@ class LangChainDocumentEntity:
     @property
     def page_content(self) -> str:     # La funzione invoke di LangChain richiede di accedere a doc.page_content
         return self.__page_content
-    
+
     @property
     def metadata(self) -> dict:        # La funzione invoke di LangChain richiede di accedere a doc.metadata
         return self.__metadata

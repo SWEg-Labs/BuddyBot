@@ -1,7 +1,9 @@
 from dto.lastLoadOutcomeDTO import LastLoadOutcomeDTO
 from use_cases.getLastLoadOutcomeUseCase import GetLastLoadOutcomeUseCase
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class GetLastLoadOutcomeController:
     """
     Controller for handling the retrieval of the last load outcome.

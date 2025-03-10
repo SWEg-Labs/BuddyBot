@@ -1,3 +1,6 @@
+from utils.beartype_personalized import beartype_personalized
+
+@beartype_personalized
 class PageEntity:
     def __init__(self, id: str, type: str, title: str, space: dict, body: dict, version: dict, status: str, ancestors: list, extensions: dict, links: dict):
         """

@@ -10,6 +10,7 @@ class LoadFilesInVectorStorePort(ABC):
     This class should be inherited by any class that aims to implement
     the functionality of loading documents into a vector store.
     """
+
     @abstractmethod
     def load(self, documents: list[Document]) -> VectorStoreLog:
         """

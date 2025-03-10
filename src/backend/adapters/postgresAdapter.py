@@ -1,4 +1,4 @@
-from typing import List
+from beartype.typing import List
 
 from models.dbSaveOperationResponse import DbSaveOperationResponse
 from models.loggingModels import LoadingAttempt
@@ -15,7 +15,9 @@ from ports.getMessagesPort import GetMessagesPort
 from ports.getLastLoadOutcomePort import GetLastLoadOutcomePort
 from repositories.postgresRepository import PostgresRepository
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class PostgresAdapter(SaveLoadingAttemptInDbPort, SaveMessagePort, GetMessagesPort, GetLastLoadOutcomePort):
     """
     Adapter class for interacting with a PostgreSQL repository.

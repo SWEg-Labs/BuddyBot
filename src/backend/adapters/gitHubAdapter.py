@@ -1,12 +1,14 @@
 import base64
-from typing import List, Tuple
+from beartype.typing import List, Tuple
 
 from models.document import Document
 from models.loggingModels import PlatformLog
 from ports.gitHubPort import GitHubPort
 from repositories.gitHubRepository import GitHubRepository
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class GitHubAdapter(GitHubPort):
     """
     Adapter class for interacting with a GitHub repository.
@@ -50,7 +52,7 @@ class GitHubAdapter(GitHubPort):
                         "email": commit.get_author_email()
                         if commit.get_author_email() is not None
                         else "/",
-                        "date": commit.get_author_date()
+                        "date": commit.get_author_date().strftime('%Y-%m-%d %H:%M:%S')
                         if commit.get_author_date() is not None
                         else "/",
                         "files": [

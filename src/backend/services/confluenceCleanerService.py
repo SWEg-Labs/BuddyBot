@@ -1,13 +1,16 @@
 import re
-from typing import List
+from beartype.typing import List
 
 from models.document import Document
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class ConfluenceCleanerService:
     """
     Service class to clean Confluence pages by removing HTML tags and replacing HTML entities.
     """
+
     def clean_confluence_pages(self, pages: List[Document]) -> List[Document]:
         """
         Cleans the content of a list of Confluence pages by removing HTML tags and replacing HTML entities.

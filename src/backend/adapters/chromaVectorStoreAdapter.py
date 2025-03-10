@@ -9,7 +9,9 @@ from ports.similaritySearchPort import SimilaritySearchPort
 from ports.loadFilesInVectorStorePort import LoadFilesInVectorStorePort
 from repositories.chromaVectorStoreRepository import ChromaVectorStoreRepository
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class ChromaVectorStoreAdapter(SimilaritySearchPort, LoadFilesInVectorStorePort):
     """
     Adapter class for interacting with a Chroma vector store repository.

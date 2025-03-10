@@ -2,7 +2,9 @@ from models.lastLoadOutcome import LastLoadOutcome
 from use_cases.getLastLoadOutcomeUseCase import GetLastLoadOutcomeUseCase
 from ports.getLastLoadOutcomePort import GetLastLoadOutcomePort
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class GetLastLoadOutcomeService(GetLastLoadOutcomeUseCase):
     """
     Service class to handle the retrieval of the last load outcome.

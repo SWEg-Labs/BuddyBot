@@ -1,12 +1,15 @@
 from enum import Enum
 from datetime import datetime
 
+from utils.beartype_personalized import beartype_personalized
+
 class LoadingItems(Enum):
     GitHubCommits = "GitHub Commits"
     GitHubFiles = "GitHub Files"
     JiraIssues = "Jira Issues"
     ConfluencePages = "Confluence Pages"
 
+@beartype_personalized
 class PlatformLog:
     def __init__(self, loading_items: LoadingItems, timestamp: datetime, outcome: bool):
         self.__loading_items = loading_items
@@ -29,6 +32,7 @@ class PlatformLog:
             self.__timestamp == other.get_timestamp() and
             self.__outcome == other.get_outcome())
 
+@beartype_personalized
 class VectorStoreLog:
     def __init__(self, timestamp: datetime, outcome: bool, num_added_items: int, num_modified_items: int, num_deleted_items: int):
         self.__timestamp = timestamp
@@ -61,6 +65,7 @@ class VectorStoreLog:
             self.__num_modified_items == other.get_num_modified_items() and
             self.__num_deleted_items == other.get_num_deleted_items())
 
+@beartype_personalized
 class LoadingAttempt:
     def __init__(self, platform_logs: list[PlatformLog], vector_store_log: VectorStoreLog, starting_timestamp: datetime):
         self.__platform_logs = platform_logs

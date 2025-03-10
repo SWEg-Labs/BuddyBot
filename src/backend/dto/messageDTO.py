@@ -2,17 +2,20 @@ from enum import Enum
 from datetime import datetime
 from pydantic import BaseModel
 
+from utils.beartype_personalized import beartype_personalized
+
 class MessageSenderDTO(str, Enum):
     USER = "User"
     CHATBOT = "Chatbot"
 
+@beartype_personalized
 class MessageDTO(BaseModel):
     def __init__(self, content: str, timestamp: datetime, sender: MessageSenderDTO):
         super().__init__(content=content, timestamp=timestamp, sender=sender)
         self.__content = content
         self.__timestamp = timestamp
         self.__sender = sender
-    
+
     def get_content(self) -> str:
         return self.__content
 

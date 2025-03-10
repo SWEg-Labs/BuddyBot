@@ -12,6 +12,7 @@ class SaveLoadingAttemptInDbPort(ABC):
     Methods:
         save_loading_attempt(loading_attempt: LoadingAttempt) -> DbSaveOperationResponse:
     """
+
     @abstractmethod
     def save_loading_attempt(self, loading_attempt: LoadingAttempt) -> DbSaveOperationResponse:
         """

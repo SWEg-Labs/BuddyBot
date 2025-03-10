@@ -5,7 +5,9 @@ from models.header import Header
 from use_cases.getNextPossibleQuestionsUseCase import GetNextPossibleQuestionsUseCase
 from ports.getNextPossibleQuestionsPort import GetNextPossibleQuestionsPort
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class GetNextPossibleQuestionsService(GetNextPossibleQuestionsUseCase):
     """
     Service for handling the retrieval of the next possible questions based on the provided question-answer-quantity data.

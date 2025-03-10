@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Tuple, List
+from beartype.typing import Tuple, List
 
 from models.document import Document
 from models.loggingModels import PlatformLog
@@ -16,8 +16,6 @@ class GitHubPort(ABC):
         Load commits from the GitHub repository and convert them into documents.
         Returns:
             tuple: A tuple containing the log and a list of Document instances representing the commits.
-        Raises:
-            Exception: If there is an error while loading commits.
         """
         pass
 
