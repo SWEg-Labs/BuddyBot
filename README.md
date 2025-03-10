@@ -8,7 +8,7 @@ Nel file config.json di Docker aggiungere la seguente opzione:
 ```
 {
   "features": {
-    "buildkit": true
+    "buildkit": "true"
   }
 }
 ```
