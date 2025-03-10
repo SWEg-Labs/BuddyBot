@@ -2,9 +2,11 @@ import pytest
 from unittest.mock import AsyncMock, MagicMock
 from fastapi import Request
 from fastapi.responses import JSONResponse
+
+from models.question import Question
+from models.answer import Answer
 from use_cases.chatUseCase import ChatUseCase
 from controllers.chatController import ChatController
-from models.question import Question, Answer
 
 pytestmark = pytest.mark.asyncio  # ✅ Imposta asyncio per tutti i test nel file
 
