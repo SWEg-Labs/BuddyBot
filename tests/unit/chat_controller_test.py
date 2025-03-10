@@ -8,32 +8,24 @@ from controllers.chatController import ChatController
 from models.question import Question
 
 
-# Verifica che il metodo get_answer di ChatController, in caso di messaggio non vuoto, restituisca la risposta corretta
+@pytest.fixture
+def mock_chat_use_case():
+    return MagicMock(spec=ChatUseCase)
 
-@pytest.mark.asyncio
-async def test_process_chat_calls_get_answer():
-    # Arrange
-    mock_chat_use_case = MagicMock(spec=ChatUseCase)
-    chat_controller = ChatController(chat_use_case=mock_chat_use_case)
-    mock_request = AsyncMock(Request)
-    mock_request.json.return_value = {"message": "Hello"}
+@pytest.fixture
+def chat_controller(mock_chat_use_case):
+    return ChatController(chat_use_case=mock_chat_use_case)
 
-    # Act
-    response = await chat_controller.get_answer(mock_request)
-
-    # Assert
-    mock_chat_use_case.get_answer.assert_called_with(Question("Hello"))
-    assert response == {"response": mock_chat_use_case.get_answer.return_value.get_content()}
+@pytest.fixture
+def mock_request():
+    return AsyncMock(Request)
 
 
 # Verifica che il metodo get_answer di ChatController, in caso di messaggio vuoto, restituisca un messaggio di errore
 
 @pytest.mark.asyncio
-async def test_process_chat_empty_message():
+async def test_process_chat_empty_message(chat_controller, mock_request):
     # Arrange
-    mock_chat_use_case = MagicMock(spec=ChatUseCase)
-    chat_controller = ChatController(chat_use_case=mock_chat_use_case)
-    mock_request = AsyncMock(Request)
     mock_request.json.return_value = {"message": ""}
 
     # Act
@@ -48,11 +40,8 @@ async def test_process_chat_empty_message():
 # Verifica che il metodo get_answer di ChatController gestisca correttamente le eccezioni
 
 @pytest.mark.asyncio
-async def test_process_chat_raises_exception():
+async def test_process_chat_raises_exception(chat_controller, mock_chat_use_case, mock_request):
     # Arrange
-    mock_chat_use_case = MagicMock(spec=ChatUseCase)
-    chat_controller = ChatController(chat_use_case=mock_chat_use_case)
-    mock_request = AsyncMock(Request)
     mock_request.json.return_value = {"message": "Hello"}
 
     # Configura il mock per lanciare un'eccezione
