@@ -3,7 +3,7 @@ from beartype.typing import Optional, Tuple
 
 from entities.loggingEntities import PostgresLoadingAttempt
 from entities.postgresSaveOperationResponse import PostgresSaveOperationResponse
-from entities.postgresMessage import PostgresMessage
+from entities.postgresMessage import PostgresMessage, PostgresMessageSender
 from entities.postgresLastLoadOutcome import PostgresLastLoadOutcome
 from utils.logger import logger
 from utils.beartype_personalized import beartype_personalized
@@ -123,7 +123,7 @@ class PostgresRepository:
 
             logger.info("Messages retrieved successfully from the Postgres database.")
 
-            return [PostgresMessage(content=message[0], timestamp=message[1], sender=message[2]) for message in messages]
+            return [PostgresMessage(content=message[0], timestamp=message[1], sender=PostgresMessageSender(message[2])) for message in messages]
 
         except Exception as e:
             message = f"An error occurred while retrieving the messages from the Postgres database: {e}"
