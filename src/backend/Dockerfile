@@ -39,8 +39,8 @@ WORKDIR ${WORKDIR}
 COPY ${SRC_DIRECTORY} ${WORKDIR}
 
 # Installa dipendenze e supervisord
-RUN apt-get update && apt-get install -y cron supervisor && \
-    pip install -r $REQUIREMENTS_PATH
+RUN apt-get update && apt-get install -y cron supervisor 
+RUN --mount=type=cache,target=/root/.cache/pip pip install -r $REQUIREMENTS_PATH
 
 # Copia le variabili necessarie nel .env (altrimenti lo script chiamato dal cronjob non le vede)
 RUN echo "" >> ${DOTENV_PATH} && \
