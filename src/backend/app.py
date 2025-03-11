@@ -8,13 +8,6 @@ from dto.lastLoadOutcomeDTO import LastLoadOutcomeDTO
 from utils.dependency_injection import dependency_injection_frontend
 from utils.logger import logger
 
-##################
-from fastapi.exceptions import RequestValidationError
-from fastapi import Request
-from starlette.responses import JSONResponse
-
-#################
-
 
 # Inizializzazione dell'app FastAPI
 app = FastAPI(
@@ -33,33 +26,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Inizializzazione dei controller necessari per la gestione delle richieste
 frontend_dependencies = dependency_injection_frontend()
+
 chat_controller = frontend_dependencies["chat_controller"]
 get_last_load_outcome_controller = frontend_dependencies["get_last_load_outcome_controller"]
 save_message_controller = frontend_dependencies["save_message_controller"]
 get_messages_controller = frontend_dependencies["get_messages_controller"]
 get_next_possible_questions_controller = frontend_dependencies["get_next_possible_questions_controller"]
 
-#####################
-
-@app.exception_handler(RequestValidationError)
-async def validation_exception_handler(request: Request, exc: RequestValidationError):
-    """
-    log per pydantic
-    """
-    logger.error(f"Validation error for request {request.url}: {exc.errors()}")
-    print("Validation error details:", exc.errors())
-    
-    return JSONResponse(
-        status_code=422,
-        content={
-            "status": "error",
-            "message": str(exc),
-            "details": exc.errors()
-        },
-    )
-
-######################
 
 @app.post("/api/chat", summary="Send a messagge to the chatbot", response_model=Dict[str, str])
 async def chat(request: Request) -> Dict[str, str] | JSONResponse:
