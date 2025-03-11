@@ -11,6 +11,10 @@
     .icon.not-updated {
       color: #e74c3c;
     }
+
+    .icon.updated, .icon.not-updated {
+      margin-bottom: 0.2rem;
+    }
   
     &:hover {
       opacity: 0.8;
