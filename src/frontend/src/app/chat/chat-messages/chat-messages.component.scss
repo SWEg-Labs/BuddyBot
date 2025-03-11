@@ -104,6 +104,9 @@
 :host ::ng-deep .copy-snippet-icon.snippet-copied:before {
   content: '\2713';
   margin-right: 5px;
+}
+
+:host ::ng-deep .copy-snippet-icon.snippet-copied {
   animation: checkAnimation 0.5s;
 }
 
