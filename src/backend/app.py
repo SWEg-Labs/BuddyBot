@@ -26,7 +26,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+# Inizializzazione dei controller necessari per la gestione delle richieste
 frontend_dependencies = dependency_injection_frontend()
+
 chat_controller = frontend_dependencies["chat_controller"]
 get_last_load_outcome_controller = frontend_dependencies["get_last_load_outcome_controller"]
 save_message_controller = frontend_dependencies["save_message_controller"]
