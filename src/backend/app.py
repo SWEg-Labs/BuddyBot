@@ -26,6 +26,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 # Inizializzazione dei controller necessari per la gestione delle richieste
 frontend_dependencies = dependency_injection_frontend()
 
