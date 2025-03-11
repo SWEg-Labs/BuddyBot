@@ -31,7 +31,7 @@ class MessageDTO(BaseModel):
         if not isinstance(other, MessageDTO):
             return False
         return (
-            self.__content == other.get_content() and 
+            self.__content == other.get_content() and
             self.__timestamp == other.get_timestamp() and
             self.__sender == other.get_sender()
         )

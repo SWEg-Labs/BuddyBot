@@ -109,9 +109,9 @@ export class ChatContainerComponent implements OnInit {
         console.error('Errore nel salvataggio del messaggio utente:', err);
       },
     });
-    
+
     this.isLoading = true;
-  
+
     this.chatService.sendMessage(text).subscribe({
       next: (res) => {
         const rawFormatted = this.formatResponse(res.response);
@@ -133,7 +133,7 @@ export class ChatContainerComponent implements OnInit {
             console.error('Errore nel salvataggio del messaggio bot:', err);
           },
         });
-  
+
         this.isLoading = false;
         this.messagesComponent.scrollToBottom();
       },
