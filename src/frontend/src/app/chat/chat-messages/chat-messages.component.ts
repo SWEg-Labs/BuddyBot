@@ -56,11 +56,16 @@ export class ChatMessagesComponent implements AfterViewInit {
     const text = msg.sanitizedContent || msg.content
     const stringText = String(text)
     const textWithLineBreaks = stringText.replace(/<br\s*\/?>/gi, '\n')
-    const sanitizedText = this.stripHtml(textWithLineBreaks)
+    const sanitizedText = this.stripHtml(textWithLineBreaks);
+    let plainText = sanitizedText;
+    while (plainText.includes('content_copy')) {
+      plainText = plainText.replace('content_copy', '');
+    }
+    plainText = plainText
       .replace('SafeValue must use [property]=binding: ', '')
       .replace(' (see https://g.co/ng/security#xss)', '')
       .replace(/\s{10,}/g, '\n\n\n')
-    navigator.clipboard.writeText(sanitizedText).then(() => {
+    navigator.clipboard.writeText(plainText).then(() => {
       msg.copied = true
       setTimeout(() => (msg.copied = false), 1000)
     })
