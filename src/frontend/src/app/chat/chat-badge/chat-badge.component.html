@@ -1,10 +1,16 @@
 <div class="chat-badge">
-  <ng-container *ngIf="isUpdated; else notUp">
-    <span class="icon updated">✔︎</span>
-    <span class="label">Aggiornato</span>
+  <ng-container [ngSwitch]="lastLoadOutcome">
+    <ng-container *ngSwitchCase="LastLoadOutcome.TRUE">
+      <span class="icon updated">✔︎</span>
+      <span class="label">Aggiornato</span>
+    </ng-container>
+    <ng-container *ngSwitchCase="LastLoadOutcome.FALSE">
+      <span class="icon not-updated">⚠</span>
+      <span class="label">Da aggiornare</span>
+    </ng-container>
+    <ng-container *ngSwitchCase="LastLoadOutcome.ERROR">
+      <span class="icon not-updated">!</span>
+      <span class="label">Errore</span>
+    </ng-container>
   </ng-container>
-  <ng-template #notUp>
-    <span class="icon not-updated">⚠</span>
-    <span class="label">Da aggiornare</span>
-  </ng-template>
 </div>

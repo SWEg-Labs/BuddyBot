@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChatService } from '../chat.service';
+import { LastLoadOutcome } from '../../models/badge.model';
 
 @Component({
   standalone: true,
@@ -10,18 +11,24 @@ import { ChatService } from '../chat.service';
   imports: [CommonModule],
 })
 export class ChatBadgeComponent implements OnInit {
-  isUpdated = true;
+  lastLoadOutcome: LastLoadOutcome = LastLoadOutcome.TRUE
+  public LastLoadOutcome = LastLoadOutcome
 
   constructor(private chatService: ChatService) {}
 
   ngOnInit(): void {
-    this.chatService.lastLoadOutcome$.subscribe((outcome: boolean | null) => {
-      console.log(outcome);
-      if (outcome) {
-        this.isUpdated = outcome;
-      } else {
-        this.isUpdated = false;
+    this.chatService.lastLoadOutcome$.subscribe({
+      next: (outcome: LastLoadOutcome) => {
+        this.lastLoadOutcome = outcome
       }
-    });
+    })
+  }
+
+  onToggleStatus(): void {
+    this.chatService.checkFileUpdates()
+  }
+
+  get isUpdated(): boolean {
+    return this.lastLoadOutcome === LastLoadOutcome.TRUE
   }
 }

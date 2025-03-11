@@ -3,6 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
+import { LastLoadOutcome } from '../models/badge.model';
+
+
 
 @Injectable({
   providedIn: 'root', 
@@ -15,8 +18,8 @@ export class ChatService {
 
   private lastMessageTimestamp: number = Date.now();
 
-  private lastLoadOutcomeSubject = new BehaviorSubject<boolean | null>(null);
-  public lastLoadOutcome$ = this.lastLoadOutcomeSubject.asObservable();
+  private lastLoadOutcomeSubject = new BehaviorSubject<LastLoadOutcome>(LastLoadOutcome.TRUE);
+  public lastLoadOutcome$ = this.lastLoadOutcomeSubject.asObservable();  
 
 
   constructor(private http: HttpClient) {}
@@ -64,13 +67,19 @@ export class ChatService {
     this.http.post<boolean>(`${this.apiBaseUrl}/api/get_last_load_outcome`, {})
       .subscribe({
         next: (data) => {
-          this.lastLoadOutcomeSubject.next(data);
-          console.log("lastOutcome: ", data);
+          if (data === true) {
+            this.lastLoadOutcomeSubject.next(LastLoadOutcome.TRUE);
+          } else if (data === false) {
+            this.lastLoadOutcomeSubject.next(LastLoadOutcome.FALSE);
+          } else {
+            this.lastLoadOutcomeSubject.next(LastLoadOutcome.ERROR);
+          }
         },
         error: (err) => {
           console.error('Errore nel recupero di get_last_load_outcome:', err);
-          this.lastLoadOutcomeSubject.next(false);
+          this.lastLoadOutcomeSubject.next(LastLoadOutcome.ERROR);
         }
       });
   }
+
 }

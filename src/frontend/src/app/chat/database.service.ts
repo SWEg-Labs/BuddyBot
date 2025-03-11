@@ -1,17 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { tap, catchError } from 'rxjs/operators';
-import { throwError } from 'rxjs';
-
-/**
- * Struttura del modello di messaggio
- */
-export interface DbMessageModel {
-  content: string;
-  sender: string;
-  timestamp: Date;
-}
+import { Observable, map } from 'rxjs';
+import { Message, MessageSender } from '../models/message.model';
 
 @Injectable({
   providedIn: 'root',
@@ -21,44 +11,29 @@ export class DatabaseService {
 
   constructor(private http: HttpClient) {}
 
-  /**
-   * Recupera un certo numero di messaggi dal DB.
-   */
-  getMessages(quantity: number): Observable<DbMessageModel[]> {
-    console.log('Richiesta getMessages, payload =', { quantity });
-    
+  getMessages(quantity: number): Observable<Message[]> {
     return this.http
-      .post<DbMessageModel[]>(`${this.baseUrl}/api/get_messages`, { quantity })
+      .post<any[]>(`${this.baseUrl}/api/get_messages`, { quantity })
       .pipe(
-        tap((response) => {
-          console.log('Risposta da getMessages:', response);
-        }),
-        catchError((error) => {
-          console.error('Errore da getMessages:', error);
-          return throwError(() => error);
+        map((responseArray: any[]) => {
+          return responseArray.map(obj => {
+            const dateObj = new Date(obj.timestamp)
+            const senderEnum = obj.sender === 'User' ? MessageSender.USER : MessageSender.CHATBOT
+            return new Message(obj.content, dateObj, senderEnum)
+          })
         })
-      );
+      )
   }
 
-  /**
-   * Salva un messaggio nel DB.
-   */
-  saveMessage(message: DbMessageModel): Observable<{ status: boolean | string }> {
-    console.log('Richiesta saveMessage, payload =', message);
-    
-    return this.http
-      .post<{ status: boolean | string }>(
-        `${this.baseUrl}/api/save_message`,
-        message
-      )
-      .pipe(
-        tap((resp) => {
-          console.log('Risposta da saveMessage:', resp);
-        }),
-        catchError((error) => {
-          console.error('Errore da saveMessage:', error);
-          return throwError(() => error);
-        })
-      );
+  saveMessage(msg: Message): Observable<{ status: boolean | string }> {
+    const payload = {
+      content: msg.content,
+      sender: msg.sender,
+      timestamp: msg.timestamp,
+    }
+    return this.http.post<{ status: boolean | string }>(
+      `${this.baseUrl}/api/save_message`,
+      payload
+    )
   }
 }
