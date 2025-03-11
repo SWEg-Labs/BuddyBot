@@ -12,6 +12,7 @@ import { ChatService } from '../chat.service';
 export class ChatSuggestionsComponent implements OnChanges {
   @Input() question: string = '';
   @Input() answer: string = '';
+  @Input() hideSuggestions: boolean = false;
   @Output() suggestionClicked = new EventEmitter<string>();
 
   continuationSuggestions: string[] = [];
@@ -20,8 +21,15 @@ export class ChatSuggestionsComponent implements OnChanges {
   constructor(private chatService: ChatService) {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    if ((changes['question'] || changes['answer']) && this.canLoadSuggestions()) {
+    if (
+      (changes['question'] || changes['answer']) &&
+      this.canLoadSuggestions() &&
+      !this.hideSuggestions
+    ) {
       this.getContinuationSuggestions();
+    } else if (this.hideSuggestions) {
+      this.continuationSuggestions = [];
+      this.loadError = false;
     }
   }
 
@@ -38,6 +46,7 @@ export class ChatSuggestionsComponent implements OnChanges {
     this.chatService.getContinuationSuggestions(payload).subscribe({
       next: (res) => {
         this.continuationSuggestions = Object.values(res);
+        this.loadError = false;
       },
       error: (err) => {
         console.error('Errore nel caricamento delle suggestions', err);

@@ -11,10 +11,12 @@
 
   <!-- SUGGERIMENTI -->
   <app-chat-suggestions
-    [question]="lastUserQuestion"
-    [answer]="lastBotAnswer"
-    (suggestionClicked)="onSuggestionClicked($event)"
-  ></app-chat-suggestions>
+  [question]="lastUserQuestion"
+  [answer]="lastBotAnswer"
+  [hideSuggestions]="hideSuggestions"
+  (suggestionClicked)="onSuggestionClicked($event)"
+></app-chat-suggestions>
+
 
   <!-- INPUT -->
   <app-chat-input

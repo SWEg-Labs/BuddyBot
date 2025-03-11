@@ -27,13 +27,14 @@ import { DatabaseService } from '../database.service';
   ]
 })
 export class ChatContainerComponent implements OnInit {
-  messages: Message[] = []
-  isLoading = false
-  showScrollToBottom = false
-  lastUserQuestion = ''
-  lastBotAnswer = ''
+  messages: Message[] = [];
+  isLoading = false;
+  showScrollToBottom = false;
+  lastUserQuestion = '';
+  lastBotAnswer = '';
+  hideSuggestions = false;
 
-  @ViewChild(ChatMessagesComponent) messagesComponent!: ChatMessagesComponent
+  @ViewChild(ChatMessagesComponent) messagesComponent!: ChatMessagesComponent;
 
   constructor(
     private readonly chatService: ChatService,
@@ -42,109 +43,115 @@ export class ChatContainerComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadOldMessages(50)
-    this.chatService.loadLastLoadOutcome()
+    this.loadOldMessages(50);
+    this.chatService.loadLastLoadOutcome();
   }
 
   loadOldMessages(quantity: number) {
     this.databaseService.getMessages(quantity).subscribe({
       next: (serverMessages: Message[]) => {
-        serverMessages.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
-        this.messages = serverMessages.map(m => {
-          const rawFormatted = this.formatResponse(m.content)
-          m.sanitizedContent = this.sanitizer.bypassSecurityTrustHtml(rawFormatted)
-          m.copied = false
-          return m
-        })
+        serverMessages.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+        this.messages = serverMessages.map((m) => {
+          const rawFormatted = this.formatResponse(m.content);
+          m.sanitizedContent = this.sanitizer.bypassSecurityTrustHtml(rawFormatted);
+          m.copied = false;
+          return m;
+        });
         setTimeout(() => {
-          this.scrollToBottom()
-        }, 0)
+          this.scrollToBottom();
+        }, 0);
       },
-      error: err => {
-        console.error('Errore nel caricamento dei messaggi dal DB:', err)
+      error: (err) => {
+        console.error('Errore nel caricamento dei messaggi dal DB:', err);
       }
-    })
+    });
   }
 
   onScrollChange(isScrolledUp: boolean): void {
-    this.showScrollToBottom = isScrolledUp
+    this.showScrollToBottom = isScrolledUp;
   }
 
   onSendMessage(text: string) {
-    const trimmed = text.trim()
-    if (!trimmed) return
+    const trimmed = text.trim();
+    if (!trimmed) return;
 
-    const userMsg = new Message(trimmed, new Date(), MessageSender.USER)
-    this.messages.push(userMsg)
-    this.lastUserQuestion = trimmed
-    this.isLoading = true
-    this.databaseService.saveMessage(userMsg).subscribe()
+    this.hideSuggestions = true;
+    this.lastUserQuestion = '';
+    this.lastBotAnswer = '';
+
+    const userMsg = new Message(trimmed, new Date(), MessageSender.USER);
+    this.messages.push(userMsg);
+    this.lastUserQuestion = trimmed;
+    this.isLoading = true;
+
+    this.databaseService.saveMessage(userMsg).subscribe();
 
     setTimeout(() => {
-      this.scrollToBottom()
-    }, 0)
+      this.scrollToBottom();
+    }, 0);
 
     this.chatService.sendMessage(trimmed).subscribe({
-      next: res => {
-        const botMsg = new Message(res.response, new Date(), MessageSender.CHATBOT)
-        const rawFormatted = this.formatResponse(botMsg.content)
-        botMsg.sanitizedContent = this.sanitizer.bypassSecurityTrustHtml(rawFormatted)
-        botMsg.copied = false
-        this.messages.push(botMsg)
-        this.lastBotAnswer = res.response
-        this.databaseService.saveMessage(botMsg).subscribe()
-        this.isLoading = false
-        setTimeout(() => {
-          this.scrollToBottom()
-        }, 0)
-      },
-      error: () => {
-        const errorMsg = new Message('C’è stato un errore!', new Date(), MessageSender.CHATBOT)
-        this.messages.push(errorMsg)
-        this.databaseService.saveMessage(errorMsg).subscribe()
-        this.isLoading = false
+      next: (res) => {
+        const botMsg = new Message(res.response, new Date(), MessageSender.CHATBOT);
+        const rawFormatted = this.formatResponse(botMsg.content);
+        botMsg.sanitizedContent = this.sanitizer.bypassSecurityTrustHtml(rawFormatted);
+        botMsg.copied = false;
+        this.messages.push(botMsg);
+        this.lastBotAnswer = res.response;
+        this.databaseService.saveMessage(botMsg).subscribe();
+        this.isLoading = false;
+        this.lastUserQuestion = trimmed;
+        this.lastBotAnswer = res.response;
+        this.hideSuggestions = false;
 
         setTimeout(() => {
-          this.scrollToBottom()
-        }, 0)
+          this.scrollToBottom();
+        }, 0);
+      },
+      error: () => {
+        const errorMsg = new Message('C’è stato un errore!', new Date(), MessageSender.CHATBOT);
+        this.messages.push(errorMsg);
+        this.databaseService.saveMessage(errorMsg).subscribe();
+        this.isLoading = false;
+        setTimeout(() => {
+          this.scrollToBottom();
+        }, 0);
       }
-    })
+    });
   }
 
   onSuggestionClicked(suggestion: string) {
-    this.onSendMessage(suggestion)
+    this.onSendMessage(suggestion);
   }
 
   formatResponse(response: string): string {
-    const codeRegex = /```(\w+)?([\s\S]*?)```/g
+    const codeRegex = /```(\w+)?([\s\S]*?)```/g;
     let formatted = response.replace(codeRegex, (match, maybeLang, codeBlock) => {
-      const trimmed = codeBlock.replace(/^\n+|\n+$/g, '')
-      const escapedCode = trimmed
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
+      const trimmed = codeBlock.replace(/^\n+|\n+$/g, '');
+      const escapedCode = trimmed.replace(/</g, '&lt;').replace(/>/g, '&gt;');
       return `
         <div class="code-container">
           <mat-icon title="Copia il codice" class="mat-icon notranslate material-icons mat-ligature-font mat-icon-no-color copy-snippet-icon" aria-hidden="true" data-mat-icon-type="font">content_copy</mat-icon>
           <pre class="snippet-content">${escapedCode}</pre>
-        </div>`
-    })
+        </div>`;
+    });
     formatted = formatted
       .replace(/^### (.+)$/gm, '<h3>$1</h3>')
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>')
-      .replace(/\n/g, '<br>')
+      .replace(/\n/g, '<br>');
 
-    const linkBlockRegex = /(Link correlati:(?:<br>.*?))(?=<br><br>|$)/gs
-    formatted = formatted.replace(linkBlockRegex, fullMatch => {
-      const clean = fullMatch.replace(/<br>$/, '')
-      return `<div class="related-links-block">${clean}</div>`
-    })
-    return formatted
+    const linkBlockRegex = /(Link correlati:(?:<br>.*?))(?=<br><br>|$)/gs;
+    formatted = formatted.replace(linkBlockRegex, (fullMatch) => {
+      const clean = fullMatch.replace(/<br>$/, '');
+      return `<div class="related-links-block">${clean}</div>`;
+    });
+    return formatted;
   }
 
   scrollToBottom(): void {
     if (this.messagesComponent) {
-      this.messagesComponent.scrollToBottom()
+      this.messagesComponent.scrollToBottom();
     }
   }
 }
