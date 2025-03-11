@@ -1,5 +1,5 @@
 import psycopg2
-from beartype.typing import Optional, Tuple
+from typing import Optional, Tuple
 
 from entities.loggingEntities import PostgresLoadingAttempt
 from entities.postgresSaveOperationResponse import PostgresSaveOperationResponse

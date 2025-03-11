@@ -59,7 +59,6 @@ export class ChatMessagesComponent implements AfterViewChecked, AfterViewInit {
     const textWithLineBreaks = stringText.replace(/<br\s*\/?>/gi, '\n')
     const sanitizedText = this.stripHtml(textWithLineBreaks)
       .replace('SafeValue must use [property]=binding: ', '')
-      .replace('content_copy', '')
       .replace(' (see https://g.co/ng/security#xss)', '')
       .replace(/\s{10,}/g, '\n\n\n')
     navigator.clipboard.writeText(sanitizedText).then(() => {
