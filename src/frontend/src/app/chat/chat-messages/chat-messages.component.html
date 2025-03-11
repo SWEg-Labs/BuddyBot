@@ -15,7 +15,12 @@
       (click)="copyToClipboard(msg)"
       title="Copia l'intero messaggio"
     ></span>
+
     <span class="text" [innerHTML]="msg.sanitizedContent || msg.content"></span>
+
+    <span class="timestamp">
+      {{ msg.timestamp | date:'dd/MM/yyyy HH:mm' }}
+    </span>
   </div>
 
   <div *ngIf="isLoading" class="message bot-message loading-placeholder">

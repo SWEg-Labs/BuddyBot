@@ -1,8 +1,8 @@
 import { SafeHtml } from '@angular/platform-browser';
 
 export enum MessageSender {
-  USER = 'User',
-  CHATBOT = 'Chatbot',
+  USER = 'USER',
+  CHATBOT = 'CHATBOT',
 }
 
 export class Message {

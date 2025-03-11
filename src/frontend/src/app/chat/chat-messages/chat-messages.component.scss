@@ -118,6 +118,14 @@
   user-select: none;
 }
 
+.timestamp {
+  display: block;
+  font-size: 0.65rem;
+  color: #cccccc;
+  margin-top: 4px;
+}
+
+
 .copy-icon.copied {
   animation: checkAnimation 0.5s;
   margin-right: 5px;

@@ -17,8 +17,9 @@ export class DatabaseService {
       .pipe(
         map((responseArray: any[]) => {
           return responseArray.map(obj => {
+            console.log(obj);
             const dateObj = new Date(obj.timestamp)
-            const senderEnum = obj.sender === 'User' ? MessageSender.USER : MessageSender.CHATBOT
+            const senderEnum = obj.sender === 'USER' ? MessageSender.USER : MessageSender.CHATBOT
             return new Message(obj.content, dateObj, senderEnum)
           })
         })

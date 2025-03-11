@@ -67,6 +67,7 @@ export class ChatService {
     this.http.post<boolean>(`${this.apiBaseUrl}/api/get_last_load_outcome`, {})
       .subscribe({
         next: (data) => {
+          console.log(data);
           if (data === true) {
             this.lastLoadOutcomeSubject.next(LastLoadOutcome.TRUE);
           } else if (data === false) {
