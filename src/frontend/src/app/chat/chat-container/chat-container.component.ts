@@ -56,7 +56,9 @@ export class ChatContainerComponent implements OnInit {
           m.copied = false
           return m
         })
-        this.scrollToBottom()
+        setTimeout(() => {
+          this.scrollToBottom()
+        }, 0)
       },
       error: err => {
         console.error('Errore nel caricamento dei messaggi dal DB:', err)
@@ -71,11 +73,17 @@ export class ChatContainerComponent implements OnInit {
   onSendMessage(text: string) {
     const trimmed = text.trim()
     if (!trimmed) return
+
     const userMsg = new Message(trimmed, new Date(), MessageSender.USER)
     this.messages.push(userMsg)
     this.lastUserQuestion = trimmed
     this.isLoading = true
     this.databaseService.saveMessage(userMsg).subscribe()
+
+    setTimeout(() => {
+      this.scrollToBottom()
+    }, 0)
+
     this.chatService.sendMessage(trimmed).subscribe({
       next: res => {
         const botMsg = new Message(res.response, new Date(), MessageSender.CHATBOT)
@@ -86,17 +94,21 @@ export class ChatContainerComponent implements OnInit {
         this.lastBotAnswer = res.response
         this.databaseService.saveMessage(botMsg).subscribe()
         this.isLoading = false
-        this.scrollToBottom()
+        setTimeout(() => {
+          this.scrollToBottom()
+        }, 0)
       },
       error: () => {
         const errorMsg = new Message('C’è stato un errore!', new Date(), MessageSender.CHATBOT)
         this.messages.push(errorMsg)
         this.databaseService.saveMessage(errorMsg).subscribe()
         this.isLoading = false
-        this.scrollToBottom()
+
+        setTimeout(() => {
+          this.scrollToBottom()
+        }, 0)
       }
     })
-    this.scrollToBottom()
   }
 
   onSuggestionClicked(suggestion: string) {
@@ -121,6 +133,7 @@ export class ChatContainerComponent implements OnInit {
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>')
       .replace(/\n/g, '<br>')
+
     const linkBlockRegex = /(Link correlati:(?:<br>.*?))(?=<br><br>|$)/gs
     formatted = formatted.replace(linkBlockRegex, fullMatch => {
       const clean = fullMatch.replace(/<br>$/, '')

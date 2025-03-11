@@ -1,4 +1,4 @@
-import { Component, Input, AfterViewChecked, AfterViewInit, ElementRef, ViewChild, Output, EventEmitter } from '@angular/core';
+import { Component, Input, AfterViewInit, ElementRef, ViewChild, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { Message, MessageSender } from '../../models/message.model';
@@ -11,7 +11,7 @@ import { ChatLoadingIndicatorComponent } from '../chat-loading-indicator/chat-lo
   styleUrls: ['./chat-messages.component.scss'],
   imports: [CommonModule, MatIconModule, ChatLoadingIndicatorComponent],
 })
-export class ChatMessagesComponent implements AfterViewChecked, AfterViewInit {
+export class ChatMessagesComponent implements AfterViewInit {
   @Input() messages: Message[] = []
   @Input() isLoading = false
   @Output() isScrolledUp = new EventEmitter<boolean>()
@@ -21,6 +21,7 @@ export class ChatMessagesComponent implements AfterViewChecked, AfterViewInit {
 
   ngAfterViewInit(): void {
     const el = this.messagesContainer.nativeElement as HTMLElement
+
     el.addEventListener('click', (event: MouseEvent) => {
       const target = event.target as HTMLElement
       if (target.classList.contains('copy-snippet-icon')) {
@@ -35,15 +36,13 @@ export class ChatMessagesComponent implements AfterViewChecked, AfterViewInit {
     })
   }
 
-  ngAfterViewChecked(): void {}
-
   onScroll(): void {
     if (!this.messagesContainer) return
     const el = this.messagesContainer.nativeElement
     const threshold = 50
     const distanceFromBottom = el.scrollHeight - (el.scrollTop + el.clientHeight)
     this.keepScrollBottom = distanceFromBottom < threshold
-    const isAtBottom = el.scrollHeight - el.scrollTop <= el.clientHeight + 10
+    const isAtBottom = distanceFromBottom < 10
     this.isScrolledUp.emit(!isAtBottom)
   }
 
