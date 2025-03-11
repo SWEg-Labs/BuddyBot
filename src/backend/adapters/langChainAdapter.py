@@ -101,10 +101,15 @@ class LangChainAdapter(GenerateAnswerPort, GetNextPossibleQuestionsPort):
             question_content = question_answer_couple.get_question().get_content()
             answer_content = question_answer_couple.get_answer().get_content()
 
+            question_answer_couple = [
+                LangChainDocumentEntity(question_content),
+                LangChainDocumentEntity(answer_content)
+            ]
+
             # Call the repository method to get the next possible questions
             repo_response = self.__langchain_repository.get_next_possible_questions(
-                [question_content, answer_content],
-                header.get_content()
+                question_answer_couple = question_answer_couple,
+                header = header.get_content()
             )
 
             # Parse the repository response to create NextPossibleQuestions object
