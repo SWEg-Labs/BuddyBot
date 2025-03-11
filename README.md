@@ -36,7 +36,7 @@ Il file si trova alla directory ~/.docker/config.json su Linux, C:\Users\<nome_u
 
 Alla prima costruzione del container Docker "compila" la cache con tutti i pacchetti necessari, alle build successive verranno semplicemente installati i pacchetti elencati in requirements.txt già presenti nella cache, riducendo il tempo di build.
 Il comando pip freeze compila il file requirements.txt con tutte le dipendenze contenute nell'ambiente virtuale, quindi è importante installare nell'ambiente virtuale solo i pacchetti necessari per evitare di aumentare inutilmente il tempo di build.
-Di conseguenza se bisogna aggiungere una dipendenza a primary_requirements è sufficiente installarla nell'ambiente virtuale e richiamare pip freeze per aggiungere le nuove dipendenze secondarie a requirements.txt.
+Di conseguenza se bisogna aggiungere una dipendenza a primary_requirements è sufficiente installarla nell'ambiente virtuale e richiamare pip freeze per aggiungere le nuove dipendenze secondarie a requirements.txt. Infatti, pip freeze fa una sovrascrizione completa del file precedente, quindi lo restituisce aggiornato.
 Se una dipendenza di primary_requirements non è più necessaria: 
 - bisogna toglierla dal file primary_requirements.txt, 
 - installare pip-autoremove con 'pip install pip-autoremove'
