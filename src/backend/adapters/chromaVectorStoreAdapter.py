@@ -55,6 +55,8 @@ class ChromaVectorStoreAdapter(SimilaritySearchPort, LoadFilesInVectorStorePort)
             documents (list[Document]): List of documents to be split.
         Returns:
             list[ChromaDocumentEntity]: List of document chunks as ChromaDocumentEntity objects.
+        Raises:
+            ValueError: If a document does not have an 'id' field in its metadata.
         """
         try:
             chroma_documents = []
@@ -64,7 +66,9 @@ class ChromaVectorStoreAdapter(SimilaritySearchPort, LoadFilesInVectorStorePort)
             for document in documents:
                 page_content = document.get_page_content()
                 metadata = document.get_metadata()
-                doc_id = metadata.get("id", "")
+                doc_id = metadata.get("id")
+                if not doc_id:
+                    raise ValueError("Document metadata must contain an 'id' field.")
 
                 # Check for duplicate doc_id values
                 if doc_id in seen_doc_ids:

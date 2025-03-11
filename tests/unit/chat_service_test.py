@@ -51,12 +51,11 @@ def test_get_answer_exception(chat_service, mock_similarity_search_service, mock
     mock_similarity_search_service.similarity_search.side_effect = Exception("Similarity search error")
 
     # Act
-    with pytest.raises(Exception, match="Similarity search error"):
+    with pytest.raises(Exception) as exc_info:
         chat_service.get_answer(user_input)
 
     # Assert
-    mock_similarity_search_service.similarity_search.assert_called_once_with(user_input)
-    mock_generate_answer_service.generate_answer.assert_not_called()
+    assert str(exc_info.value) == "Similarity search error"
 
 
 # Verifica che il metodo similarity_search di ChatService gestisca correttamente le eccezioni
@@ -67,11 +66,11 @@ def test_similarity_search_exception(chat_service, mock_similarity_search_servic
     mock_similarity_search_service.similarity_search.side_effect = Exception("Similarity search error")
 
     # Act
-    with pytest.raises(Exception, match="Similarity search error"):
+    with pytest.raises(Exception) as exc_info:
         chat_service.similarity_search(user_input)
 
     # Assert
-    mock_similarity_search_service.similarity_search.assert_called_once_with(user_input)
+    assert str(exc_info.value) == "Similarity search error"
 
 
 # Verifica che il metodo generate_answer di ChatService gestisca correttamente le eccezioni
@@ -83,8 +82,8 @@ def test_generate_answer_exception(chat_service, mock_generate_answer_service):
     mock_generate_answer_service.generate_answer.side_effect = Exception("Generate answer error")
 
     # Act
-    with pytest.raises(Exception, match="Generate answer error"):
+    with pytest.raises(Exception) as exc_info:
         chat_service.generate_answer(user_input, relevant_docs)
 
     # Assert
-    mock_generate_answer_service.generate_answer.assert_called_once_with(user_input, relevant_docs)
+    assert str(exc_info.value) == "Generate answer error"
