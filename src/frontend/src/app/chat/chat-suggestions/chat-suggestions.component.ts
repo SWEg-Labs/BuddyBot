@@ -18,7 +18,7 @@ export class ChatSuggestionsComponent implements OnChanges {
   continuationSuggestions: string[] = [];
   loadError = false;
 
-  constructor(private chatService: ChatService) {}
+  constructor(private readonly chatService: ChatService) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (

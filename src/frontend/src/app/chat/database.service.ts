@@ -7,9 +7,9 @@ import { Message, MessageSender } from '../models/message.model';
   providedIn: 'root',
 })
 export class DatabaseService {
-  private baseUrl = 'http://localhost:5000';
+  private readonly baseUrl = 'http://localhost:5000';
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   getMessages(quantity: number): Observable<Message[]> {
     return this.http

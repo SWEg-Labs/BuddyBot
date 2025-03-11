@@ -14,7 +14,7 @@ export class ChatBadgeComponent implements OnInit {
   lastLoadOutcome: LastLoadOutcome = LastLoadOutcome.TRUE
   public LastLoadOutcome = LastLoadOutcome
 
-  constructor(private chatService: ChatService) {}
+  constructor(private readonly chatService: ChatService) {}
 
   ngOnInit(): void {
     this.chatService.lastLoadOutcome$.subscribe({

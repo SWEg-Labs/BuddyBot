@@ -15,7 +15,7 @@ export class ChatMessagesComponent implements AfterViewInit {
   @Input() messages: Message[] = []
   @Input() isLoading = false
   @Output() isScrolledUp = new EventEmitter<boolean>()
-  @ViewChild('scrollMe') private messagesContainer!: ElementRef
+  @ViewChild('scrollMe') private readonly messagesContainer!: ElementRef
   messageSender = MessageSender
   private keepScrollBottom = true
 

@@ -11,18 +11,18 @@ import { LastLoadOutcome } from '../models/badge.model';
   providedIn: 'root', 
 })
 export class ChatService {
-  private isUpdatedSubject = new BehaviorSubject<boolean>(true);
+  private readonly isUpdatedSubject = new BehaviorSubject<boolean>(true);
   public isUpdated$ = this.isUpdatedSubject.asObservable();
-  private apiBaseUrl = 'http://localhost:5000';
+  private readonly apiBaseUrl = 'http://localhost:5000';
 
 
   private lastMessageTimestamp: number = Date.now();
 
-  private lastLoadOutcomeSubject = new BehaviorSubject<LastLoadOutcome>(LastLoadOutcome.TRUE);
+  private readonly lastLoadOutcomeSubject = new BehaviorSubject<LastLoadOutcome>(LastLoadOutcome.TRUE);
   public lastLoadOutcome$ = this.lastLoadOutcomeSubject.asObservable();  
 
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   checkFileUpdates(): void {
     this.isUpdatedSubject.next(!this.isUpdatedSubject.value);
