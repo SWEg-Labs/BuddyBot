@@ -167,5 +167,6 @@ package-lock.json
 # Il file txt di log dell'aggiornamento automatico del database vettoriale, che viene creato nelle prove locali
 **/logs_db_update.txt
 
-# Il nuovo ambiente virtuale di Python per la cache di Docker:
+# Nuovi ambienti virtuali di Python per la cache di Docker:
 **/nome_ambiente/
+**/new_venv/
