@@ -64,13 +64,13 @@ export class ChatService {
   }
 
   loadLastLoadOutcome(): void {
-    this.http.post<boolean>(`${this.apiBaseUrl}/api/get_last_load_outcome`, {})
+    this.http.post<string>(`${this.apiBaseUrl}/api/get_last_load_outcome`, {})
       .subscribe({
         next: (data) => {
           console.log(data);
-          if (data === true) {
+          if (data === "True") {
             this.lastLoadOutcomeSubject.next(LastLoadOutcome.TRUE);
-          } else if (data === false) {
+          } else if (data === "False") {
             this.lastLoadOutcomeSubject.next(LastLoadOutcome.FALSE);
           } else {
             this.lastLoadOutcomeSubject.next(LastLoadOutcome.ERROR);

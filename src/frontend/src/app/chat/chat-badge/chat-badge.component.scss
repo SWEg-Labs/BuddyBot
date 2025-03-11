@@ -2,7 +2,6 @@
     display: flex;
     align-items: center;
     gap: 0.3rem;
-    cursor: pointer;
     font-size: 0.9rem;
   
     .icon.updated {
@@ -14,10 +13,6 @@
 
     .icon.updated, .icon.not-updated {
       margin-bottom: 0.2rem;
-    }
-  
-    &:hover {
-      opacity: 0.8;
     }
   }
   
