@@ -39,7 +39,7 @@ export class ChatContainerComponent implements OnInit {
   constructor(
     private readonly chatService: ChatService,
     private readonly sanitizer: DomSanitizer,
-    private databaseService: DatabaseService
+    private readonly databaseService: DatabaseService
   ) {}
 
   ngOnInit(): void {
@@ -175,11 +175,7 @@ export class ChatContainerComponent implements OnInit {
 
       return `
         <div class="code-container">
-          <mat-icon 
-            title="Copia il codice"
-            class="mat-icon copy-snippet-icon">
-            content_copy
-          </mat-icon>
+          <mat-icon _ngcontent-ng-c4071621763 title="Copia il codice" class="mat-icon notranslate material-icons mat-ligature-font mat-icon-no-color copy-snippet-icon" aria-hidden="true" data-mat-icon-type="font">content_copy</mat-icon>
           <pre class="snippet-content">${escapedCode}</pre>
         </div>`;
     });
