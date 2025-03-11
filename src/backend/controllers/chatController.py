@@ -18,11 +18,7 @@ class ChatController:
         Args:
             chat_use_case (ChatUseCase): The use case to process chat interactions.
         """
-        try:
-            self.__chat_use_case = chat_use_case
-        except Exception as e:
-            logger.error(f"Error initializing ChatController: {e}")
-            raise e
+        self.__chat_use_case = chat_use_case
 
     async def get_answer(self, user_input: Request) -> dict[str, str] | JSONResponse:
         """

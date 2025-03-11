@@ -5,7 +5,8 @@ from fastapi.responses import JSONResponse
 
 from use_cases.chatUseCase import ChatUseCase
 from controllers.chatController import ChatController
-from models.question import Question
+
+pytestmark = pytest.mark.asyncio  # Imposta asyncio per tutti i test nel file
 
 
 @pytest.fixture
@@ -23,7 +24,6 @@ def mock_request():
 
 # Verifica che il metodo get_answer di ChatController, in caso di messaggio vuoto, restituisca un messaggio di errore
 
-@pytest.mark.asyncio
 async def test_process_chat_empty_message(chat_controller, mock_request):
     # Arrange
     mock_request.json.return_value = {"message": ""}
@@ -39,7 +39,6 @@ async def test_process_chat_empty_message(chat_controller, mock_request):
 
 # Verifica che il metodo get_answer di ChatController gestisca correttamente le eccezioni
 
-@pytest.mark.asyncio
 async def test_process_chat_raises_exception(chat_controller, mock_chat_use_case, mock_request):
     # Arrange
     mock_request.json.return_value = {"message": "Hello"}
@@ -53,14 +52,3 @@ async def test_process_chat_raises_exception(chat_controller, mock_chat_use_case
 
     # Assert
     assert str(exc_info.value) == "Errore nel recupero della risposta"
-
-
-# Verifica che il costruttore di ChatController gestisca correttamente le eccezioni
-
-#def test_chat_controller_constructor_raises_exception():
-    # Act
-#    with pytest.raises(ValueError) as exc_info:
-#        ChatController(chat_use_case=None)
-
-    # Assert
-#    assert str(exc_info.value) == "chat_use_case cannot be None"
