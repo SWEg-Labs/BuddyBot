@@ -22,15 +22,9 @@ class GetNextPossibleQuestionsService(GetNextPossibleQuestionsUseCase):
         Args:
             header (Header): The header for the service.
             get_next_possible_questions_port (GetNextPossibleQuestionsPort): The port for getting the next possible questions.
-        Raises:
-            Exception: If there is an error during initialization.
         """
-        try:
-            self.__header = header
-            self.__get_next_possible_questions_port = get_next_possible_questions_port
-        except Exception as e:
-            logger.error(f"Error initializing GetNextPossibleQuestionsService: {e}")
-            raise e
+        self.__header = header
+        self.__get_next_possible_questions_port = get_next_possible_questions_port
 
     def get_next_possible_questions(self, question_answer_couple: QuestionAnswerCouple, quantity: Quantity) -> NextPossibleQuestions:
         """

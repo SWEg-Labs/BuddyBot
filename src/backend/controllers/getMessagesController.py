@@ -18,14 +18,8 @@ class GetMessagesController:
         """
         Initialize the GetMessagesController with the provided use case.
             get_messages_use_case (GetMessagesUseCase): The use case instance to retrieve messages.
-        Raises:
-            Exception: If an error occurs during initialization.
         """
-        try:
-            self.__get_messages_use_case = get_messages_use_case
-        except Exception as e:
-            logger.error(f"An error occurred while initializing GetMessagesController: {e}")
-            raise e
+        self.__get_messages_use_case = get_messages_use_case
 
     def get_messages(self, quantity: dict[str, int]) -> List[MessageDTO]:
         """

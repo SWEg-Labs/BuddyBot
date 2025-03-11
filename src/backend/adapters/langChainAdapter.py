@@ -27,12 +27,8 @@ class LangChainAdapter(GenerateAnswerPort, GetNextPossibleQuestionsPort):
             max_num_tokens (int): The maximum number of tokens allowed for the LLM.
             langchain_repository (LangChainRepository): An instance of LangChainRepository used to generate answers.
         """
-        try:
-            self.__max_num_tokens = max_num_tokens
-            self.__langchain_repository = langchain_repository
-        except Exception as e:
-            logger.error(f"An error occurred during initialization: {e}")
-            raise e
+        self.__max_num_tokens = max_num_tokens
+        self.__langchain_repository = langchain_repository
 
     def generate_answer(self, user_input: Question, relevant_docs: list[Document], header: Header) -> Answer:
         """

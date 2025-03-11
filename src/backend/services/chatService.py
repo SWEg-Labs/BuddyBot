@@ -24,15 +24,9 @@ class ChatService(ChatUseCase):
         Args:
             similarity_search_service (SimilaritySearchService): An instance of the SimilaritySearchService.
             generate_answer_service (GenerateAnswerService): An instance of the GenerateAnswerService.
-        Raises:
-            Exception: If an error occurs during initialization.
         """
-        try:
-            self.__similarity_search_service = similarity_search_service
-            self.__generate_answer_service = generate_answer_service
-        except Exception as e:
-            logger.error(f"Error initializing ChatService: {e}")
-            raise e
+        self.__similarity_search_service = similarity_search_service
+        self.__generate_answer_service = generate_answer_service
 
     def get_answer(self, user_input: Question) -> Answer:
         """

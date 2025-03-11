@@ -21,14 +21,8 @@ class GitHubAdapter(GitHubPort):
         Initialize the GitHubAdapter with a GitHubRepository instance.
         Args:
             github_repository (GitHubRepository): An instance of GitHubRepository to interact with GitHub.
-        Raises:
-            Exception: If there is an error during initialization.
         """
-        try:
-            self.__github_repository = github_repository
-        except Exception as e:
-            logger.error(f"Error initializing GitHubAdapter: {e}")
-            raise e
+        self.__github_repository = github_repository
 
     def load_github_commits(self) -> Tuple[PlatformLog, List[Document]]:
         """

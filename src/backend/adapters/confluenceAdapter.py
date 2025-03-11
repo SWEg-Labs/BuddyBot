@@ -20,14 +20,8 @@ class ConfluenceAdapter(ConfluencePort):
         Initializes the ConfluenceAdapter with the given repository.
         Args:
             confluence_repository (ConfluenceRepository): The repository used to interact with Confluence.
-        Raises:
-            Exception: If there is an error initializing the adapter.
         """
-        try:
-            self.__confluence_repository = confluence_repository
-        except Exception as e:
-            logger.error(f"Error initializing ConfluenceAdapter: {e}")
-            raise e
+        self.__confluence_repository = confluence_repository
 
     def load_confluence_pages(self) -> Tuple[PlatformLog, List[Document]]:
         """

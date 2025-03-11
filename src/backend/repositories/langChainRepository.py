@@ -20,14 +20,8 @@ class LangChainRepository:
         Initializes the LangChainRepository with a language model.
         Args:
             llm (ChatOpenAI): An instance of the ChatOpenAI language model.
-        Raises:
-            Exception: If an error occurs during initialization.
         """
-        try:
-            self.__llm = llm
-        except Exception as e:
-            logger.error(f"Error initializing LangChainRepository: {e}")
-            raise e
+        self.__llm = llm
 
     def generate_answer(self, user_input: str, relevant_docs: list[LangChainDocumentEntity], header: str) -> str:
         """

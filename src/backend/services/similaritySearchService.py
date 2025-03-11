@@ -21,12 +21,8 @@ class SimilaritySearchService:
             document_constraints (DocumentConstraints): Constraints to apply during the similarity search.
             similarity_search_port (SimilaritySearchPort): The port used to perform the similarity search.
         """
-        try:
-            self.__document_constraints = document_constraints
-            self.__similarity_search_port = similarity_search_port
-        except Exception as e:
-            logger.error(f"Error initializing SimilaritySearchService: {e}")
-            raise e
+        self.__document_constraints = document_constraints
+        self.__similarity_search_port = similarity_search_port
 
     def similarity_search(self, user_input: Question) -> list[Document]:
         """

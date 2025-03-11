@@ -20,14 +20,8 @@ class GetMessagesService(GetMessagesUseCase):
         Initialize the GetMessagesService with a GetMessagesPort.
         Args:
             get_messages_port (GetMessagesPort): The port to fetch messages.
-        Raises:
-            Exception: If initialization of GetMessagesService fails.
         """
-        try:
-            self.__get_messages_port = get_messages_port
-        except Exception as e:
-            logger.error(f"Failed to initialize GetMessagesService: {e}")
-            raise e
+        self.__get_messages_port = get_messages_port
 
     def get_messages(self, quantity: Quantity) -> List[Message]:
         """

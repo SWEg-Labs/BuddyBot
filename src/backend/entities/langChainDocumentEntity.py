@@ -37,7 +37,7 @@ class LangChainDocumentEntity:
 
     def __repr__(self) -> str:
         return f"Document(page_content={self.__page_content!r}, metadata={self.__metadata!r})"
-    
+
     def __eq__(self, other) -> bool:
         if not isinstance(other, LangChainDocumentEntity):
             return False

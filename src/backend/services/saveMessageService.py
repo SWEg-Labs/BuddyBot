@@ -18,14 +18,8 @@ class SaveMessageService(SaveMessageUseCase):
         Initializes the SaveMessageService with the given SaveMessagePort.
         Args:
             save_message_port (SaveMessagePort): The port used to save messages.
-        Raises:
-            Exception: If there is an error initializing the SaveMessagePort.
         """
-        try:
-            self.__save_message_port = save_message_port
-        except Exception as e:
-            logger.error(f"Failed to initialize SaveMessageService: {e}")
-            raise e
+        self.__save_message_port = save_message_port
 
     def save(self, message: Message) -> DbSaveOperationResponse:
         """

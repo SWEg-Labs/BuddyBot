@@ -17,14 +17,8 @@ class GetLastLoadOutcomeService(GetLastLoadOutcomeUseCase):
         Initializes the GetLastLoadOutcomeService with the provided port.
         Args:
             get_last_load_outcome_port (GetLastLoadOutcomePort): Port to access the last load outcome data.
-        Raises:
-            Exception: If there is an error during initialization.
         """
-        try:
-            self.get_last_load_outcome_port = get_last_load_outcome_port
-        except Exception as e:
-            logger.error(f"Error initializing GetLastLoadOutcomeService: {e}")
-            raise e
+        self.get_last_load_outcome_port = get_last_load_outcome_port
 
     def get_last_load_outcome(self) -> LastLoadOutcome:
         """

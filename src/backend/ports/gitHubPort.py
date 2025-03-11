@@ -25,7 +25,5 @@ class GitHubPort(ABC):
         Load files from the GitHub repository and convert them into documents.
         Returns:
             tuple: A tuple containing the log and a list of Document instances representing the files.
-        Raises:
-            Exception: If there is an error while loading files.
         """
         pass

@@ -24,26 +24,16 @@ class ChromaVectorStoreRepository:
     def __init__(self, collection: chromadb.Collection):
         """ 
         Initializes the ChromaVectorStoreRepository by connecting to the Chroma server and setting up the collection.
-
         Args:
             collection (chromadb.Collection): The collection object to interact with Chroma.
-
-        Raises: 
-            Exception: If an error occurs during initialization. 
         """
-        try:
-            self.__collection = collection
-        except Exception as e:
-            logger.error(f"Error initializing Chroma vector store: {e}")
-            raise e
+        self.__collection = collection
 
     def load(self, documents: list[ChromaDocumentEntity]) -> VectorStoreLog:
         """
         Loads the provided documents into the Chroma vector store.
-
         Args:
             documents (list[ChromaDocumentEntity]): A list of documents to be loaded.
-
         Returns:
             VectorStoreLog: An object containing the log of the operation.
         
@@ -120,13 +110,10 @@ class ChromaVectorStoreRepository:
     def similarity_search(self, query: str) -> QueryResultEntity:
         """ 
         Performs a similarity search in the collection and returns the most relevant documents. 
-        
         Args: 
             query (str): The query text to search for. 
-            
         Returns: 
             QueryResultEntity: An object containing the most relevant documents, their metadata, and distances. 
-            
         Raises: 
             Exception: If an error occurs while performing the similarity search. 
         """

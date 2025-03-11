@@ -29,12 +29,8 @@ class ChromaVectorStoreAdapter(SimilaritySearchPort, LoadFilesInVectorStorePort)
             max_chunk_size (int): Maximum size of each document chunk.
             chroma_vector_store_repository (ChromaVectorStoreRepository): Repository for interacting with the Chroma vector store.
         """
-        try:
-            self.__max_chunk_size = max_chunk_size
-            self.__chroma_vector_store_repository = chroma_vector_store_repository
-        except Exception as e:
-            logger.error(f"Error in initializing ChromaVectorStoreAdapter: {e}")
-            raise e
+        self.__max_chunk_size = max_chunk_size
+        self.__chroma_vector_store_repository = chroma_vector_store_repository
 
     def load(self, documents: list[Document]) -> VectorStoreLog:
         """

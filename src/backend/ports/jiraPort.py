@@ -16,7 +16,5 @@ class JiraPort(ABC):
         Loads Jira issues and adapts them into a list of Document objects.
         Returns:
             Tuple[PlatformLog, List[Document]]: A tuple containing the platform log and a list of adapted documents.
-        Raises:
-            Exception: If an error occurs while loading or adapting Jira issues.
         """
         pass

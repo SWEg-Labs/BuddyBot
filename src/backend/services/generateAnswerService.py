@@ -22,12 +22,8 @@ class GenerateAnswerService:
             header (Header): The header information required for generating answers.
             generate_answer_port (GenerateAnswerPort): The port used to generate answers.
         """
-        try:
-            self.__header = header
-            self.__generate_answer_port = generate_answer_port
-        except Exception as e:
-            logger.error(f"An error occurred during initialization: {e}")
-            raise e
+        self.__header = header
+        self.__generate_answer_port = generate_answer_port
 
     def generate_answer(self, user_input: Question, relevant_docs: list[Document]) -> Answer:
         """

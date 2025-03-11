@@ -22,14 +22,8 @@ class GitHubRepository:
         Initializes the GitHubRepository with a given GitHub repository object.
         Args:
             github_repo (Repository): The GitHub repository object.
-        Raises:
-            Exception: If there is an error initializing the GitHubRepository.
         """
-        try:
-            self.__github_repo = github_repo
-        except Exception as e:
-            logger.error(f"Error initializing GitHubRepository: {e}")
-            raise e
+        self.__github_repo = github_repo
 
     def load_github_commits(self) -> Tuple[PlatformLog, List[CommitEntity]]:
         """

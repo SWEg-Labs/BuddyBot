@@ -20,14 +20,8 @@ class JiraAdapter(JiraPort):
         Initializes the JiraAdapter with a JiraRepository instance.
         Args:
             jira_repository (JiraRepository): The repository instance for Jira operations.
-        Raises:
-            Exception: If an error occurs during initialization.
         """
-        try:
-            self.__jira_repository = jira_repository
-        except Exception as e:
-            logger.error(f"An error occurred while initializing JiraAdapter: {e}")
-            raise e
+        self.__jira_repository = jira_repository
 
     def load_jira_issues(self) -> Tuple[PlatformLog, List[Document]]:
         """

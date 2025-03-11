@@ -21,14 +21,8 @@ class PostgresRepository:
         Initializes the PostgresRepository with the given database connection.
         Args:
             conn (psycopg2.extensions.connection): The connection object to the PostgreSQL database.
-        Raises:
-            psycopg2.Error: If an error occurs while initializing the PostgresRepository.
         '''
-        try:
-            self.__conn = conn
-        except Exception as e:
-            logger.error(f"An error occurred while initializing the PostgresRepository: {e}")
-            raise e
+        self.__conn = conn
 
     def __execute_query(self, query: str, params: Optional[Tuple] = None, fetch_one: bool = False, fetch_all: bool = False) -> tuple | list | None:
         '''

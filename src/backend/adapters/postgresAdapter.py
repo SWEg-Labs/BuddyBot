@@ -32,14 +32,8 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort, SaveMessagePort, GetMessagesPo
         Initialize the PostgresAdapter with a given repository.
         Args:
             repository (PostgresRepository): The repository to interact with.
-        Raises:
-            Exception: If there is an error during initialization.
         """
-        try:
-            self.__repository = repository
-        except Exception as e:
-            logger.error(f"Error initializing PostgresAdapter: {e}")
-            raise e
+        self.__repository = repository
 
     def save_message(self, message: Message) -> DbSaveOperationResponse:
         """

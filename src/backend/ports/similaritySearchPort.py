@@ -13,10 +13,8 @@ class SimilaritySearchPort(ABC):
     def similarity_search(self, user_input: Question) -> list[Document]:
         """
         Perform a similarity search based on the given user input.
-
         Args:
             user_input (Question): The input question for which similar documents are to be searched.
-
         Returns:
             list[Document]: A list of documents that are similar to the user input.
         """

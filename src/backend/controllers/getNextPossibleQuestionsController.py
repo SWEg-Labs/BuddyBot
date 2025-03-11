@@ -22,14 +22,8 @@ class GetNextPossibleQuestionsController:
         Initializes the GetNextPossibleQuestionsController with the provided use case.
         Args:
             get_next_possible_questions_use_case (GetNextPossibleQuestionsUseCase): The use case for getting the next possible questions.
-        Raises:
-            Exception: If there is an error during initialization.
         """
-        try:
-            self.__get_next_possible_questions_use_case = get_next_possible_questions_use_case
-        except Exception as e:
-            logger.error(f"Error initializing GetNextPossibleQuestionsController: {e}")
-            raise e
+        self.__get_next_possible_questions_use_case = get_next_possible_questions_use_case
 
     def get_next_possible_questions(self, question_answer_quantity: Dict[str, Union[str, int]]) -> Dict[str, str]:
         """

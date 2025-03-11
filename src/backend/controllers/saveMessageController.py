@@ -17,14 +17,8 @@ class SaveMessageController:
         Initializes the SaveMessagesController with the given SaveMessageUseCase.
         Args:
             save_message_use_case (SaveMessageUseCase): The use case instance responsible for saving messages.
-        Raises:
-            Exception: If there is an error during initialization.
         """
-        try:
-            self.__save_message_use_case = save_message_use_case
-        except Exception as e:
-            logger.error(f"Failed to initialize SaveMessagesController: {e}")
-            raise e
+        self.__save_message_use_case = save_message_use_case
 
     def save(self, message: MessageDTO) -> dict[str, bool | str]:
         """

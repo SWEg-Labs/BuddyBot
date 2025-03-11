@@ -22,21 +22,16 @@ class ConfluenceRepository:
     def __init__(self, base_url: str, project_key: str, timeout: int, headers: dict[str, str]):
         """
         Initializes the ConfluenceRepository with the given parameters.
-
         Args:
             base_url (str): The base URL of the Confluence instance.
             project_key (str): The key of the Confluence project/space.
             timeout (int): The timeout for API requests.
             headers (dict[str, str]): The headers to include in API requests.
         """
-        try:
-            self.__base_url = base_url
-            self.__project_key = project_key
-            self.__timeout = timeout
-            self.__headers = headers
-        except Exception as e:
-            logger.error(f"Error initializing ConfluenceRepository: {e}")
-            raise e
+        self.__base_url = base_url
+        self.__project_key = project_key
+        self.__timeout = timeout
+        self.__headers = headers
 
     def get_base_url(self) -> str:
         """

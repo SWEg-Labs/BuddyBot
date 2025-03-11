@@ -41,16 +41,12 @@ class LoadFilesService(LoadFilesUseCase):
             save_loading_attempt_in_db_port (SaveLoadingAttemptInDbPort): Port for saving loading attempts in the database.
             confluence_cleaner_service (ConfluenceCleanerService): Service for cleaning Confluence pages.
         """
-        try:
-            self.__github_port = github_port
-            self.__jira_port = jira_port
-            self.__confluence_port = confluence_port
-            self.__confluence_cleaner_service = confluence_cleaner_service
-            self.__load_files_in_vector_store_port = load_files_in_vector_store_port
-            self.__save_loading_attempt_in_db_port = save_loading_attempt_in_db_port
-        except Exception as e:
-            logger.error(f"Error initializing LoadFilesService: {e}")
-            raise e
+        self.__github_port = github_port
+        self.__jira_port = jira_port
+        self.__confluence_port = confluence_port
+        self.__confluence_cleaner_service = confluence_cleaner_service
+        self.__load_files_in_vector_store_port = load_files_in_vector_store_port
+        self.__save_loading_attempt_in_db_port = save_loading_attempt_in_db_port
 
     def load(self):
         """

@@ -27,17 +27,11 @@ class JiraRepository:
             project_key (str): The key of the Jira project.
             timeout (int): The timeout for API requests.
             headers (dict[str, str]): The headers to include in API requests.
-        Raises:
-            Exception: If there is an error during initialization.
         """
-        try:
-            self.__base_url = base_url
-            self.__project_key = project_key
-            self.__timeout = timeout
-            self.__headers = headers
-        except Exception as e:
-            logger.error(f"Error initializing JiraRepository: {e}")
-            raise e
+        self.__base_url = base_url
+        self.__project_key = project_key
+        self.__timeout = timeout
+        self.__headers = headers
 
     def get_base_url(self) -> str:
         return self.__base_url

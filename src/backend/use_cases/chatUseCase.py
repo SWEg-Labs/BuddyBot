@@ -12,10 +12,8 @@ class ChatUseCase(ABC):
     def get_answer(self, user_input: Question) -> Answer:
         """
         Processes the user's input and generates an answer.
-
         Args:
             user_input (Question): The input provided by the user.
-
         Returns:
             Answer: The generated answer.
         """

@@ -16,7 +16,5 @@ class ConfluencePort(ABC):
         Loads Confluence pages and converts them to Document objects.
         Returns:
             Tuple[PlatformLog, List[Document]]: A tuple containing the platform log and a list of Document objects.
-        Raises:
-            Exception: If there is an error loading the Confluence pages.
         """
         pass
