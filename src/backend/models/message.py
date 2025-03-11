@@ -4,8 +4,8 @@ from enum import Enum
 from utils.beartype_personalized import beartype_personalized
 
 class MessageSender(Enum):
-    USER = "User"
-    CHATBOT = "Chatbot"
+    USER = "USER"
+    CHATBOT = "CHATBOT"
 
 @beartype_personalized
 class Message:

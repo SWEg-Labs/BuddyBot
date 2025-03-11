@@ -5,8 +5,8 @@ from pydantic import BaseModel
 from utils.beartype_personalized import beartype_personalized
 
 class MessageSenderDTO(str, Enum):
-    USER = "User"
-    CHATBOT = "Chatbot"
+    USER = "USER"
+    CHATBOT = "CHATBOT"
 
 @beartype_personalized
 class MessageDTO(BaseModel):

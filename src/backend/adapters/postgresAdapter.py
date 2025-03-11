@@ -143,7 +143,7 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort, SaveMessagePort, GetMessagesPo
             return PostgresMessage(
                 content=message.get_content(),
                 timestamp=message.get_timestamp(),
-                sender=PostgresMessageSender(message.get_sender().value)
+                sender=PostgresMessageSender(message.get_sender().name)
             )
         except Exception as e:
             logger.error(f"Error in postgres_message_converter of PostgresAdapter: {e}")
