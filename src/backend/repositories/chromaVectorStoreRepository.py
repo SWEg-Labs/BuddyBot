@@ -134,5 +134,5 @@ class ChromaVectorStoreRepository:
 
             return query_result_entity
         except Exception as e:
-            logger.error(f"Error performing similarity search: {e}")
+            logger.error(f"Error performing similarity search in ChromaVectorStoreRepository: {e}")
             raise e

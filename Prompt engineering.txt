@@ -1075,7 +1075,8 @@ Bastava fare una domanda fatta bene
 
 12 Marzo 2025
 
-Ho scoperto che la funzione query di Chroma per la ricerca di similarità ha un limite superiore nel parametro n_results.
+Ho scoperto che la funzione query di Chroma per la ricerca di similarità ha un limite superiore nel parametro n_results
+per i documenti che può recuperare.
 
 
 Ultimo caricamento:
@@ -1110,18 +1111,21 @@ Test con alcune domande:
 
 515    : NO
 514    : SI'
+500    : SI'
 
 
 3) Quando è stato installato ESLint?
 
 515    : NO
-514    : Si'
+514    : SI'
+500    : SI'
 
 
 4) Com'è fatta la funzione similarity_search?
 
 515    : NO
 514    : SI'
+500    : SI'
 
 
 5) Chi deve scrivere la sezione "Strategie di test" del piano di qualifica?

@@ -45,7 +45,7 @@ class ChromaVectorStoreAdapter(SimilaritySearchPort, LoadFilesInVectorStorePort)
             result = self.__chroma_vector_store_repository.load(chroma_documents)
             return result
         except Exception as e:
-            logger.error(f"Error in adapting documents to load: {e}")
+            logger.error(f"Error in adapting documents to load in Chroma: {e}")
             raise e
 
     def __split(self, documents: list[Document]) -> list[ChromaDocumentEntity]:
@@ -104,7 +104,7 @@ class ChromaVectorStoreAdapter(SimilaritySearchPort, LoadFilesInVectorStorePort)
 
             return chroma_documents
         except Exception as e:
-            logger.error(f"Error in splitting Documents: {e}")
+            logger.error(f"Error in splitting Documents before loading in Chroma: {e}")
             raise e
 
     def similarity_search(self, user_input: Question) -> list[Document]:
