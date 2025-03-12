@@ -1,10 +1,11 @@
 from models.message import Message
 from models.dbSaveOperationResponse import DbSaveOperationResponse
-
 from use_cases.saveMessageUseCase import SaveMessageUseCase
 from ports.saveMessagePort import SaveMessagePort
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class SaveMessageService(SaveMessageUseCase):
     """
     Service class responsible for saving messages.
@@ -17,14 +18,8 @@ class SaveMessageService(SaveMessageUseCase):
         Initializes the SaveMessageService with the given SaveMessagePort.
         Args:
             save_message_port (SaveMessagePort): The port used to save messages.
-        Raises:
-            Exception: If there is an error initializing the SaveMessagePort.
         """
-        try:
-            self.__save_message_port = save_message_port
-        except Exception as e:
-            logger.error(f"Failed to initialize SaveMessageService: {e}")
-            raise e
+        self.__save_message_port = save_message_port
 
     def save(self, message: Message) -> DbSaveOperationResponse:
         """

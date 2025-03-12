@@ -1,4 +1,4 @@
-from typing import Dict, List, Union
+from beartype.typing import Dict, List, Union
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -7,6 +7,7 @@ from dto.messageDTO import MessageDTO
 from dto.lastLoadOutcomeDTO import LastLoadOutcomeDTO
 from utils.dependency_injection import dependency_injection_frontend
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
 
 # Inizializzazione dell'app FastAPI
@@ -37,6 +38,7 @@ get_messages_controller = frontend_dependencies["get_messages_controller"]
 get_next_possible_questions_controller = frontend_dependencies["get_next_possible_questions_controller"]
 
 
+@beartype_personalized
 @app.post("/api/chat", summary="Send a messagge to the chatbot", response_model=Dict[str, str])
 async def chat(request: Request) -> Dict[str, str] | JSONResponse:
     """
@@ -60,6 +62,7 @@ async def chat(request: Request) -> Dict[str, str] | JSONResponse:
         return JSONResponse(content={"status": "error", "message": error_message}, status_code=500)
     
 
+@beartype_personalized
 @app.post("/api/get_next_possible_questions", summary="Get the next possible questions based on the last question and the last answer",
           response_model=Dict[str, str])
 async def get_next_possible_questions(question_answer_quantity: Dict[str, Union[str, int]]) -> Dict[str, str] | JSONResponse:
@@ -80,6 +83,7 @@ async def get_next_possible_questions(question_answer_quantity: Dict[str, Union[
         return JSONResponse(content={"status": "error", "message": error_message}, status_code=500)
 
 
+@beartype_personalized
 @app.post("/api/save_message", summary="Save a message to the Postgres database", response_model=dict[str, bool | str])
 async def save_message(message: MessageDTO) -> dict[str, bool | str] | JSONResponse:
     """
@@ -99,6 +103,7 @@ async def save_message(message: MessageDTO) -> dict[str, bool | str] | JSONRespo
         return JSONResponse(content={"status": "error", "message": error_message}, status_code=500)
 
 
+@beartype_personalized
 @app.post("/api/get_messages", summary="Get messages from the Postgres database", response_model=List[MessageDTO])
 async def get_messages(quantity: dict[str, int]) -> List[MessageDTO] | JSONResponse:
     """
@@ -118,6 +123,7 @@ async def get_messages(quantity: dict[str, int]) -> List[MessageDTO] | JSONRespo
         return JSONResponse(content={"status": "error", "message": error_message}, status_code=500)
 
 
+@beartype_personalized
 @app.post("/api/get_last_load_outcome", summary="Get the last load outcome", response_model=LastLoadOutcomeDTO)
 async def get_last_load_outcome() -> LastLoadOutcomeDTO | JSONResponse:
     """

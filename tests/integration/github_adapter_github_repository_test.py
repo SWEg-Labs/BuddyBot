@@ -28,7 +28,7 @@ def test_load_github_commits_calls_repository_method():
                 metadata={
                     "author": "John Doe",
                     "email": "john.doe@example.com",
-                    "date": "2025-02-28T12:34:56Z",
+                    "date": "2025-02-28 12:34:56",
                     "files": [
                         "- file1.txt (Status: modified, Changes: 10, Additions: 5, Deletions: 5)\n  Patch:\n@@ -1,2 +1,2 @@\n- old line\n+ new line",
                         "- file2.txt (Status: added, Changes: 20, Additions: 20, Deletions: 0)\n  Patch:\n@@ -0,0 +1,20 @@\n+ new content"
@@ -53,7 +53,7 @@ def test_load_github_commits_calls_repository_method():
                 message="Fix bug in feature X",
                 author_name="John Doe",
                 author_email="john.doe@example.com",
-                author_date="2025-02-28T12:34:56Z",
+                author_date=datetime(2025, 2, 28, 12, 34, 56),
                 url="https://github.com/owner/repo/commit/abc123",
                 files=[
                     CommitFileEntity(

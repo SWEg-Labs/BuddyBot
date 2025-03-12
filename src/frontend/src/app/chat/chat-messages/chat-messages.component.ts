@@ -1,9 +1,8 @@
-import { Component, Input, AfterViewChecked, ElementRef, ViewChild, Output, EventEmitter  } from '@angular/core';
+import { Component, Input, AfterViewInit, ElementRef, ViewChild, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
-
-import { IMessage } from '../../models/message.model';
-import { ChatLoadingIndicatorComponent } from '../chat-loadind-indicator/chat-loading-indicator.component';
+import { Message, MessageSender } from '../../models/message.model';
+import { ChatLoadingIndicatorComponent } from '../chat-loading-indicator/chat-loading-indicator.component';
 
 @Component({
   standalone: true,
@@ -12,35 +11,78 @@ import { ChatLoadingIndicatorComponent } from '../chat-loadind-indicator/chat-lo
   styleUrls: ['./chat-messages.component.scss'],
   imports: [CommonModule, MatIconModule, ChatLoadingIndicatorComponent],
 })
-export class ChatMessagesComponent implements AfterViewChecked {
-  @Input() messages: IMessage[] = [];
-  @Input() isLoading = false;
+export class ChatMessagesComponent implements AfterViewInit {
+  @Input() messages: Message[] = []
+  @Input() isLoading = false
+  @Output() isScrolledUp = new EventEmitter<boolean>()
+  @ViewChild('scrollMe') private readonly messagesContainer!: ElementRef
+  messageSender = MessageSender
+  private keepScrollBottom = true
 
-  @ViewChild('scrollMe') private readonly messagesContainer!: ElementRef;
+  ngAfterViewInit(): void {
+    const el = this.messagesContainer.nativeElement as HTMLElement
 
-  @Output() isScrolledUp = new EventEmitter<boolean>();
-
-  ngAfterViewChecked(): void {
-    this.scrollToBottom();
-  }  
-
-  public scrollToBottom(): void {
-    console.log('Scroll to bottom triggered');
-    if (this.messagesContainer) {
-      const element = this.messagesContainer.nativeElement;
-      element.scrollTop = element.scrollHeight;
-    } else {
-      console.error('messagesContainer is not defined');
-    }
+    el.addEventListener('click', (event: MouseEvent) => {
+      const target = event.target as HTMLElement
+      if (target.classList.contains('copy-snippet-icon')) {
+        const preElement = target
+          .closest('.code-container')
+          ?.querySelector<HTMLElement>('.snippet-content')
+        if (preElement) {
+          const codeToCopy = preElement.innerText
+          this.copySnippet(codeToCopy, target)
+        }
+      }
+    })
   }
-  
-  
-  
 
   onScroll(): void {
-    const element = this.messagesContainer.nativeElement;
-    const isAtBottom = element.scrollHeight - element.scrollTop <= element.clientHeight + 10;
-    this.isScrolledUp.emit(!isAtBottom);
+    if (!this.messagesContainer) return
+    const el = this.messagesContainer.nativeElement
+    const threshold = 50
+    const distanceFromBottom = el.scrollHeight - (el.scrollTop + el.clientHeight)
+    this.keepScrollBottom = distanceFromBottom < threshold
+    const isAtBottom = distanceFromBottom < 10
+    this.isScrolledUp.emit(!isAtBottom)
   }
-  
+
+  scrollToBottom(): void {
+    if (!this.messagesContainer) return
+    const el = this.messagesContainer.nativeElement
+    el.scrollTop = el.scrollHeight
   }
+
+  copyToClipboard(msg: Message): void {
+    const text = msg.sanitizedContent || msg.content
+    const stringText = String(text)
+    const textWithLineBreaks = stringText.replace(/<br\s*\/?>/gi, '\n')
+    const sanitizedText = this.stripHtml(textWithLineBreaks);
+    let plainText = sanitizedText;
+    while (plainText.includes('content_copy')) {
+      plainText = plainText.replace('content_copy', '');
+    }
+    plainText = plainText
+      .replace('SafeValue must use [property]=binding: ', '')
+      .replace(' (see https://g.co/ng/security#xss)', '')
+      .replace(/\s{10,}/g, '\n\n\n')
+    navigator.clipboard.writeText(plainText).then(() => {
+      msg.copied = true
+      setTimeout(() => (msg.copied = false), 1000)
+    })
+  }
+
+  private copySnippet(code: string, iconElement: HTMLElement): void {
+    navigator.clipboard.writeText(code).then(() => {
+      iconElement.classList.add('snippet-copied')
+      setTimeout(() => {
+        iconElement.classList.remove('snippet-copied')
+      }, 1000)
+    })
+  }
+
+  private stripHtml(html: string): string {
+    const tempDiv = document.createElement('div')
+    tempDiv.innerHTML = html
+    return tempDiv.textContent || tempDiv.innerText || ''
+  }
+}

@@ -1,4 +1,4 @@
-from typing import Dict, Union
+from beartype.typing import Dict, Union
 
 from models.question import Question
 from models.answer import Answer
@@ -7,7 +7,9 @@ from models.questionAnswerCouple import QuestionAnswerCouple
 from models.nextPossibleQuestions import NextPossibleQuestions
 from use_cases.getNextPossibleQuestionsUseCase import GetNextPossibleQuestionsUseCase
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class GetNextPossibleQuestionsController:
     """
     Controller for handling the retrieval of the next possible questions based on the provided question-answer-quantity data.
@@ -20,14 +22,8 @@ class GetNextPossibleQuestionsController:
         Initializes the GetNextPossibleQuestionsController with the provided use case.
         Args:
             get_next_possible_questions_use_case (GetNextPossibleQuestionsUseCase): The use case for getting the next possible questions.
-        Raises:
-            Exception: If there is an error during initialization.
         """
-        try:
-            self.__get_next_possible_questions_use_case = get_next_possible_questions_use_case
-        except Exception as e:
-            logger.error(f"Error initializing GetNextPossibleQuestionsController: {e}")
-            raise e
+        self.__get_next_possible_questions_use_case = get_next_possible_questions_use_case
 
     def get_next_possible_questions(self, question_answer_quantity: Dict[str, Union[str, int]]) -> Dict[str, str]:
         """
@@ -52,6 +48,11 @@ class GetNextPossibleQuestionsController:
                 f"question {i + 1}": possible_question.get_content()
                 for i, possible_question in enumerate(possible_questions)
             }
+
+            message = "Next possible questions retrieved successfully: " + ", ".join(
+                [f"{key}: {value}" for key, value in next_possible_questions_dict.items()]
+            )
+            logger.info(message)
 
             return next_possible_questions_dict
         except Exception as e:

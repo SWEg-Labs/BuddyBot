@@ -6,17 +6,17 @@ from entities.chromaDocumentEntity import ChromaDocumentEntity
 from entities.queryResultEntity import QueryResultEntity
 from utils.logger import logger
 from datetime import datetime
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class ChromaVectorStoreRepository:
     """
     A repository class for interacting with the Chroma vector store.
     This class provides methods to initialize the connection, load documents, and perform similarity searches.
-
     Attributes:
         client (chromadb.HttpClient): The client to connect to the Chroma server.
         collection_name (str): The name of the collection in the Chroma.
         collection (chromadb.Collection): The collection object to interact with the Chroma.
-
     Raises:
         Exception: If an error occurs during initialization or while interacting with the vector store.
     """
@@ -24,26 +24,16 @@ class ChromaVectorStoreRepository:
     def __init__(self, collection: chromadb.Collection):
         """ 
         Initializes the ChromaVectorStoreRepository by connecting to the Chroma server and setting up the collection.
-
         Args:
             collection (chromadb.Collection): The collection object to interact with Chroma.
-
-        Raises: 
-            Exception: If an error occurs during initialization. 
         """
-        try:
-            self.__collection = collection
-        except Exception as e:
-            logger.error(f"Error initializing Chroma vector store: {e}")
-            raise e
+        self.__collection = collection
 
     def load(self, documents: list[ChromaDocumentEntity]) -> VectorStoreLog:
         """
         Loads the provided documents into the Chroma vector store.
-
         Args:
             documents (list[ChromaDocumentEntity]): A list of documents to be loaded.
-
         Returns:
             VectorStoreLog: An object containing the log of the operation.
         
@@ -120,13 +110,10 @@ class ChromaVectorStoreRepository:
     def similarity_search(self, query: str) -> QueryResultEntity:
         """ 
         Performs a similarity search in the collection and returns the most relevant documents. 
-        
         Args: 
             query (str): The query text to search for. 
-            
         Returns: 
             QueryResultEntity: An object containing the most relevant documents, their metadata, and distances. 
-            
         Raises: 
             Exception: If an error occurs while performing the similarity search. 
         """
@@ -134,7 +121,7 @@ class ChromaVectorStoreRepository:
             # Esegui una ricerca di similarità
             query_result = self.__collection.query(
                 query_texts=[query],
-                n_results=10000,
+                n_results=500,
             )
 
             query_result_entity = QueryResultEntity(
@@ -147,5 +134,5 @@ class ChromaVectorStoreRepository:
 
             return query_result_entity
         except Exception as e:
-            logger.error(f"Error performing similarity search: {e}")
+            logger.error(f"Error performing similarity search in ChromaVectorStoreRepository: {e}")
             raise e

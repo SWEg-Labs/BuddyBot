@@ -1,4 +1,4 @@
-from typing import List
+from beartype.typing import List
 
 from models.dbSaveOperationResponse import DbSaveOperationResponse
 from models.loggingModels import LoadingAttempt
@@ -15,7 +15,9 @@ from ports.getMessagesPort import GetMessagesPort
 from ports.getLastLoadOutcomePort import GetLastLoadOutcomePort
 from repositories.postgresRepository import PostgresRepository
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class PostgresAdapter(SaveLoadingAttemptInDbPort, SaveMessagePort, GetMessagesPort, GetLastLoadOutcomePort):
     """
     Adapter class for interacting with a PostgreSQL repository.
@@ -30,14 +32,8 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort, SaveMessagePort, GetMessagesPo
         Initialize the PostgresAdapter with a given repository.
         Args:
             repository (PostgresRepository): The repository to interact with.
-        Raises:
-            Exception: If there is an error during initialization.
         """
-        try:
-            self.__repository = repository
-        except Exception as e:
-            logger.error(f"Error initializing PostgresAdapter: {e}")
-            raise e
+        self.__repository = repository
 
     def save_message(self, message: Message) -> DbSaveOperationResponse:
         """
@@ -122,6 +118,9 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort, SaveMessagePort, GetMessagesPo
             Exception: If there is an error during the conversion.
         """
         try:
+            if not psor.get_message():
+                raise ValueError("The message is empty.")
+
             return DbSaveOperationResponse(success=psor.get_success(), message=psor.get_message())
         except Exception as e:
             logger.error(f"Error in dsor_converter of PostgresAdapter: {e}")
@@ -138,10 +137,13 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort, SaveMessagePort, GetMessagesPo
             Exception: If there is an error during the conversion.
         """
         try:
+            if not message.get_content():
+                raise ValueError("The content is empty.")
+
             return PostgresMessage(
                 content=message.get_content(),
                 timestamp=message.get_timestamp(),
-                sender=PostgresMessageSender(message.get_sender().value)
+                sender=PostgresMessageSender(message.get_sender().name)
             )
         except Exception as e:
             logger.error(f"Error in postgres_message_converter of PostgresAdapter: {e}")
@@ -158,6 +160,9 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort, SaveMessagePort, GetMessagesPo
             Exception: If there is an error during the conversion.
         """
         try:
+            if not postgres_message.get_content():
+                raise ValueError("The content is empty.")
+
             return Message(
                 content=postgres_message.get_content(),
                 timestamp=postgres_message.get_timestamp(),
@@ -178,6 +183,9 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort, SaveMessagePort, GetMessagesPo
             Exception: If there is an error during the conversion.
         """
         try:
+            if not loading_attempt.get_platform_logs():
+                raise ValueError("The platform logs are empty.")
+
             postgres_platform_logs = [
                 PostgresPlatformLog(
                     postgres_loading_items=PostgresLoadingItems[log.get_loading_items().name],
@@ -208,11 +216,5 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort, SaveMessagePort, GetMessagesPo
             pllo (PostgresLastLoadOutcome): The outcome from the PostgreSQL repository.
         Returns:
             LastLoadOutcome: The converted outcome.
-        Raises:
-            Exception: If there is an error during the conversion.
         """
-        try:
-            return LastLoadOutcome[pllo.name]
-        except Exception as e:
-            logger.error(f"Error in last_load_outcome_converter of PostgresAdapter: {e}")
-            raise e
+        return LastLoadOutcome[pllo.name]

@@ -1,12 +1,13 @@
-from langchain.chains.combine_documents import create_stuff_documents_chain
 from models.question import Question
 from models.answer import Answer
 from models.document import Document
+from use_cases.chatUseCase import ChatUseCase
 from services.similaritySearchService import SimilaritySearchService
 from services.generateAnswerService import GenerateAnswerService
-from use_cases.chatUseCase import ChatUseCase
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class ChatService(ChatUseCase):
     """
     A service class that processes user input and generates a response using a language model.
@@ -16,23 +17,16 @@ class ChatService(ChatUseCase):
     Raises:
         Exception: If an error occurs during initialization.
     """
+
     def __init__(self, similarity_search_service: SimilaritySearchService, generate_answer_service: GenerateAnswerService):
         """
-        Initializes the ChatService with a language model and a vector store repository.
-
+        Initializes the ChatService with the required services.
         Args:
-            similarity_search_service (ChromaVectorStoreRepository): An instance of the ChromaVectorStoreRepository.
+            similarity_search_service (SimilaritySearchService): An instance of the SimilaritySearchService.
             generate_answer_service (GenerateAnswerService): An instance of the GenerateAnswerService.
-
-        Raises:
-            Exception: If an error occurs during initialization.
         """
-        try:
-            self.__similarity_search_service = similarity_search_service
-            self.__generate_answer_service = generate_answer_service
-        except Exception as e:
-            logger.error(f"Error initializing ChatService: {e}")
-            raise e
+        self.__similarity_search_service = similarity_search_service
+        self.__generate_answer_service = generate_answer_service
 
     def get_answer(self, user_input: Question) -> Answer:
         """

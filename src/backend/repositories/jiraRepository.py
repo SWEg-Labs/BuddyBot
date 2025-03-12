@@ -1,12 +1,14 @@
 import requests
 from datetime import datetime
 import pytz
-from typing import List, Tuple
+from beartype.typing import List, Tuple
 
 from models.loggingModels import PlatformLog, LoadingItems
 from entities.issueEntity import IssueEntity
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class JiraRepository:
     """
     A repository class for interacting with Jira API to fetch issues.
@@ -25,17 +27,11 @@ class JiraRepository:
             project_key (str): The key of the Jira project.
             timeout (int): The timeout for API requests.
             headers (dict[str, str]): The headers to include in API requests.
-        Raises:
-            Exception: If there is an error during initialization.
         """
-        try:
-            self.__base_url = base_url
-            self.__project_key = project_key
-            self.__timeout = timeout
-            self.__headers = headers
-        except Exception as e:
-            logger.error(f"Error initializing JiraRepository: {e}")
-            raise e
+        self.__base_url = base_url
+        self.__project_key = project_key
+        self.__timeout = timeout
+        self.__headers = headers
 
     def get_base_url(self) -> str:
         return self.__base_url

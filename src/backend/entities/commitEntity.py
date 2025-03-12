@@ -1,5 +1,10 @@
+from datetime import datetime
+
+from utils.beartype_personalized import beartype_personalized
+
+@beartype_personalized
 class CommitFileEntity:
-    def __init__(self, filename: str, status: str, changes: int, additions: int, deletions: int, patch: str):
+    def __init__(self, filename: str, status: str, changes: int, additions: int, deletions: int, patch: str | None):
         """
         Inizializza un nuovo oggetto CommitFileEntity, basato su un file coinvolto in un commit di GitHub.
 
@@ -9,7 +14,7 @@ class CommitFileEntity:
             changes (int): Il numero totale di modifiche nel file.
             additions (int): Il numero di righe aggiunte.
             deletions (int): Il numero di righe rimosse.
-            patch (str): La patch del file (le modifiche apportate).
+            patch (str | None): La patch del file (le modifiche apportate) oppure None se non disponibile.
         """
         self.__filename = filename
         self.__status = status
@@ -33,7 +38,7 @@ class CommitFileEntity:
     def get_deletions(self) -> int:
         return self.__deletions
 
-    def get_patch(self) -> str:
+    def get_patch(self) -> str | None:
         return self.__patch
 
     def __repr__(self):
@@ -50,8 +55,9 @@ class CommitFileEntity:
             self.get_patch() == other.get_patch())
 
 
+@beartype_personalized
 class CommitEntity:
-    def __init__(self, sha: str, message: str, author_name: str, author_email: str, author_date: str, url: str, files: list[CommitFileEntity]):
+    def __init__(self, sha: str, message: str, author_name: str, author_email: str, author_date: datetime, url: str, files: list[CommitFileEntity]):
         """
         Inizializza un nuovo oggetto CommitEntity, basato su un commit di GitHub.
 
@@ -60,7 +66,7 @@ class CommitEntity:
             message (str): Il messaggio del commit.
             author_name (str): Il nome dell'autore del commit.
             author_email (str): L'email dell'autore del commit.
-            author_date (str): La data del commit.
+            author_date (datetime): La data del commit.
             url (str): L'URL HTML del commit su GitHub.
             files (list[CommitFileEntity]): Una lista di oggetti CommitFileEntity che rappresentano i file modificati nel commit.
         """
@@ -84,7 +90,7 @@ class CommitEntity:
     def get_author_email(self) -> str:
         return self.__author_email
 
-    def get_author_date(self) -> str:
+    def get_author_date(self) -> datetime:
         return self.__author_date
 
     def get_url(self) -> str:

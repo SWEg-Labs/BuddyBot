@@ -12,3 +12,4 @@ pytest-cov
 freezegun
 psycopg2
 pytz
+beartype

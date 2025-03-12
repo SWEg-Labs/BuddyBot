@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List
+from beartype.typing import List
 
 from models.message import Message
 from models.quantity import Quantity
@@ -18,4 +18,3 @@ class GetMessagesPort(ABC):
         Returns:
             List[Message]: A list of retrieved messages.
         """
-        pass

@@ -1,13 +1,15 @@
 from github.Repository import Repository
 from datetime import datetime
 import pytz
-from typing import Tuple, List
+from beartype.typing import Tuple, List
 
 from models.loggingModels import PlatformLog, LoadingItems
 from entities.commitEntity import CommitEntity, CommitFileEntity
 from entities.fileEntity import FileEntity
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class GitHubRepository:
     """
     A repository class to interact with a GitHub repository using the provided GitHub API.
@@ -20,14 +22,8 @@ class GitHubRepository:
         Initializes the GitHubRepository with a given GitHub repository object.
         Args:
             github_repo (Repository): The GitHub repository object.
-        Raises:
-            Exception: If there is an error initializing the GitHubRepository.
         """
-        try:
-            self.__github_repo = github_repo
-        except Exception as e:
-            logger.error(f"Error initializing GitHubRepository: {e}")
-            raise e
+        self.__github_repo = github_repo
 
     def load_github_commits(self) -> Tuple[PlatformLog, List[CommitEntity]]:
         """

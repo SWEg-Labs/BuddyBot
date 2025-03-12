@@ -1,10 +1,13 @@
 from enum import Enum
 from datetime import datetime
 
-class PostgresMessageSender(Enum):
-    USER = "User"
-    CHATBOT = "Chatbot"
+from utils.beartype_personalized import beartype_personalized
 
+class PostgresMessageSender(Enum):
+    USER = "USER"
+    CHATBOT = "CHATBOT"
+
+@beartype_personalized
 class PostgresMessage:
     def __init__(self, content: str, timestamp: datetime, sender: PostgresMessageSender):
         self.__content = content
@@ -13,10 +16,10 @@ class PostgresMessage:
 
     def get_content(self) -> str:
         return self.__content
-    
+
     def get_timestamp(self) -> datetime:
         return self.__timestamp
-    
+
     def get_sender(self) -> PostgresMessageSender:
         return self.__sender
 

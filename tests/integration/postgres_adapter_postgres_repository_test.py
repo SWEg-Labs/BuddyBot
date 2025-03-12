@@ -22,7 +22,7 @@ def test_save_message_calls_repository_method():
     postgres_adapter = PostgresAdapter(mock_postgres_repository)
 
     content = "test message"
-    timestamp = "2021-10-10T10:10:10"
+    timestamp = datetime(2021, 10, 10, 10, 10, 10)
     message = Message(content, timestamp, MessageSender.USER)
     postgres_message = PostgresMessage(content, timestamp, PostgresMessageSender.USER)
 
@@ -46,12 +46,12 @@ def test_get_messages_calls_repository_method():
 
     quantity = 5
     expected_response = [
-        Message(content=f"Message {i}", timestamp=f"2021-10-10T10:10:0{i}",
+        Message(content=f"Message {i}", timestamp=datetime(2021, 10, 10, 10, 10, i),
                 sender=MessageSender.USER if i%2==0 else MessageSender.CHATBOT) for i in range(quantity)
     ]
 
     postgres_messages = [
-        PostgresMessage(content=f"Message {i}", timestamp=f"2021-10-10T10:10:0{i}",
+        PostgresMessage(content=f"Message {i}", timestamp=datetime(2021, 10, 10, 10, 10, i),
                         sender=PostgresMessageSender.USER if i%2==0 else PostgresMessageSender.CHATBOT) for i in range(quantity)
     ]
     mock_postgres_repository.get_messages.return_value = postgres_messages

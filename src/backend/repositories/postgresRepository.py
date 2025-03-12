@@ -1,12 +1,14 @@
 import psycopg2
-from typing import Optional, Tuple
+from beartype.typing import Optional, Tuple
 
 from entities.loggingEntities import PostgresLoadingAttempt
 from entities.postgresSaveOperationResponse import PostgresSaveOperationResponse
-from entities.postgresMessage import PostgresMessage
+from entities.postgresMessage import PostgresMessage, PostgresMessageSender
 from entities.postgresLastLoadOutcome import PostgresLastLoadOutcome
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class PostgresRepository:
     '''
     A repository class for interacting with a PostgreSQL database.
@@ -19,18 +21,11 @@ class PostgresRepository:
         Initializes the PostgresRepository with the given database connection.
         Args:
             conn (psycopg2.extensions.connection): The connection object to the PostgreSQL database.
-        Raises:
-            psycopg2.Error: If an error occurs while initializing the PostgresRepository.
         '''
-        try:
-            self.__conn = conn
-        except Exception as e:
-            logger.error(f"An error occurred while initializing the PostgresRepository: {e}")
-            raise e
+        self.__conn = conn
 
     def __execute_query(self, query: str, params: Optional[Tuple] = None, fetch_one: bool = False, fetch_all: bool = False) -> tuple | list | None:
         '''
-        Initializes the PostgresRepository with the given database connection parameters.
         Executes a given SQL query with optional parameters and fetch options.
         Args:
             query (str): The SQL query to be executed.
@@ -65,21 +60,11 @@ class PostgresRepository:
             psycopg2.Error: If an error occurs while saving the message in the PostgreSQL database.
         '''
         try:
-            create_messages_table_query = """
-            CREATE TABLE IF NOT EXISTS messages (
-                id SERIAL PRIMARY KEY,
-                content TEXT,
-                timestamp TIMESTAMP,
-                sender VARCHAR(50)
-            );
-            """
+            # Template
             insert_message_query = """
             INSERT INTO messages (content, timestamp, sender)
             VALUES (%s, %s, %s);
             """
-
-            # Create table
-            self.__execute_query(create_messages_table_query)
 
             # Insert message
             params = (message.get_content(), message.get_timestamp(), message.get_sender().value)
@@ -121,7 +106,7 @@ class PostgresRepository:
 
             logger.info("Messages retrieved successfully from the Postgres database.")
 
-            return [PostgresMessage(content=message[0], timestamp=message[1], sender=message[2]) for message in messages]
+            return [PostgresMessage(content=message[0], timestamp=message[1], sender=PostgresMessageSender(message[2])) for message in messages]
 
         except Exception as e:
             message = f"An error occurred while retrieving the messages from the Postgres database: {e}"
@@ -139,34 +124,7 @@ class PostgresRepository:
             psycopg2.Error: If an error occurs while saving the loading attempt in the PostgreSQL database.
         '''
         try:
-            create_loading_attempts_table_query = """
-            CREATE TABLE IF NOT EXISTS loading_attempts (
-                id SERIAL PRIMARY KEY,
-                starting_timestamp TIMESTAMP,
-                ending_timestamp TIMESTAMP,
-                outcome BOOLEAN
-            );
-            """
-            create_platform_logs_table_query = """
-            CREATE TABLE IF NOT EXISTS platform_logs (
-                id SERIAL PRIMARY KEY,
-                loading_attempt_id INTEGER REFERENCES loading_attempts(id),
-                loading_item VARCHAR(50),
-                timestamp TIMESTAMP,
-                outcome BOOLEAN
-            );
-            """
-            create_vector_store_logs_table_query = """
-            CREATE TABLE IF NOT EXISTS vector_store_logs (
-                id SERIAL PRIMARY KEY,
-                loading_attempt_id INTEGER REFERENCES loading_attempts(id),
-                timestamp TIMESTAMP,
-                outcome BOOLEAN,
-                num_added_items INTEGER,
-                num_modified_items INTEGER,
-                num_deleted_items INTEGER
-            );
-            """
+            # Templates
             insert_loading_attempt_query = """
             INSERT INTO loading_attempts (starting_timestamp, ending_timestamp, outcome)
             VALUES (%s, %s, %s)
@@ -180,11 +138,6 @@ class PostgresRepository:
             INSERT INTO vector_store_logs (loading_attempt_id, timestamp, outcome, num_added_items, num_modified_items, num_deleted_items)
             VALUES (%s, %s, %s, %s, %s, %s);
             """
-
-            # Create tables
-            self.__execute_query(create_loading_attempts_table_query)
-            self.__execute_query(create_platform_logs_table_query)
-            self.__execute_query(create_vector_store_logs_table_query)
 
             # Insert loading attempt
             params = (
@@ -225,7 +178,7 @@ class PostgresRepository:
         except Exception as e:
             logger.error(f"An error occurred while saving the loading attempt in the Postgres database: {e}")
             raise e
-        
+
     def get_last_load_outcome(self) -> PostgresLastLoadOutcome:
         '''
         Retrieves the outcome of the most recent loading attempt from the PostgreSQL database.

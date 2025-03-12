@@ -1,3 +1,6 @@
+from utils.beartype_personalized import beartype_personalized
+
+@beartype_personalized
 class PossibleQuestion:
     def __init__(self, content: str):
         self.__content = content

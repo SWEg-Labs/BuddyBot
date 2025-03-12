@@ -1,17 +1,28 @@
-<div #scrollMe class="messages">
+<div #scrollMe class="messages" (scroll)="onScroll()">
   <div
-    *ngFor="let msg of messages"
     class="message"
+    *ngFor="let msg of messages"
     [ngClass]="{
-      'user-message': msg.sender === 'Utente',
-      'bot-message': msg.sender === 'Bot'
+      'user-message': msg.sender === messageSender.USER,
+      'bot-message': msg.sender === messageSender.CHATBOT
     }"
   >
-    <span class="sender">{{ msg.sender }}:</span>
-    <span class="text" [innerHTML]="msg.text"></span>
+    <span
+      *ngIf="msg.sender === messageSender.CHATBOT"
+      class="copy-icon"
+      [ngClass]="{ 'copied': msg.copied }"
+      [innerHTML]="msg.copied ? '✔' : '📋'"
+      (click)="copyToClipboard(msg)"
+      title="Copia l'intero messaggio"
+    ></span>
+
+    <span class="text" [innerHTML]="msg.sanitizedContent || msg.content"></span>
+
+    <span class="timestamp">
+      {{ msg.timestamp | date:'dd/MM/yyyy HH:mm' }}
+    </span>
   </div>
 
-  <!-- Placeholder per il caricamento -->
   <div *ngIf="isLoading" class="message bot-message loading-placeholder">
     <app-chat-loading-indicator></app-chat-loading-indicator>
     <span class="text"></span>

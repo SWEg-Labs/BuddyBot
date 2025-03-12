@@ -10,13 +10,16 @@ from ports.generateAnswerPort import GenerateAnswerPort
 from ports.getNextPossibleQuestionsPort import GetNextPossibleQuestionsPort
 from repositories.langChainRepository import LangChainRepository
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class LangChainAdapter(GenerateAnswerPort, GetNextPossibleQuestionsPort):
     """
     Adapter class for integrating with the LangChainRepository. This class is responsible for
     adapting the input parameters to the format expected by the LangChainRepository and 
     generating answers based on user input and relevant documents.
     """
+
     def __init__(self, max_num_tokens: int, langchain_repository: LangChainRepository):
         """
         Initialize the LangChainAdapter with a LangChainRepository instance.
@@ -24,12 +27,8 @@ class LangChainAdapter(GenerateAnswerPort, GetNextPossibleQuestionsPort):
             max_num_tokens (int): The maximum number of tokens allowed for the LLM.
             langchain_repository (LangChainRepository): An instance of LangChainRepository used to generate answers.
         """
-        try:
-            self.__max_num_tokens = max_num_tokens
-            self.__langchain_repository = langchain_repository
-        except Exception as e:
-            logger.error(f"An error occurred during initialization: {e}")
-            raise e
+        self.__max_num_tokens = max_num_tokens
+        self.__langchain_repository = langchain_repository
 
     def generate_answer(self, user_input: Question, relevant_docs: list[Document], header: Header) -> Answer:
         """
@@ -43,7 +42,6 @@ class LangChainAdapter(GenerateAnswerPort, GetNextPossibleQuestionsPort):
         Raises:
             Exception: If an error occurs during answer generation
         """
-
         try:
             # Adapt the parameters to the format expected by LangChainRepository
             user_input = user_input.get_content()
@@ -100,20 +98,36 @@ class LangChainAdapter(GenerateAnswerPort, GetNextPossibleQuestionsPort):
             # Extract content from question and answer
             question_content = question_answer_couple.get_question().get_content()
             answer_content = question_answer_couple.get_answer().get_content()
-            
+
+            question_answer_couple = [
+                LangChainDocumentEntity(question_content),
+                LangChainDocumentEntity(answer_content)
+            ]
+
             # Call the repository method to get the next possible questions
             repo_response = self.__langchain_repository.get_next_possible_questions(
-                [question_content, answer_content],
-                header.get_content()
+                question_answer_couple = question_answer_couple,
+                header = header.get_content()
             )
-            
+
             # Parse the repository response to create NextPossibleQuestions object
             questions = repo_response.split("___")
             questions = [q.strip() for q in questions if q.strip()]
-            
+
             possible_questions = [PossibleQuestion(q) for q in questions]
             next_possible_questions = NextPossibleQuestions(num_questions=len(possible_questions), possible_questions=possible_questions)
-            
+
+            # Create a formatted message for logging
+            message = (
+                f"Next Possible Questions:\n"
+                f"Header: {header.get_content()}\n"
+                f"Number of Questions: {next_possible_questions.get_num_questions()}\n"
+                f"Questions:\n" + "\n".join([f"- {pq.get_content()}" for pq in next_possible_questions.get_possible_questions()])
+            )
+
+            # Log the message
+            logger.info(message)
+
             return next_possible_questions
         except Exception as e:
             logger.error(f"An error occured in get_next_possible_questions of LangChainAdapter: {e}")

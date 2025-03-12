@@ -1,3 +1,6 @@
+from utils.beartype_personalized import beartype_personalized
+
+@beartype_personalized
 class Quantity:
     def __init__(self, value: int):
         self.__value = value

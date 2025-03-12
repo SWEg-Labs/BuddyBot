@@ -1,4 +1,5 @@
 from unittest.mock import MagicMock
+from datetime import datetime
 
 from models.message import Message, MessageSender
 from models.quantity import Quantity
@@ -15,7 +16,7 @@ def test_get_messages_calls_port_method():
 
     quantity = 5
     quantity_object = Quantity(quantity)
-    expected_result = [Message(content=f"Message {i}", timestamp=f"2021-10-10T10:10:0{i}",
+    expected_result = [Message(content=f"Message {i}", timestamp=datetime(2021, 10, 10, 10, 10, i),
                                sender=MessageSender.USER) for i in range(quantity)]
     mock_get_messages_port.get_messages.return_value = expected_result
 
