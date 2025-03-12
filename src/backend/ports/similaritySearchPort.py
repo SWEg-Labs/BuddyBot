@@ -18,4 +18,3 @@ class SimilaritySearchPort(ABC):
         Returns:
             list[Document]: A list of documents that are similar to the user input.
         """
-        pass

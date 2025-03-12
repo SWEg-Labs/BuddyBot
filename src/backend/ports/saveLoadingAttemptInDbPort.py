@@ -22,4 +22,3 @@ class SaveLoadingAttemptInDbPort(ABC):
         Returns:
             DbSaveOperationResponse: The response from the save operation.
         """
-        pass

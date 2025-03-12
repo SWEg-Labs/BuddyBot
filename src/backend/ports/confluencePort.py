@@ -17,4 +17,3 @@ class ConfluencePort(ABC):
         Returns:
             Tuple[PlatformLog, List[Document]]: A tuple containing the platform log and a list of Document objects.
         """
-        pass

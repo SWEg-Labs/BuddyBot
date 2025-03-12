@@ -12,4 +12,3 @@ class LoadFilesUseCase(ABC):
         Abstract method to load files from various platforms to a vector store.
         This method should be implemented by subclasses to define the specific loading logic.
         """
-        pass

@@ -29,4 +29,3 @@ class GenerateAnswerPort(ABC):
             Answer
                 The generated answer based on the provided inputs.
         """
-        pass

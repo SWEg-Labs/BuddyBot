@@ -17,5 +17,3 @@ class ChatUseCase(ABC):
         Returns:
             Answer: The generated answer.
         """
-        pass
-

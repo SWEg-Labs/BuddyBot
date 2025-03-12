@@ -14,4 +14,3 @@ class GetLastLoadOutcomeUseCase(ABC):
         Returns:
             LastLoadOutcome: The last load outcome.
         """
-        pass

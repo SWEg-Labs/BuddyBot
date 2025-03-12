@@ -18,4 +18,3 @@ class GetMessagesPort(ABC):
         Returns:
             List[Message]: A list of retrieved messages.
         """
-        pass

@@ -14,4 +14,3 @@ class GetLastLoadOutcomePort(ABC):
         Returns:
             LastLoadOutcome: The last load outcome.
         """
-        pass

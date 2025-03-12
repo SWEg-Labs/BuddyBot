@@ -17,7 +17,6 @@ class GitHubPort(ABC):
         Returns:
             tuple: A tuple containing the log and a list of Document instances representing the commits.
         """
-        pass
 
     @abstractmethod
     def load_github_files(self) -> Tuple[PlatformLog, List[Document]]:
@@ -26,4 +25,3 @@ class GitHubPort(ABC):
         Returns:
             tuple: A tuple containing the log and a list of Document instances representing the files.
         """
-        pass

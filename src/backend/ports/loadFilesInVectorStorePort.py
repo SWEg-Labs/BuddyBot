@@ -19,4 +19,3 @@ class LoadFilesInVectorStorePort(ABC):
         Returns:
             VectorStoreLog: An instance of VectorStoreLog containing information about the load operation.
         """
-        pass

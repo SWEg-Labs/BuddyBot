@@ -19,4 +19,3 @@ class GetNextPossibleQuestionsUseCase(ABC):
         Returns:
             NextPossibleQuestions: The next possible questions.
         """
-        pass
