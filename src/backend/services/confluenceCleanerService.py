@@ -40,9 +40,12 @@ class ConfluenceCleanerService:
         Returns:
             Document: The Document with HTML tags removed from its content.
         Raises:
-            Exception: If an error occurs during the removal of HTML tags.
+            ValueError: If the content of the Document is empty.
         """
         try:
+            if not document.get_page_content():
+                raise ValueError("Document content is empty")
+
             document.set_page_content(re.sub(r'<[^>]+>', ' ', document.get_page_content()))
             return document
         except Exception as e:
@@ -57,9 +60,12 @@ class ConfluenceCleanerService:
         Returns:
             Document: The Document with HTML entities replaced by their corresponding characters.
         Raises:
-            Exception: If an error occurs during the replacement of HTML entities.
+            ValueError: If the content of the Document is empty.
         """
         try:
+            if not document.get_page_content():
+                raise ValueError("Document content is empty")
+
             replacements = {
                 '&agrave;': 'à',
                 '&egrave;': 'è',

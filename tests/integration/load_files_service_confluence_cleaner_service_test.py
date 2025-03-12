@@ -1,4 +1,5 @@
 from unittest.mock import MagicMock
+
 from models.document import Document
 from services.loadFilesService import LoadFilesService
 from services.confluenceCleanerService import ConfluenceCleanerService

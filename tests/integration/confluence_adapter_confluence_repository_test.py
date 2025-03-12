@@ -1,5 +1,6 @@
 from unittest.mock import MagicMock
 from datetime import datetime, timedelta
+
 from models.document import Document
 from models.loggingModels import PlatformLog, LoadingItems
 from adapters.confluenceAdapter import ConfluenceAdapter
