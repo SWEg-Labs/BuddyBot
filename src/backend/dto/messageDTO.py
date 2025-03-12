@@ -4,17 +4,13 @@ from pydantic import BaseModel
 
 from utils.beartype_personalized import beartype_personalized
 
-class MessageSenderDTO(str, Enum):
-    USER = "USER"
-    CHATBOT = "CHATBOT"
-
 @beartype_personalized
 class MessageDTO(BaseModel):
     content: str
-    timestamp: datetime
-    sender: MessageSenderDTO
+    timestamp: str
+    sender: str
 
-    def __init__(self, content: str, timestamp: datetime, sender: MessageSenderDTO):
+    def __init__(self, content: str, timestamp: str, sender: str):
         super().__init__(content=content, timestamp=timestamp, sender=sender)
         self.__content = content
         self.__timestamp = timestamp
@@ -23,10 +19,10 @@ class MessageDTO(BaseModel):
     def get_content(self) -> str:
         return self.__content
 
-    def get_timestamp(self) -> datetime:
+    def get_timestamp(self) -> str:
         return self.__timestamp
 
-    def get_sender(self) -> MessageSenderDTO:
+    def get_sender(self) -> str:
         return self.__sender
 
     def __eq__(self, other)-> bool:

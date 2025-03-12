@@ -1,6 +1,6 @@
 from beartype.typing import List
 
-from dto.messageDTO import MessageDTO, MessageSenderDTO
+from dto.messageDTO import MessageDTO
 from models.quantity import Quantity
 from use_cases.getMessagesUseCase import GetMessagesUseCase
 from utils.logger import logger
@@ -41,8 +41,9 @@ class GetMessagesController:
 
             return_list = []
             for message in message_list:
-                return_list.append(MessageDTO(content=message.get_content(), timestamp=message.get_timestamp(),
-                                                    sender=MessageSenderDTO(message.get_sender().name)))
+                timestamp_str = message.get_timestamp().strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
+                sender_str = message.get_sender().name
+                return_list.append(MessageDTO(content=message.get_content(), timestamp=timestamp_str, sender=sender_str))
             return return_list
         except Exception as e:
             logger.error(f"An error occurred while retrieving messages: {e}")

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from dto.messageDTO import MessageDTO
 from models.message import Message, MessageSender
 from use_cases.saveMessageUseCase import SaveMessageUseCase
@@ -31,10 +33,23 @@ class SaveMessageController:
             Exception: If there is an error during the save operation.
         """
         try:
+            sender_str = message.get_sender()
+            if sender_str == 'USER':
+                sender = MessageSender.USER
+            elif sender_str == 'CHATBOT':
+                sender = MessageSender.CHATBOT
+            else:
+                raise ValueError(f"Invalid sender: {sender_str}")
+
+            try:
+                timestamp = datetime.strptime(message.get_timestamp(), '%Y-%m-%dT%H:%M:%S.%fZ')
+            except ValueError as ve:
+                raise ValueError(f"Invalid timestamp format: {message.get_timestamp()}") from ve
+
             message = Message(
                 content=message.get_content(),
-                timestamp=message.get_timestamp(),
-                sender=MessageSender[message.get_sender()]
+                timestamp=timestamp,
+                sender=sender
             )
             db_save_operation_response = self.__save_message_use_case.save(message)
             result = {"success": db_save_operation_response.get_success(), "message": db_save_operation_response.get_message()}
