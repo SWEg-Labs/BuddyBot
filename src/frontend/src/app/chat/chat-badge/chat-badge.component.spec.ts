@@ -1,97 +1,139 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ChatBadgeComponent } from './chat-badge.component';
 import { ChatService } from '../chat.service';
-import { of } from 'rxjs';
+import { DatabaseService } from '../database.service';
+import { LastLoadOutcome } from '../../models/badge.model';
+import { Subject } from 'rxjs';
 
 describe('ChatBadgeComponent', () => {
   let component: ChatBadgeComponent;
   let fixture: ComponentFixture<ChatBadgeComponent>;
-  let chatServiceSpy: jasmine.SpyObj<ChatService>;
+  let mockChatService: any;
+  let mockDatabaseService: any;
+  let lastLoadOutcomeSubject: Subject<LastLoadOutcome>;
 
   beforeEach(async () => {
-    // Arrange
-    chatServiceSpy = jasmine.createSpyObj('ChatService', ['checkFileUpdates'], {});
-    chatServiceSpy.isUpdated$ = of(true);
-
+    // Arrange:
+    mockChatService = { checkFileUpdates: jasmine.createSpy('checkFileUpdates') };
+    lastLoadOutcomeSubject = new Subject<LastLoadOutcome>();
+    mockDatabaseService = { lastLoadOutcome$: lastLoadOutcomeSubject.asObservable() };
+    // Arrange:
     await TestBed.configureTestingModule({
       imports: [ChatBadgeComponent],
-      providers: [{ provide: ChatService, useValue: chatServiceSpy }]
+      providers: [
+        { provide: ChatService, useValue: mockChatService },
+        { provide: DatabaseService, useValue: mockDatabaseService },
+      ],
     }).compileComponents();
-  });
-
-  beforeEach(() => {
-    // Arrange
+    // Arrange:
     fixture = TestBed.createComponent(ChatBadgeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  // ==============================================================================
-  //                              TEST DI UNITÀ
-  // ==============================================================================
+  // ------------------------------------------------------
+  // Test di integrazione
+  // ------------------------------------------------------
+  describe('Test di integrazione', () => {
+    it("Verifica che il valore iniziale di lastLoadOutcome sia TRUE", () => {
+      // Arrange:
+      // Act:
+      // Assert:
+      expect(component.lastLoadOutcome).toBe(LastLoadOutcome.TRUE);
+    });
 
-  it('Dovrebbe creare correttamente un’istanza di ChatBadgeComponent (Unit Test) - AAA', () => {
-    /**
-     * In questo test verifichiamo la creazione del componente ChatBadgeComponent,
-     * assicurandoci che l'istanza sia definita.
-     */
+    it("Verifica che, al cambio di valore di lastLoadOutcome$, la proprietà lastLoadOutcome venga aggiornata", () => {
+      // Arrange:
+      const nuovoValore = LastLoadOutcome.FALSE;
+      // Act:
+      lastLoadOutcomeSubject.next(nuovoValore);
+      fixture.detectChanges();
+      // Assert:
+      expect(component.lastLoadOutcome).toBe(nuovoValore);
+    });
 
-    // AAA: Arrange
-    // (Fatto in beforeEach)
+    it("Verifica che il getter isUpdated restituisca true se lastLoadOutcome è TRUE", () => {
+      // Arrange:
+      component.lastLoadOutcome = LastLoadOutcome.TRUE;
+      // Act:
+      const isUpdated = component.isUpdated;
+      // Assert:
+      expect(isUpdated).toBeTrue();
+    });
 
-    // AAA: Act
-    // (Nessuna azione ulteriore)
+    it("Verifica che il getter isUpdated restituisca false se lastLoadOutcome non è TRUE", () => {
+      // Arrange:
+      component.lastLoadOutcome = LastLoadOutcome.ERROR;
+      // Act:
+      const isUpdated = component.isUpdated;
+      // Assert:
+      expect(isUpdated).toBeFalse();
+    });
 
-    // AAA: Assert
-    expect(component).toBeTruthy();
+    it("Verifica che, alla chiamata del metodo onToggleStatus, venga chiamato il metodo checkFileUpdates di ChatService", () => {
+      // Arrange:
+      // Act:
+      component.onToggleStatus();
+      // Assert:
+      expect(mockChatService.checkFileUpdates).toHaveBeenCalled();
+    });
   });
 
-  it('Dovrebbe impostare isUpdated inizialmente a true (Unit Test) - AAA', () => {
-    /**
-     * In questo test controlliamo che la proprietà "isUpdated" 
-     * sia inizialmente impostata a true.
-     */
+  // ------------------------------------------------------
+  // Test di unità
+  // ------------------------------------------------------
+  describe('Test di unità', () => {
+    let localComponent: ChatBadgeComponent;
+    let localChatService: any;
+    let localDatabaseService: any;
+    let localSubject: Subject<LastLoadOutcome>;
 
-    // AAA: Arrange
-    // (Fatto in beforeEach)
+    beforeEach(() => {
+      // Arrange:
+      localChatService = { checkFileUpdates: jasmine.createSpy('checkFileUpdates') };
+      localSubject = new Subject<LastLoadOutcome>();
+      localDatabaseService = { lastLoadOutcome$: localSubject.asObservable() };
+      // Arrange:
+      localComponent = new ChatBadgeComponent(localChatService, localDatabaseService);
+    });
 
-    // AAA: Act
-    // (Nessuna azione specifica)
+    it("Verifica che il valore iniziale di lastLoadOutcome sia TRUE", () => {
+      // Arrange:
+      // Act:
+      // Assert:
+      expect(localComponent.lastLoadOutcome).toBe(LastLoadOutcome.TRUE);
+    });
 
-    // AAA: Assert
-    expect(component.isUpdated).toBeTrue();
-  });
+    it("Verifica che, durante l'inizializzazione, la sottoscrizione a lastLoadOutcome$ aggiorni lastLoadOutcome", () => {
+      // Arrange:
+      localComponent.ngOnInit();
+      // Act:
+      localSubject.next(LastLoadOutcome.ERROR);
+      // Assert:
+      expect(localComponent.lastLoadOutcome).toBe(LastLoadOutcome.ERROR);
+    });
 
-  it('Dovrebbe chiamare checkFileUpdates quando viene invocato onToggleStatus (Unit Test) - AAA', () => {
-    /**
-     * In questo test verifichiamo che richiamando onToggleStatus() 
-     * venga effettivamente invocato il metodo checkFileUpdates() del ChatService.
-     */
+    it("Verifica che il getter isUpdated restituisca il valore corretto in base a lastLoadOutcome", () => {
+      // Arrange:
+      localComponent.lastLoadOutcome = LastLoadOutcome.TRUE;
+      // Act:
+      let result = localComponent.isUpdated;
+      // Assert:
+      expect(result).toBeTrue();
+      // Arrange:
+      localComponent.lastLoadOutcome = LastLoadOutcome.FALSE;
+      // Act:
+      result = localComponent.isUpdated;
+      // Assert:
+      expect(result).toBeFalse();
+    });
 
-    // AAA: Arrange
-
-    // AAA: Act
-    component.onToggleStatus();
-
-    // AAA: Assert
-    expect(chatServiceSpy.checkFileUpdates).toHaveBeenCalled();
-  });
-
-  it('Dovrebbe aggiornare isUpdated al cambiamento di isUpdated$ (Unit Test) - AAA', () => {
-    /**
-     * In questo test verifichiamo che la proprietà isUpdated venga aggiornata correttamente
-     * quando il BehaviorSubject isUpdated$ emette un nuovo valore (false).
-     */
-
-    // AAA: Arrange
-    chatServiceSpy.isUpdated$ = of(false);
-    fixture = TestBed.createComponent(ChatBadgeComponent);
-    component = fixture.componentInstance;
-
-    // AAA: Act
-    fixture.detectChanges();
-
-    // AAA: Assert
-    expect(component.isUpdated).toBeFalse();
+    it("Verifica che, alla chiamata del metodo onToggleStatus, venga invocato il metodo checkFileUpdates di ChatService", () => {
+      // Arrange:
+      // Act:
+      localComponent.onToggleStatus();
+      // Assert:
+      expect(localChatService.checkFileUpdates).toHaveBeenCalled();
+    });
   });
 });

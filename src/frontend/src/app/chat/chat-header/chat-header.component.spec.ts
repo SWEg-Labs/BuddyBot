@@ -1,64 +1,78 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ChatHeaderComponent } from './chat-header.component';
-import { ChatService } from '../chat.service';
-import { of } from 'rxjs';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { By } from '@angular/platform-browser';
 
 describe('ChatHeaderComponent', () => {
   let component: ChatHeaderComponent;
   let fixture: ComponentFixture<ChatHeaderComponent>;
-  let chatServiceSpy: jasmine.SpyObj<ChatService>;
 
   beforeEach(async () => {
-    // Arrange
-    chatServiceSpy = jasmine.createSpyObj('ChatService', ['checkFileUpdates'], {
-      isUpdated$: of(true)
-    });
-
+    // Arrange:
     await TestBed.configureTestingModule({
-      imports: [ChatHeaderComponent],
-      providers: [{ provide: ChatService, useValue: chatServiceSpy }]
+      imports: [ChatHeaderComponent, HttpClientTestingModule],
     }).compileComponents();
-  });
-
-  beforeEach(() => {
+    // Arrange:
     fixture = TestBed.createComponent(ChatHeaderComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  // ==============================================================================
-  //                              TEST DI UNITÀ
-  // ==============================================================================
-  
-  it('Dovrebbe creare correttamente un’istanza di ChatHeaderComponent (Unit Test) - AAA', () => {
-    /**
-     * In questo test verifichiamo che il componente ChatHeaderComponent venga
-     * creato correttamente e che l'istanza sia definita.
-     */
+  // ------------------------------------------------------
+  // Test di integrazione
+  // ------------------------------------------------------
+  describe('Test di integrazione', () => {
+    it("Verifica che il componente venga creato", () => {
+      // Arrange:
+      // Act:
+      // Assert:
+      expect(component).toBeTruthy();
+    });
 
-    // AAA: Arrange
-    // (Fatto nel beforeEach)
+    it("Verifica che il titolo contenga 'BuddyBot'", () => {
+      // Arrange:
+      // Act:
+      const h1 = fixture.nativeElement.querySelector('h1');
+      // Assert:
+      expect(h1.textContent).toContain('BuddyBot');
+    });
 
-    // AAA: Act
-    // (Nessuna azione specifica)
+    it("Verifica che l'elemento app-chat-badge sia presente", () => {
+      // Arrange:
+      // Act:
+      const badgeElement = fixture.debugElement.query(By.css('app-chat-badge'));
+      // Assert:
+      expect(badgeElement).toBeTruthy();
+    });
 
-    // AAA: Assert
-    expect(component).toBeTruthy();
+    it("Verifica che l'immagine del logo abbia src e alt corretti", () => {
+      // Arrange:
+      // Act:
+      const img = fixture.nativeElement.querySelector('.logo-container img');
+      // Assert:
+      expect(img.src).toContain('assets/sweg_logo_sito.png');
+      expect(img.alt).toBe('Logo');
+    });
+
+    it("Verifica che il tag header abbia la classe 'chat-header'", () => {
+      // Arrange:
+      // Act:
+      const headerEl = fixture.nativeElement.querySelector('header');
+      // Assert:
+      expect(headerEl.classList).toContain('chat-header');
+    });
   });
 
-  it('Dovrebbe contenere il badge di aggiornamento nel template HTML (Unit Test) - AAA', () => {
-    /**
-     * In questo test verifichiamo che nel template HTML del componente
-     * sia presente l'elemento <app-chat-badge>.
-     */
-
-    // AAA: Arrange
-    const compiled = fixture.nativeElement as HTMLElement;
-
-    // AAA: Act
-    // (Nessuna azione specifica, semplicemente ispezioniamo il DOM)
-
-    // AAA: Assert
-    expect(compiled.querySelector('app-chat-badge')).toBeTruthy();
+  // ------------------------------------------------------
+  // Test di unità
+  // ------------------------------------------------------
+  describe('Test di unità', () => {
+    it("Verifica che l'istanza del componente sia definita", () => {
+      // Arrange:
+      const localComponent = new ChatHeaderComponent();
+      // Act:
+      // Assert:
+      expect(localComponent).toBeDefined();
+    });
   });
 });

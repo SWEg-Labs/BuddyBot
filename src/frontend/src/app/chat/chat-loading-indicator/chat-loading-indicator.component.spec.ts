@@ -6,50 +6,63 @@ describe('ChatLoadingIndicatorComponent', () => {
   let fixture: ComponentFixture<ChatLoadingIndicatorComponent>;
 
   beforeEach(async () => {
+    // Arrange:
     await TestBed.configureTestingModule({
-      imports: [ ChatLoadingIndicatorComponent ]
+      imports: [ChatLoadingIndicatorComponent],
     }).compileComponents();
-  });
-
-  beforeEach(() => {
+    // Arrange:
     fixture = TestBed.createComponent(ChatLoadingIndicatorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  // ==============================================================================
-  //                              TEST DI UNITÀ
-  // ==============================================================================
+  // ------------------------------------------------------
+  // Test di integrazione
+  // ------------------------------------------------------
+  describe('Test di integrazione', () => {
+    it("Verifica che il componente venga creato", () => {
+      // Arrange:
+      // Act:
+      // Assert:
+      expect(component).toBeTruthy();
+    });
 
-  it('Verifica che venga creata correttamente un’istanza di ChatLoadingIndicatorComponent (Unit Test) - AAA', () => {
-    /**
-     * In questo test controlliamo che il componente ChatLoadingIndicatorComponent
-     * venga creato con successo.
-     */
+    it("Verifica che il template contenga l'elemento con classe 'loading-indicator'", () => {
+      // Arrange:
+      // Act:
+      const container = fixture.nativeElement.querySelector('.loading-indicator');
+      // Assert:
+      expect(container).toBeTruthy();
+    });
 
-    // AAA: Arrange
-    // (Nessuna disposizione speciale)
+    it("Verifica che il template contenga un'immagine con src 'assets/banana.png'", () => {
+      // Arrange:
+      // Act:
+      const img = fixture.nativeElement.querySelector('img');
+      // Assert:
+      expect(img).toBeTruthy();
+      expect(img.src).toContain('assets/banana.png');
+    });
 
-    // AAA: Act
-    // (Nessuna azione necessaria)
-
-    // AAA: Assert
-    expect(component).toBeTruthy();
+    it("Verifica che l'immagine abbia alt 'Caricamento'", () => {
+      // Arrange:
+      // Act:
+      const img = fixture.nativeElement.querySelector('img');
+      // Assert:
+      expect(img.alt).toBe('Caricamento');
+    });
   });
 
-  it('Verifica che il template HTML contenga un\'immagine con la classe rotating-logo (Unit Test) - AAA', () => {
-    /**
-     * In questo test verifichiamo che all'interno del template del componente
-     * esista effettivamente l'immagine con classe "rotating-logo".
-     */
-
-    // AAA: Arrange
-    const compiled = fixture.nativeElement as HTMLElement;
-
-    // AAA: Act
-    const img = compiled.querySelector('img.rotating-logo');
-
-    // AAA: Assert
-    expect(img).toBeTruthy();
+  // ------------------------------------------------------
+  // Test di unità
+  // ------------------------------------------------------
+  describe('Test di unità', () => {
+    it("Verifica che l'istanza del componente sia definita", () => {
+      // Arrange:
+      const localComponent = new ChatLoadingIndicatorComponent();
+      // Act:
+      // Assert:
+      expect(localComponent).toBeDefined();
+    });
   });
 });

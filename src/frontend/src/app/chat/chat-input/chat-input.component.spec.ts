@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ChatInputComponent } from './chat-input.component';
+import { FormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 
 describe('ChatInputComponent', () => {
@@ -7,88 +8,153 @@ describe('ChatInputComponent', () => {
   let fixture: ComponentFixture<ChatInputComponent>;
 
   beforeEach(async () => {
+    // Arrange:
     await TestBed.configureTestingModule({
-      imports: [ ChatInputComponent ],
+      imports: [ChatInputComponent, FormsModule],
     }).compileComponents();
-  });
-
-  beforeEach(() => {
+    // Arrange:
     fixture = TestBed.createComponent(ChatInputComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  // ==============================================================================
-  //                              TEST DI UNITÀ
-  // ==============================================================================
+  // ------------------------------------------------------
+  // Test di integrazione
+  // ------------------------------------------------------
+  describe('Test di integrazione', () => {
+    it("Verifica che il componente venga creato", () => {
+      // Arrange:
+      // Act:
+      // Assert:
+      expect(component).toBeTruthy();
+    });
 
-  it('Verifica che venga creata correttamente un’istanza di ChatInputComponent (Unit Test) - AAA', () => {
-    /**
-     * In questo test assicuriamo che il componente ChatInputComponent
-     * sia creato correttamente.
-     */
+    it("Verifica che il bottone 'Invia' sia disabilitato se isLoading è true", () => {
+      // Arrange:
+      component.isLoading = true;
+      fixture.detectChanges();
+      // Act:
+      const button = fixture.nativeElement.querySelector('button');
+      // Assert:
+      expect(button.disabled).toBeTrue();
+    });
 
-    // AAA: Arrange
-    // (Fase di arrangiamento eseguita nel beforeEach)
+    it("Verifica che il bottone 'Invia' sia abilitato se isLoading è false", () => {
+      // Arrange:
+      component.isLoading = false;
+      fixture.detectChanges();
+      // Act:
+      const button = fixture.nativeElement.querySelector('button');
+      // Assert:
+      expect(button.disabled).toBeFalse();
+    });
 
-    // AAA: Act
-    // (Nessun atto particolare)
+    it("Verifica che l'input abbia il placeholder 'Scrivi un messaggio...'", () => {
+      // Arrange:
+      // Act:
+      const input = fixture.nativeElement.querySelector('input');
+      // Assert:
+      expect(input.placeholder).toBe('Scrivi un messaggio...');
+    });
 
-    // AAA: Assert
-    expect(component).toBeTruthy();
+    it("Verifica che l'input sia disabilitato se isLoading è true", async () => {
+      // Arrange:
+      component.isLoading = true;
+      fixture.detectChanges();
+      await fixture.whenStable();
+      // Act:
+      const input = fixture.nativeElement.querySelector('input');
+      // Assert (controllo dell'attributo 'disabled'):
+      expect(input.getAttribute('disabled')).not.toBeNull();
+    });
+    
+
+    it("Verifica che l'input non sia disabilitato se isLoading è false", () => {
+      // Arrange:
+      component.isLoading = false;
+      fixture.detectChanges();
+      // Act:
+      const input = fixture.nativeElement.querySelector('input');
+      // Assert:
+      expect(input.disabled).toBeFalse();
+    });
+
+    it("Verifica che, quando si digita nell'input, il valore userInput si aggiorna", () => {
+      // Arrange:
+      const input = fixture.debugElement.query(By.css('input')).nativeElement;
+      // Act:
+      input.value = 'Nuovo messaggio';
+      input.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+      // Assert:
+      expect(component.userInput).toBe('Nuovo messaggio');
+    });
+
+    it("Verifica che, quando si clicca il bottone, venga inviata la stringa corretta", () => {
+      // Arrange:
+      spyOn(component.sendMessage, 'emit');
+      component.isLoading = false;
+      component.userInput = '  Test Message  ';
+      fixture.detectChanges();
+      // Act:
+      const button = fixture.nativeElement.querySelector('button');
+      button.click();
+      // Assert:
+      expect(component.sendMessage.emit).toHaveBeenCalledWith('Test Message');
+      expect(component.userInput).toBe('');
+    });
+
+    it("Verifica che, quando si preme il tasto Enter nell'input, venga inviata la stringa corretta", () => {
+      // Arrange:
+      spyOn(component.sendMessage, 'emit');
+      component.isLoading = false;
+      component.userInput = 'Hello World';
+      fixture.detectChanges();
+      // Act:
+      const inputEl = fixture.debugElement.query(By.css('input'));
+      inputEl.triggerEventHandler('keyup.enter', {});
+      // Assert:
+      expect(component.sendMessage.emit).toHaveBeenCalledWith('Hello World');
+      expect(component.userInput).toBe('');
+    });
   });
 
-  it('Verifica che, se viene premuto Invio, venga emesso l’evento sendMessage di ChatInputComponent con il testo corretto (Unit Test) - AAA', () => {
-    /**
-     * In questo test verifichiamo che il componente emetta correttamente
-     * l'evento "sendMessage" quando l'utente preme Invio nell'input.
-     */
+  // ------------------------------------------------------
+  // Test di unità
+  // ------------------------------------------------------
+  describe('Test di unità', () => {
+    it("Verifica che onSend non emetta alcun valore se userInput è vuoto", () => {
+      // Arrange:
+      spyOn(component.sendMessage, 'emit');
+      component.userInput = '   ';
+      // Act:
+      component.onSend();
+      // Assert:
+      expect(component.sendMessage.emit).not.toHaveBeenCalled();
+    });
 
-    // AAA: Arrange
-    spyOn(component.sendMessage, 'emit');
-    const input = fixture.debugElement.query(By.css('input')).nativeElement;
-    input.value = 'Ciao';
+    it("Verifica che onSend non emetta alcun valore se isLoading è true", () => {
+      // Arrange:
+      spyOn(component.sendMessage, 'emit');
+      component.userInput = 'Test';
+      component.isLoading = true;
+      // Act:
+      component.onSend();
+      // Assert:
+      expect(component.sendMessage.emit).not.toHaveBeenCalled();
+      expect(component.userInput).toBe('Test');
+    });
 
-    // AAA: Act
-    input.dispatchEvent(new Event('input'));
-    input.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter' }));
-
-    // AAA: Assert
-    expect(component.sendMessage.emit).toHaveBeenCalledWith('Ciao');
-  });
-
-  it('Verifica che non sia possibile emettere l’evento sendMessage se isLoading=true (Unit Test) - AAA', () => {
-    /**
-     * In questo test verifichiamo che l'evento "sendMessage" non venga emesso
-     * se la proprietà "isLoading" è impostata a true.
-     */
-
-    // AAA: Arrange
-    spyOn(component.sendMessage, 'emit');
-    component.isLoading = true;
-    component.userInput = 'Prova';
-
-    // AAA: Act
-    component.onSend();
-
-    // AAA: Assert
-    expect(component.sendMessage.emit).not.toHaveBeenCalled();
-  });
-
-  it('Verifica che, dopo l’invio di un messaggio, il campo input venga pulito (Unit Test) - AAA', () => {
-    /**
-     * In questo test ci assicuriamo che il campo di input venga svuotato
-     * dopo aver inviato correttamente un messaggio.
-     */
-
-    // AAA: Arrange
-    spyOn(component.sendMessage, 'emit');
-    component.userInput = 'Messaggio';
-
-    // AAA: Act
-    component.onSend();
-
-    // AAA: Assert
-    expect(component.userInput).toBe('');
+    it("Verifica che onSend emetta il valore corretto e resetti userInput se le condizioni sono soddisfatte", () => {
+      // Arrange:
+      spyOn(component.sendMessage, 'emit');
+      component.userInput = '  Example  ';
+      component.isLoading = false;
+      // Act:
+      component.onSend();
+      // Assert:
+      expect(component.sendMessage.emit).toHaveBeenCalledWith('Example');
+      expect(component.userInput).toBe('');
+    });
   });
 });

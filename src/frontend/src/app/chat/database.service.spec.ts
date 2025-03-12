@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { DatabaseService } from './database.service';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { Message, MessageSender } from '../models/message.model';
 import { LastLoadOutcome } from '../models/badge.model';
 
@@ -9,7 +9,7 @@ describe('DatabaseService', () => {
   let httpMock: HttpTestingController;
 
   beforeEach(() => {
-    // AAA: Arrange
+    // Arrange:
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [DatabaseService],
@@ -19,175 +19,107 @@ describe('DatabaseService', () => {
   });
 
   afterEach(() => {
+    // Act:
     httpMock.verify();
   });
 
-  // ==============================================================================
-  //                              TEST DI UNITÀ
-  // ==============================================================================
-  it('Dovrebbe creare correttamente un’istanza di DatabaseService (Unit Test) - AAA', () => {
-    /**
-     * In questo test verifichiamo che il servizio DatabaseService venga
-     * creato correttamente e che l'istanza sia definita.
-     */
-    // AAA: Arrange
-    // (Istanza già creata nel beforeEach)
-
-    // AAA: Act
-    // (Nessuna azione specifica)
-
-    // AAA: Assert
-    expect(service).toBeTruthy();
+  describe('getMessages', () => {
+    it("Verifica che getMessages mappi correttamente la risposta in un array di Message", () => {
+      // Arrange:
+      const responseArray = [
+        { content: "Ciao", timestamp: "2023-01-01T00:00:00Z", sender: "USER" },
+        { content: "Salve", timestamp: "2023-01-01T00:01:00Z", sender: "CHATBOT" }
+      ];
+      // Act:
+      service.getMessages(2).subscribe(messages => {
+        // Assert:
+        expect(messages.length).toBe(2);
+        expect(messages[0].content).toBe("Ciao");
+        expect(messages[0].sender).toBe(MessageSender.USER);
+        expect(new Date(messages[0].timestamp).toISOString()).toBe("2023-01-01T00:00:00.000Z");
+        expect(messages[1].content).toBe("Salve");
+        expect(messages[1].sender).toBe(MessageSender.CHATBOT);
+      });
+      const req = httpMock.expectOne("http://localhost:5000/api/get_messages");
+      expect(req.request.method).toBe("POST");
+      expect(req.request.body).toEqual({ quantity: 2 });
+      req.flush(responseArray);
+    });
   });
 
-  it('Dovrebbe inizializzare lastLoadOutcome$ con valore LastLoadOutcome.TRUE (Unit Test) - AAA', (done) => {
-    /**
-     * In questo test verifichiamo che la BehaviorSubject lastLoadOutcomeSubject
-     * parta dal valore "LastLoadOutcome.TRUE".
-     */
-    // AAA: Arrange
+  describe('saveMessage', () => {
+    it("Verifica che saveMessage invii il payload corretto e gestisca la risposta", () => {
+      // Arrange:
+      const message = new Message("Test", new Date("2023-01-01T00:00:00Z"), MessageSender.USER);
+      const responseData = { status: true };
+      // Act:
+      service.saveMessage(message).subscribe(response => {
+        // Assert:
+        expect(response).toEqual(responseData);
+      });
+      const req = httpMock.expectOne("http://localhost:5000/api/save_message");
+      expect(req.request.method).toBe("POST");
+      expect(req.request.body).toEqual({
+        content: message.content,
+        sender: message.sender,
+        timestamp: message.timestamp
+      });
+      req.flush(responseData);
+    });
+  });
 
-    // AAA: Act
-    service.lastLoadOutcome$.subscribe((outcome) => {
-      // AAA: Assert
+  describe('loadLastLoadOutcome', () => {
+    it("Verifica che loadLastLoadOutcome imposti TRUE se la risposta è 'True'", fakeAsync(() => {
+      // Arrange:
+      let outcome: LastLoadOutcome | undefined;
+      service.lastLoadOutcome$.subscribe(val => outcome = val);
+      // Act:
+      service.loadLastLoadOutcome();
+      const req = httpMock.expectOne("http://localhost:5000/api/get_last_load_outcome");
+      expect(req.request.method).toBe("POST");
+      req.flush("True");
+      tick();
+      // Assert:
       expect(outcome).toBe(LastLoadOutcome.TRUE);
-      done();
-    });
-  });
+    }));
 
-  // ==============================================================================
-  //                              TEST DI INTEGRAZIONE
-  // ==============================================================================
-  it('Dovrebbe chiamare POST /api/get_messages e convertire la risposta in un array di Message (Integration Test) - AAA', () => {
-    /**
-     * In questo test verifichiamo che getMessages():
-     * - invii una POST a /api/get_messages
-     * - converta correttamente i dati in oggetti Message
-     */
-    // AAA: Arrange
-    const mockResponse = [
-      { content: 'Hello', sender: 'USER', timestamp: '2023-10-10T10:00:00Z' },
-      { content: 'Hi', sender: 'CHATBOT', timestamp: '2023-10-10T10:00:05Z' },
-    ];
-    let actualMessages: Message[] | undefined;
+    it("Verifica che loadLastLoadOutcome imposti FALSE se la risposta è 'False'", fakeAsync(() => {
+      // Arrange:
+      let outcome: LastLoadOutcome | undefined;
+      service.lastLoadOutcome$.subscribe(val => outcome = val);
+      // Act:
+      service.loadLastLoadOutcome();
+      const req = httpMock.expectOne("http://localhost:5000/api/get_last_load_outcome");
+      req.flush("False");
+      tick();
+      // Assert:
+      expect(outcome).toBe(LastLoadOutcome.FALSE);
+    }));
 
-    // AAA: Act
-    service.getMessages(2).subscribe((messages) => {
-      actualMessages = messages;
-    });
+    it("Verifica che loadLastLoadOutcome imposti ERROR se la risposta non è 'True' o 'False'", fakeAsync(() => {
+      // Arrange:
+      let outcome: LastLoadOutcome | undefined;
+      service.lastLoadOutcome$.subscribe(val => outcome = val);
+      // Act:
+      service.loadLastLoadOutcome();
+      const req = httpMock.expectOne("http://localhost:5000/api/get_last_load_outcome");
+      req.flush("Unexpected");
+      tick();
+      // Assert:
+      expect(outcome).toBe(LastLoadOutcome.ERROR);
+    }));
 
-    // Intercettiamo la richiesta HTTP
-    const req = httpMock.expectOne('http://localhost:5000/api/get_messages');
-    expect(req.request.method).toBe('POST');
-    req.flush(mockResponse);
-
-    // AAA: Assert
-    expect(actualMessages).toBeDefined();
-    expect(actualMessages?.length).toBe(2);
-    expect(actualMessages?.[0].content).toBe('Hello');
-    expect(actualMessages?.[0].sender).toBe(MessageSender.USER);
-    expect(actualMessages?.[1].sender).toBe(MessageSender.CHATBOT);
-  });
-
-  it('Dovrebbe chiamare POST /api/save_message per salvare un messaggio (Integration Test) - AAA', () => {
-    /**
-     * In questo test verifichiamo che saveMessage():
-     * - invii correttamente il payload
-     * - gestisca la subscription e la risposta
-     */
-    // AAA: Arrange
-    const testMessage = new Message('Salve', new Date('2023-10-10T10:00:00Z'), MessageSender.USER);
-    const mockResponse = { status: true };
-    let actualResponse: { status: boolean | string } | undefined;
-
-    // AAA: Act
-    service.saveMessage(testMessage).subscribe((res) => {
-      actualResponse = res;
-    });
-
-    const req = httpMock.expectOne('http://localhost:5000/api/save_message');
-    expect(req.request.method).toBe('POST');
-    req.flush(mockResponse);
-
-    // AAA: Assert
-    expect(actualResponse?.status).toBeTrue();
-    expect(req.request.body).toEqual({
-      content: 'Salve',
-      sender: 'USER',
-      timestamp: new Date('2023-10-10T10:00:00Z'),
-    });
-  });
-
-  it('Dovrebbe chiamare POST /api/get_last_load_outcome e gestire correttamente "True" (Integration Test) - AAA', () => {
-    /**
-     * In questo test verifichiamo che loadLastLoadOutcome():
-     * - chiami /api/get_last_load_outcome
-     * - setti lastLoadOutcomeSubject a LastLoadOutcome.TRUE se la risposta è "True"
-     */
-    // AAA: Arrange
-    let outcome!: LastLoadOutcome;
-    service.lastLoadOutcome$.subscribe((res) => (outcome = res));
-
-    // AAA: Act
-    service.loadLastLoadOutcome();
-    const req = httpMock.expectOne('http://localhost:5000/api/get_last_load_outcome');
-    expect(req.request.method).toBe('POST');
-    req.flush('True');
-
-    // AAA: Assert
-    expect(outcome).toBe(LastLoadOutcome.TRUE);
-  });
-
-  it('Dovrebbe gestire correttamente la risposta "False" in loadLastLoadOutcome (Integration Test) - AAA', () => {
-    /**
-     * Verifichiamo che se la risposta è "False",
-     * lastLoadOutcome$ venga impostato a LastLoadOutcome.FALSE.
-     */
-    // AAA: Arrange
-    let outcome!: LastLoadOutcome;
-    service.lastLoadOutcome$.subscribe((res) => (outcome = res));
-
-    // AAA: Act
-    service.loadLastLoadOutcome();
-    const req = httpMock.expectOne('http://localhost:5000/api/get_last_load_outcome');
-    req.flush('False');
-
-    // AAA: Assert
-    expect(outcome).toBe(LastLoadOutcome.FALSE);
-  });
-
-  it('Dovrebbe settare lastLoadOutcome=ERROR se la risposta non è né "True" né "False" (Integration Test) - AAA', () => {
-    /**
-     * Se la risposta dal server non è "True" o "False",
-     * ci aspettiamo che lastLoadOutcome$ venga impostato a "ERROR".
-     */
-    // AAA: Arrange
-    let outcome!: LastLoadOutcome;
-    service.lastLoadOutcome$.subscribe((res) => (outcome = res));
-
-    // AAA: Act
-    service.loadLastLoadOutcome();
-    const req = httpMock.expectOne('http://localhost:5000/api/get_last_load_outcome');
-    req.flush('BOH');
-
-    // AAA: Assert
-    expect(outcome).toBe(LastLoadOutcome.ERROR);
-  });
-
-  it('Dovrebbe gestire correttamente l’errore di rete in loadLastLoadOutcome (Integration Test) - AAA', () => {
-    /**
-     * Se il server restituisce errore, lastLoadOutcome$ viene impostato a "ERROR".
-     */
-    // AAA: Arrange
-    let outcome!: LastLoadOutcome;
-    service.lastLoadOutcome$.subscribe((res) => (outcome = res));
-
-    // AAA: Act
-    service.loadLastLoadOutcome();
-    const req = httpMock.expectOne('http://localhost:5000/api/get_last_load_outcome');
-    req.error(new ErrorEvent('Network Error'), { status: 500 });
-
-    // AAA: Assert
-    expect(outcome).toBe(LastLoadOutcome.ERROR);
+    it("Verifica che loadLastLoadOutcome imposti ERROR in caso di errore", fakeAsync(() => {
+      // Arrange:
+      let outcome: LastLoadOutcome | undefined;
+      service.lastLoadOutcome$.subscribe(val => outcome = val);
+      // Act:
+      service.loadLastLoadOutcome();
+      const req = httpMock.expectOne("http://localhost:5000/api/get_last_load_outcome");
+      req.flush("Error", { status: 500, statusText: "Server Error" });
+      tick();
+      // Assert:
+      expect(outcome).toBe(LastLoadOutcome.ERROR);
+    }));
   });
 });

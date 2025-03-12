@@ -1,50 +1,68 @@
-import { TestBed } from '@angular/core/testing';
+import { Component } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { AppComponent } from './app.component';
-import { ChatService } from './chat/chat.service';
-import { of } from 'rxjs';
+
+@Component({
+  selector: 'app-chat-container',
+  template: '<div class="stub-chat-container">Stub Chat Container</div>',
+  standalone: true,
+})
+class StubChatContainerComponent {}
 
 describe('AppComponent', () => {
-  let chatServiceSpy: jasmine.SpyObj<ChatService>;
+  let component: AppComponent;
+  let fixture: ComponentFixture<AppComponent>;
 
   beforeEach(async () => {
-    // Arrange
-    chatServiceSpy = jasmine.createSpyObj(
-      'ChatService',
-      [
-        'sendMessage',
-        'getLastMessageTimestamp',
-        'getContinuationSuggestions',
-        'getInitialSuggestions',
-        'checkFileUpdates'
-      ],
-      {
-        isUpdated$: of(true),
-      }
-    );
-
-    chatServiceSpy.getContinuationSuggestions.and.returnValue(of({ cont1: 'Cont1', cont2: 'Cont2' } as Record<string, string>));
-
+    // Arrange:
     await TestBed.configureTestingModule({
-      imports: [AppComponent],
-      providers: [{ provide: ChatService, useValue: chatServiceSpy }]
-    }).compileComponents();
+      imports: [AppComponent, HttpClientTestingModule],
+    })
+      .overrideComponent(AppComponent, {
+        set: { imports: [StubChatContainerComponent, HttpClientTestingModule] },
+      })
+      .compileComponents();
+    // Arrange:
+    fixture = TestBed.createComponent(AppComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   });
 
-  // TEST DI UNITÀ
-  it('Dovrebbe creare correttamente un’istanza di AppComponent (Unit Test) - AAA', () => {
-    /**
-     * In questo test verifichiamo la creazione del componente principale dell'applicazione,
-     * assicurandoci che l'istanza di AppComponent sia definita.
-     */
+  // ------------------------------------------------------
+  // Test di integrazione
+  // ------------------------------------------------------
+  describe('Test di integrazione', () => {
+    it("Verifica che il componente venga creato", () => {
+      // Act & Assert:
+      expect(component).toBeTruthy();
+    });
 
-    // AAA: Arrange
-    // (La fase di arrangiamento è stata fatta nel beforeEach)
+    it("Verifica che il template contenga l'elemento app-chat-container", () => {
+      // Act:
+      const containerElem = fixture.nativeElement.querySelector('app-chat-container');
+      // Assert:
+      expect(containerElem).toBeTruthy();
+    });
 
-    // AAA: Act
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
+    it("Verifica che il contenuto del chat container venga renderizzato", () => {
+      // Act:
+      const stubElement = fixture.nativeElement.querySelector('.stub-chat-container');
+      // Assert:
+      expect(stubElement).toBeTruthy();
+      expect(stubElement.textContent).toContain("Stub Chat Container");
+    });
+  });
 
-    // AAA: Assert
-    expect(app).toBeTruthy();
+  // ------------------------------------------------------
+  // Test di unità
+  // ------------------------------------------------------
+  describe('Test di unità', () => {
+    it("Verifica che l'istanza del componente sia definita", () => {
+      // Act:
+      const localComponent = new AppComponent();
+      // Assert:
+      expect(localComponent).toBeDefined();
+    });
   });
 });
