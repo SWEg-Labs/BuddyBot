@@ -1,0 +1,13 @@
+<div class="suggestions" *ngIf="!loadError && continuationSuggestions.length > 0">
+  <button
+    class="suggestion-btn"
+    *ngFor="let s of continuationSuggestions"
+    (click)="onSuggestionClick(s)"
+  >
+    {{ s }}
+  </button>
+</div>
+
+<div class="error-message" *ngIf="loadError">
+  Impossibile caricare i suggerimenti. Riprova più tardi!
+</div>

@@ -1,11 +1,13 @@
 .messages {
-  height: 95%;
+  display: flex;
+  flex-direction: column;
+
+  height: 100%;
   overflow-y: auto;
   padding: 1rem;
+  padding-bottom: 4rem;
   background-color: #2a2a2a;
   border-radius: 8px;
-  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
-
 
   &::-webkit-scrollbar {
     width: 8px;
@@ -17,15 +19,19 @@
 }
 
 .message {
+  align-self: flex-start;
+  position: relative;
   margin-bottom: 1rem;
+
   padding: 0.75rem 1rem;
   border-radius: 16px;
   background-color: #1e1e1e;
   font-size: 14px;
-  max-width: 75%;
   word-wrap: break-word;
+  max-width: 75%;
 
   &.user-message {
+    align-self: flex-end;
     background-color: #0078d7;
     color: #ffffff;
     margin-left: auto;
@@ -33,10 +39,12 @@
   }
 
   &.bot-message {
+    align-self: flex-start;
     background-color: #444444;
     color: #eaeaea;
     margin-right: auto;
     text-align: left;
+    padding-right: 2.5rem; 
   }
 
   .sender {
@@ -50,25 +58,104 @@
     display: block;
   }
 
-  .loading-placeholder {
+  &.loading-placeholder {
     display: flex;
     align-items: center;
     gap: 10px;
     color: #666;
-
-    .spinner {
-      width: 20px;
-      height: 20px;
-      border: 3px solid #ccc;
-      border-top-color: #007bff;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
   }
+}
+
+:host ::ng-deep .code-container {
+  position: relative;
+  background-color: #333;
+  margin: 8px 0;
+  padding: 8px;
+  border: 1px solid #999;
+  border-radius: 4px;
+}
+
+:host ::ng-deep .code-container pre {
+  margin: 0;
+  font-family: monospace;
+  color: #fff;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+}
+
+:host ::ng-deep .mat-icon {
+  user-select: none;
+  background-repeat: no-repeat;
+  display: inline-block;
+  fill: currentColor;
+  height: 24px;
+  width: 24px;
+  overflow: hidden;
+}
+
+:host ::ng-deep .related-links-block {
+  background-color: #363636;
+  color: #ffffff;
+  border-left: 5px solid #ccc;
+  padding: 10px;
+  margin: 1rem 0;
+  border-radius: 6px;
+}
+
+:host ::ng-deep .messages a {
+  color: #f39c12;
+  text-decoration: none;
+}
+
+:host ::ng-deep .messages a:hover {
+  text-decoration: underline; 
+}
+
+
+:host ::ng-deep .copy-snippet-icon {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  cursor: pointer;
+  color: #fff;
+  user-select: none;
+  z-index: 2;
+}
+
+:host ::ng-deep .copy-snippet-icon.snippet-copied:before {
+  content: '\2713';
+  margin-right: 5px;
+}
+
+:host ::ng-deep .copy-snippet-icon.snippet-copied {
+  animation: checkAnimation 0.5s;
+}
+
+.copy-icon {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.timestamp {
+  display: block;
+  font-size: 0.65rem;
+  color: #cccccc;
+  margin-top: 4px;
+}
+
+
+.copy-icon.copied {
+  animation: checkAnimation 0.5s;
+  margin-right: 5px;
+}
+
+@keyframes checkAnimation {
+  0%   { transform: scale(1);   color: #fff; }
+  50%  { transform: scale(1.4); color: #0f0; }
+  100% { transform: scale(1);   color: #fff; }
 }

@@ -1,21 +1,12 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { provideHttpClient } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
-
 import { AppComponent } from './app.component';
-import { ChatContainerComponent } from './chat/chat-container/chat-container.component';
+import { HttpClientModule } from '@angular/common/http';
+
+
 
 @NgModule({
-  imports: [
-    BrowserModule,
-    FormsModule,
-    ChatContainerComponent,
-    AppComponent,
-  ],
-  providers: [
-    provideHttpClient(),
-  ],
-  bootstrap: [AppComponent],
+  imports: [BrowserModule, HttpClientModule],
+  bootstrap: [AppComponent]
 })
 export class AppModule {}

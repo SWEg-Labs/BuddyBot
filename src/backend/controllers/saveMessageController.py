@@ -34,7 +34,7 @@ class SaveMessageController:
             message = Message(
                 content=message.get_content(),
                 timestamp=message.get_timestamp(),
-                sender=MessageSender[message.get_sender().name]
+                sender=MessageSender[message.get_sender()]
             )
             db_save_operation_response = self.__save_message_use_case.save(message)
             result = {"success": db_save_operation_response.get_success(), "message": db_save_operation_response.get_message()}

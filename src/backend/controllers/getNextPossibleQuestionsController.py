@@ -49,6 +49,11 @@ class GetNextPossibleQuestionsController:
                 for i, possible_question in enumerate(possible_questions)
             }
 
+            message = "Next possible questions retrieved successfully: " + ", ".join(
+                [f"{key}: {value}" for key, value in next_possible_questions_dict.items()]
+            )
+            logger.info(message)
+
             return next_possible_questions_dict
         except Exception as e:
             logger.error(f"Error in GetNextPossibleQuestionsController: {e}")
