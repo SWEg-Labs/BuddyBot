@@ -33,6 +33,7 @@ class JiraAdapter(JiraPort):
         """
         try:
             platform_log, issue_entities = self.__jira_repository.load_jira_issues()
+
             documents = [
                 Document(
                     page_content=issue.get_summary() if issue.get_summary() is not None else "/",
@@ -41,8 +42,8 @@ class JiraAdapter(JiraPort):
                                    if issue.get_project() and issue.get_project().get("name") is not None else "/",
                         "status": issue.get_status().get("name")
                                   if issue.get_status() and issue.get_status().get("name") is not None else "/",
-                        "assignee": issue.get_assignee().get("name")
-                                    if issue.get_assignee() and issue.get_assignee().get("name") is not None else "/",
+                        "assignee": issue.get_assignee().get("displayName")
+                                    if issue.get_assignee() and issue.get_assignee().get("displayName") is not None else "/",
                         "priority": issue.get_priority().get("name")
                                     if issue.get_priority() and issue.get_priority().get("name") is not None else "/",
                         "type": issue.get_issuetype().get("name")

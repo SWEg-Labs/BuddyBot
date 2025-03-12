@@ -25,6 +25,8 @@ class ConfluenceCleanerService:
             for page in pages:
                 page = self.__remove_html_tags(page)
                 page = self.__replace_html_entities(page)
+
+            logger.info(f"Successfully cleaned {len(pages)} Confluence pages")
             return pages
         except Exception as e:
             logger.error(f"Error cleaning confluence pages: {e}")
