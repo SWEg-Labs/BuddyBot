@@ -178,7 +178,7 @@ class PostgresRepository:
         except Exception as e:
             logger.error(f"An error occurred while saving the loading attempt in the Postgres database: {e}")
             raise e
-        
+
     def get_last_load_outcome(self) -> PostgresLastLoadOutcome:
         '''
         Retrieves the outcome of the most recent loading attempt from the PostgreSQL database.
