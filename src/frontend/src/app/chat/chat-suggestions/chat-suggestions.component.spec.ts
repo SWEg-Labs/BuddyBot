@@ -9,17 +9,14 @@ describe('ChatSuggestionsComponent', () => {
   let chatServiceSpy: jasmine.SpyObj<ChatService>;
 
   beforeEach(async () => {
-    chatServiceSpy = jasmine.createSpyObj<ChatService>(
-      'ChatService',
-      ['getContinuationSuggestions']
+    // Arrange
+    chatServiceSpy = jasmine.createSpyObj<ChatService>('ChatService', ['getContinuationSuggestions']);
+    chatServiceSpy.getContinuationSuggestions.and.returnValue(
+      of({ su1: 'Suggerimento1', su2: 'Suggerimento2' })
     );
-    chatServiceSpy.getContinuationSuggestions.and.returnValue(of([]));
-
     await TestBed.configureTestingModule({
       imports: [ChatSuggestionsComponent],
-      providers: [
-        { provide: ChatService, useValue: chatServiceSpy }
-      ]
+      providers: [{ provide: ChatService, useValue: chatServiceSpy }]
     }).compileComponents();
   });
 
@@ -28,58 +25,96 @@ describe('ChatSuggestionsComponent', () => {
     component = fixture.componentInstance;
   });
 
-  // Test di Unità
-  it('Verifica che venga creata correttamente un’istanza di ChatSuggestionsComponent', () => {
-    // Arrange
-    component.lastMessageTimestamp = Date.now() - 6 * 60 * 1000;
+  // ==============================================================================
+  //                              TEST DI UNITÀ
+  // ==============================================================================
 
-    // Act
+  it('Dovrebbe creare correttamente un’istanza di ChatSuggestionsComponent (Unit Test) - AAA', () => {
+    /**
+     * In questo test verifichiamo che il componente ChatSuggestionsComponent
+     * venga creato senza errori.
+     */
+    // AAA: Act
     fixture.detectChanges();
 
-    // Assert
+    // AAA: Assert
     expect(component).toBeTruthy();
   });
-  
-  // DA SOSTITUIRE CON UN TEST DIVERSO PER LA CONTINUAZIONE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  // Test di Integrazione
-  it('Verifica che, se la variabile lastMessageTimestamp di ChatSuggestionsComponent contiene un timestamp recente di massimo 5 minuti' +
-    'venga chiamato ChatService per caricare i suggerimenti di continuazione', () => {
-    // Arrange
-    chatServiceSpy.getContinuationSuggestions.and.returnValue(of(['Cont1', 'Cont2']));
-    component.lastMessageTimestamp = Date.now();
 
-    // Act
+  it('Dovrebbe emettere l’evento suggestionClicked quando si clicca un suggerimento (Unit Test) - AAA', () => {
+    /**
+     * In questo test controlliamo che il componente emetta l’evento "suggestionClicked"
+     * con il testo corretto quando si clicca su un suggerimento.
+     */
+
+    // AAA: Arrange
+    spyOn(component.suggestionClicked, 'emit');
+
+    // AAA: Act
+    component.onSuggestionClick('Prova');
+
+    // AAA: Assert
+    expect(component.suggestionClicked.emit).toHaveBeenCalledWith('Prova');
+  });
+
+  it('Dovrebbe non caricare i suggerimenti se hideSuggestions=true (Unit Test) - AAA', () => {
+    /**
+     * In questo test verifichiamo che, se la proprietà hideSuggestions è impostata a true,
+     * non vengano caricati i suggerimenti di continuazione.
+     */
+
+    // AAA: Arrange
+    component.hideSuggestions = true;
+    component.question = 'Q?';
+    component.answer = 'A!';
+
+    // AAA: Act
     fixture.detectChanges();
 
-    // Assert
-    expect(component.showInitial).toBeFalse();
+    // AAA: Assert
+    expect(component.continuationSuggestions.length).toBe(0);
+    expect(component.loadError).toBeFalse();
+  });
+
+  // ==============================================================================
+  //                              TEST DI INTEGRAZIONE
+  // ==============================================================================
+
+  it('Dovrebbe caricare correttamente i suggerimenti di continuazione se question e answer sono valide e hideSuggestions=false (Integration Test) - AAA', () => {
+    /**
+     * In questo test di integrazione verifichiamo che, quando le proprietà question e answer
+     * sono valorizzate e hideSuggestions è false, vengano effettivamente caricati i suggerimenti.
+     */
+
+    // AAA: Arrange
+    chatServiceSpy.getContinuationSuggestions.and.returnValue(of(['Cont1', 'Cont2'] as any));
+    component.question = 'Domanda?';
+    component.answer = 'Risposta!';
+    component.hideSuggestions = false;
+
+    // AAA: Act
+    fixture.detectChanges();
+
+    // AAA: Assert
     expect(component.continuationSuggestions).toEqual(['Cont1', 'Cont2']);
   });
 
-  // Test di Integrazione
-  it('Verifica che, se ChatService segnala un errore di caricamento suggerimenti, ChatSuggestionsComponent stampi'+
-    'un messaggio di errore', () => {
-    // Arrange
-    chatServiceSpy.getContinuationSuggestions.and.returnValue(throwError(() => new Error('Errore')));
-    component.lastMessageTimestamp = Date.now();
+  it('Dovrebbe gestire un errore di caricamento dei suggerimenti di continuazione (Integration Test) - AAA', () => {
+    /**
+     * In questo test di integrazione verifichiamo che il componente gestisca correttamente
+     * un errore quando la chiamata getContinuationSuggestions() fallisce.
+     */
 
-    // Act
+    // AAA: Arrange
+    chatServiceSpy.getContinuationSuggestions.and.returnValue(throwError(() => new Error('Errore')));
+    component.question = 'Domanda?';
+    component.answer = 'Risposta!';
+    component.hideSuggestions = false;
+
+    // AAA: Act
     fixture.detectChanges();
 
-    // Assert
+    // AAA: Assert
     expect(component.loadError).toBeTrue();
-  });
-
-  // Test di Unità
-  it('Verifica che, quando l’utente clicca un suggerimento, in ChatSuggestionsComponent venga emesso l’evento ' +
-    'suggestionClicked', () => {
-    // Arrange
-    spyOn(component.suggestionClicked, 'emit');
-
-    // Act
-    component.onSuggestionClick('Prova');
-
-    // Assert
-    expect(component.suggestionClicked.emit).toHaveBeenCalledWith('Prova');
   });
 });

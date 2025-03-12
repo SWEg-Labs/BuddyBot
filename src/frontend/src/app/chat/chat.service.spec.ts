@@ -2,16 +2,19 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { ChatService } from './chat.service';
 
+// Test di Unità e Integrazione
+import { of } from 'rxjs';
+
 describe('ChatService', () => {
   let service: ChatService;
   let httpMock: HttpTestingController;
 
   beforeEach(() => {
+    // Arrange
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [ChatService]
     });
-
     service = TestBed.inject(ChatService);
     httpMock = TestBed.inject(HttpTestingController);
   });
@@ -20,67 +23,125 @@ describe('ChatService', () => {
     httpMock.verify();
   });
 
-  // Test di Unità
-  it('Verifica che venga creata correttamente un’istanza di ChatService', () => {
-    // Assert
+  // ==============================================================================
+  //                              TEST DI UNITÀ
+  // ==============================================================================
+
+  it('Dovrebbe creare correttamente un’istanza di ChatService (Unit Test) - AAA', () => {
+    /**
+     * In questo test verifichiamo che il servizio ChatService venga
+     * correttamente creato e inizializzato.
+     */
+    // AAA: Arrange
+    // (La fase di arrangiamento è già stata eseguita nel beforeEach)
+
+    // AAA: Act
+    // (Non c'è un vero e proprio "Act" in quanto abbiamo già creato l'istanza nel beforeEach)
+
+    // AAA: Assert
     expect(service).toBeTruthy();
   });
 
-  // Test di Unità
-  it('Verifica che, alla chiamata del metodo checkFileUpdates di ChatService, venga invertita correttamente la variabile '+
-    'booleana isUpdatedSubject', () => {
-    // Arrange
+  it('Dovrebbe invertire correttamente la variabile booleana isUpdatedSubject quando viene chiamato checkFileUpdates (Unit Test) - AAA', () => {
+    /**
+     * In questo test verifichiamo che al richiamo di checkFileUpdates() 
+     * il BehaviorSubject isUpdatedSubject venga invertito (true -> false, false -> true).
+     */
+
+    // AAA: Arrange
     let currentValue!: boolean;
     service.isUpdated$.subscribe(value => (currentValue = value));
-    const valoreIniziale = currentValue;
+    const initialValue = currentValue;
 
-    // Act
+    // AAA: Act
     service.checkFileUpdates();
 
-    // Assert
-    expect(currentValue).toBe(!valoreIniziale);
+    // AAA: Assert
+    expect(currentValue).toBe(!initialValue);
   });
 
-  // Test di Unità
-  it('Verifica che ChatService restituisca il valore corretto di lastMessageTimestamp', () => {
-    // Arrange
+  it('Dovrebbe restituire e impostare correttamente il valore di lastMessageTimestamp (Unit Test) - AAA', () => {
+    /**
+     * In questo test verifichiamo che il metodo setLastMessageTimestamp()
+     * imposti correttamente un valore e getLastMessageTimestamp() lo restituisca.
+     */
+
+    // AAA: Arrange
     const now = Date.now();
 
-    // Act
+    // AAA: Act
     service.setLastMessageTimestamp(now);
 
-    // Assert
+    // AAA: Assert
     expect(service.getLastMessageTimestamp()).toBe(now);
   });
-  
 
-  // Test di Integrazione
-  it('Verifica il metodo getContinuationSuggestions di ChatService chiami l’endpoint GET /api/chat/suggestions/continuation '+
-    'e ne gestisca la risposta', () => {
-    // Arrange
-    const mockSuggestions = ['Cont1', 'Cont2'];
-    let result: string[] = [];
-    service.getContinuationSuggestions().subscribe(res => (result = res));
-    const req = httpMock.expectOne('http://localhost:5000/api/get_next_possible_questions');
+  // ==============================================================================
+  //                              TEST DI INTEGRAZIONE
+  // ==============================================================================
 
-    // Act
-    req.flush(mockSuggestions);
+  it('Dovrebbe chiamare correttamente l’endpoint POST /api/chat e gestire la risposta (Integration Test) - AAA', () => {
+    /**
+     * In questo test di integrazione verifichiamo la chiamata HTTP reale 
+     * al servizio /api/chat e la gestione della risposta da parte del servizio.
+     */
 
-    // Assert
-    expect(req.request.method).toBe('POST');
-    expect(result).toEqual(mockSuggestions);
-  });
-
-  // Test di Integrazione
-  it('Verifica il metodo sendMessage di ChatService chiami l’endpoint POST /api/chat e ne gestisca la risposta', () => {
+    // AAA: Arrange
     const fakeReply = { response: 'Risposta dal server' };
     let actualReply: string | undefined;
+
+    // AAA: Act
     service.sendMessage('Hello').subscribe(res => {
       actualReply = res.response;
     });
     const req = httpMock.expectOne('http://localhost:5000/api/chat');
     req.flush(fakeReply);
+
+    // AAA: Assert
     expect(req.request.method).toBe('POST');
     expect(actualReply).toBe('Risposta dal server');
+  });
+
+  it('Dovrebbe chiamare correttamente l’endpoint POST /api/get_next_possible_questions e gestirne la risposta (Integration Test) - AAA', () => {
+    /**
+     * In questo test di integrazione verifichiamo che la chiamata
+     * /api/get_next_possible_questions risponda correttamente 
+     * e che il servizio gestisca i dati ricevuti.
+     */
+
+    // AAA: Arrange
+    const mockSuggestions = ['Cont1', 'Cont2'];
+    let result: string[] = [];
+    service.getContinuationSuggestions({ question: 'Q', answer: 'A', quantity: 3 })
+      .subscribe(res => (result = Object.values(res)));
+    const req = httpMock.expectOne('http://localhost:5000/api/get_next_possible_questions');
+
+    // AAA: Act
+    req.flush(mockSuggestions);
+
+    // AAA: Assert
+    expect(req.request.method).toBe('POST');
+    expect(result).toEqual(mockSuggestions);
+  });
+
+  it('Dovrebbe gestire correttamente il metodo loadLastLoadOutcome (Integration Test) - AAA', () => {
+    /**
+     * In questo test di integrazione verifichiamo la chiamata
+     * /api/get_last_load_outcome e controlliamo che la risposta 
+     * venga gestita correttamente dal servizio.
+     */
+
+    // AAA: Arrange
+    const consoleSpy = spyOn(console, 'log');
+    const mockOutcomeTrue = true;
+
+    // AAA: Act
+    service.loadLastLoadOutcome();
+    const req = httpMock.expectOne('http://localhost:5000/api/get_last_load_outcome');
+    req.flush(mockOutcomeTrue);
+
+    // AAA: Assert
+    expect(req.request.method).toBe('POST');
+    expect(consoleSpy).toHaveBeenCalledWith(true);
   });
 });

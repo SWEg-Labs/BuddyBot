@@ -9,17 +9,14 @@ describe('ChatHeaderComponent', () => {
   let chatServiceSpy: jasmine.SpyObj<ChatService>;
 
   beforeEach(async () => {
-    chatServiceSpy = jasmine.createSpyObj('ChatService', [
-      'checkFileUpdates'
-    ], {
+    // Arrange
+    chatServiceSpy = jasmine.createSpyObj('ChatService', ['checkFileUpdates'], {
       isUpdated$: of(true)
     });
 
     await TestBed.configureTestingModule({
       imports: [ChatHeaderComponent],
-      providers: [
-        { provide: ChatService, useValue: chatServiceSpy }
-      ]
+      providers: [{ provide: ChatService, useValue: chatServiceSpy }]
     }).compileComponents();
   });
 
@@ -29,16 +26,39 @@ describe('ChatHeaderComponent', () => {
     fixture.detectChanges();
   });
 
-  // Test di Unità
-  it('Verifica che venga creata correttamente un’istanza di ChatHeaderComponent', () => {
-    // Assert
+  // ==============================================================================
+  //                              TEST DI UNITÀ
+  // ==============================================================================
+  
+  it('Dovrebbe creare correttamente un’istanza di ChatHeaderComponent (Unit Test) - AAA', () => {
+    /**
+     * In questo test verifichiamo che il componente ChatHeaderComponent venga
+     * creato correttamente e che l'istanza sia definita.
+     */
+
+    // AAA: Arrange
+    // (Fatto nel beforeEach)
+
+    // AAA: Act
+    // (Nessuna azione specifica)
+
+    // AAA: Assert
     expect(component).toBeTruthy();
   });
 
-  // Test di Unità
-  it('Verifica che ChatHeaderComponent contenga il badge di aggiornamento nel proprio template HTML', () => {
-    // Assert
+  it('Dovrebbe contenere il badge di aggiornamento nel template HTML (Unit Test) - AAA', () => {
+    /**
+     * In questo test verifichiamo che nel template HTML del componente
+     * sia presente l'elemento <app-chat-badge>.
+     */
+
+    // AAA: Arrange
     const compiled = fixture.nativeElement as HTMLElement;
+
+    // AAA: Act
+    // (Nessuna azione specifica, semplicemente ispezioniamo il DOM)
+
+    // AAA: Assert
     expect(compiled.querySelector('app-chat-badge')).toBeTruthy();
   });
 });

@@ -134,7 +134,7 @@ class ChromaVectorStoreRepository:
             # Esegui una ricerca di similarità
             query_result = self.__collection.query(
                 query_texts=[query],
-                n_results=10000,
+                n_results=500,
             )
 
             query_result_entity = QueryResultEntity(

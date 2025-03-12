@@ -44,7 +44,7 @@ export class ChatContainerComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadOldMessages(50);
-    this.chatService.loadLastLoadOutcome();
+    this.databaseService.loadLastLoadOutcome();
   }
 
   loadOldMessages(quantity: number) {
@@ -141,11 +141,12 @@ export class ChatContainerComponent implements OnInit {
       .replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>')
       .replace(/\n/g, '<br>');
 
-    const linkBlockRegex = /(Link correlati:(?:<br>.*?))(?=<br><br>|$)/gs;
-    formatted = formatted.replace(linkBlockRegex, (fullMatch) => {
-      const clean = fullMatch.replace(/<br>$/, '');
-      return `<div class="related-links-block">${clean}</div>`;
-    });
+      const linkBlockRegex = /(Link (?:correlati|utili):(?:<br>.*?))(?=<br><br>|$)/gis;
+      formatted = formatted.replace(linkBlockRegex, (fullMatch) => {
+        const clean = fullMatch.replace(/<br>$/, '');
+        return `<div class="related-links-block">${clean}</div>`;
+      });
+      
     return formatted;
   }
 

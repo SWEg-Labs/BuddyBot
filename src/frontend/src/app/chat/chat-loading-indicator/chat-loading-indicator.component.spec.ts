@@ -17,18 +17,39 @@ describe('ChatLoadingIndicatorComponent', () => {
     fixture.detectChanges();
   });
 
-  // Test di Unità
-  it('Verifica che venga creata correttamente un’istanza di ChatLoadingIndicatorComponent', () => {
-    // Assert
+  // ==============================================================================
+  //                              TEST DI UNITÀ
+  // ==============================================================================
+
+  it('Verifica che venga creata correttamente un’istanza di ChatLoadingIndicatorComponent (Unit Test) - AAA', () => {
+    /**
+     * In questo test controlliamo che il componente ChatLoadingIndicatorComponent
+     * venga creato con successo.
+     */
+
+    // AAA: Arrange
+    // (Nessuna disposizione speciale)
+
+    // AAA: Act
+    // (Nessuna azione necessaria)
+
+    // AAA: Assert
     expect(component).toBeTruthy();
   });
 
-  // Test di Unità
-  it('Verifica che l’istanza di ChatLoadingIndicatorComponent contenga nel template HTML un’immagine con la classe CSS ' +
-    'rotating-logo', () => {
-    // Assert
+  it('Verifica che il template HTML contenga un\'immagine con la classe rotating-logo (Unit Test) - AAA', () => {
+    /**
+     * In questo test verifichiamo che all'interno del template del componente
+     * esista effettivamente l'immagine con classe "rotating-logo".
+     */
+
+    // AAA: Arrange
     const compiled = fixture.nativeElement as HTMLElement;
+
+    // AAA: Act
     const img = compiled.querySelector('img.rotating-logo');
+
+    // AAA: Assert
     expect(img).toBeTruthy();
   });
 });

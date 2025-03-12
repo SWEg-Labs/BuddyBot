@@ -91,6 +91,15 @@
   overflow: hidden;
 }
 
+:host ::ng-deep .related-links-block {
+  background-color: #f5f5c2;
+  color: #333;
+  border-left: 5px solid #ccc;
+  padding: 10px;
+  margin: 1rem 0;
+  border-radius: 6px;
+}
+
 :host ::ng-deep .copy-snippet-icon {
   position: absolute;
   top: 5px;

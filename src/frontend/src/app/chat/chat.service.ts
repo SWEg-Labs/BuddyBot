@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
-import { LastLoadOutcome } from '../models/badge.model';
 
 
 
@@ -17,9 +16,6 @@ export class ChatService {
 
 
   private lastMessageTimestamp: number = Date.now();
-
-  private readonly lastLoadOutcomeSubject = new BehaviorSubject<LastLoadOutcome>(LastLoadOutcome.TRUE);
-  public lastLoadOutcome$ = this.lastLoadOutcomeSubject.asObservable();  
 
 
   constructor(private readonly http: HttpClient) {}
@@ -61,26 +57,6 @@ export class ChatService {
           return throwError(() => error);
         })
       );
-  }
-
-  loadLastLoadOutcome(): void {
-    this.http.post<string>(`${this.apiBaseUrl}/api/get_last_load_outcome`, {})
-      .subscribe({
-        next: (data) => {
-          console.log(data);
-          if (data === "True") {
-            this.lastLoadOutcomeSubject.next(LastLoadOutcome.TRUE);
-          } else if (data === "False") {
-            this.lastLoadOutcomeSubject.next(LastLoadOutcome.FALSE);
-          } else {
-            this.lastLoadOutcomeSubject.next(LastLoadOutcome.ERROR);
-          }
-        },
-        error: (err) => {
-          console.error('Errore nel recupero di get_last_load_outcome:', err);
-          this.lastLoadOutcomeSubject.next(LastLoadOutcome.ERROR);
-        }
-      });
   }
 
 }

@@ -8,34 +8,43 @@ describe('AppComponent', () => {
 
   beforeEach(async () => {
     // Arrange
-    chatServiceSpy = jasmine.createSpyObj('ChatService', [
-      'sendMessage',
-      'getLastMessageTimestamp',
-      'getContinuationSuggestions',
-      'getInitialSuggestions',
-      'checkFileUpdates',
-    ], {
-      isUpdated$: of(true)
-    });
+    chatServiceSpy = jasmine.createSpyObj(
+      'ChatService',
+      [
+        'sendMessage',
+        'getLastMessageTimestamp',
+        'getContinuationSuggestions',
+        'getInitialSuggestions',
+        'checkFileUpdates'
+      ],
+      {
+        isUpdated$: of(true),
+      }
+    );
 
-    chatServiceSpy.getInitialSuggestions.and.returnValue(of(['Ini1', 'Ini2']));
-    chatServiceSpy.getContinuationSuggestions.and.returnValue(of(['Cont1', 'Cont2']));
+    chatServiceSpy.getContinuationSuggestions.and.returnValue(of({ cont1: 'Cont1', cont2: 'Cont2' } as Record<string, string>));
 
     await TestBed.configureTestingModule({
       imports: [AppComponent],
-      providers: [
-        { provide: ChatService, useValue: chatServiceSpy }
-      ]
+      providers: [{ provide: ChatService, useValue: chatServiceSpy }]
     }).compileComponents();
   });
 
-  // Test di Unità
-  it('Verifica che venga creata correttamente un’istanza di AppComponent', () => {
-    // Act
-    const fixture = TestBed.createComponent(AppComponent);
+  // TEST DI UNITÀ
+  it('Dovrebbe creare correttamente un’istanza di AppComponent (Unit Test) - AAA', () => {
+    /**
+     * In questo test verifichiamo la creazione del componente principale dell'applicazione,
+     * assicurandoci che l'istanza di AppComponent sia definita.
+     */
 
-    // Assert
+    // AAA: Arrange
+    // (La fase di arrangiamento è stata fatta nel beforeEach)
+
+    // AAA: Act
+    const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
+
+    // AAA: Assert
     expect(app).toBeTruthy();
   });
 });

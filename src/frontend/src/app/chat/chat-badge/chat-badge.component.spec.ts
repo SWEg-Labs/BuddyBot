@@ -9,58 +9,89 @@ describe('ChatBadgeComponent', () => {
   let chatServiceSpy: jasmine.SpyObj<ChatService>;
 
   beforeEach(async () => {
-    chatServiceSpy = jasmine.createSpyObj('ChatService', ['checkFileUpdates'], {
-    });
+    // Arrange
+    chatServiceSpy = jasmine.createSpyObj('ChatService', ['checkFileUpdates'], {});
+    chatServiceSpy.isUpdated$ = of(true);
 
     await TestBed.configureTestingModule({
       imports: [ChatBadgeComponent],
-      providers: [
-        { provide: ChatService, useValue: chatServiceSpy }
-      ]
+      providers: [{ provide: ChatService, useValue: chatServiceSpy }]
     }).compileComponents();
   });
 
   beforeEach(() => {
-    chatServiceSpy.isUpdated$ = of(true);
+    // Arrange
     fixture = TestBed.createComponent(ChatBadgeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  // Test di Unità
-  it('Verifica che venga creata correttamente un’istanza di ChatBadgeComponent', () => {
-    // Assert
+  // ==============================================================================
+  //                              TEST DI UNITÀ
+  // ==============================================================================
+
+  it('Dovrebbe creare correttamente un’istanza di ChatBadgeComponent (Unit Test) - AAA', () => {
+    /**
+     * In questo test verifichiamo la creazione del componente ChatBadgeComponent,
+     * assicurandoci che l'istanza sia definita.
+     */
+
+    // AAA: Arrange
+    // (Fatto in beforeEach)
+
+    // AAA: Act
+    // (Nessuna azione ulteriore)
+
+    // AAA: Assert
     expect(component).toBeTruthy();
   });
 
-  // Test di Unità
-  it('Verifica che isUpdated di ChatBadgeComponent venga impostato inizialmente al valore true', () => {
-    // Assert
-    expect(component.isUpdated).toBeTrue();
+  it('Dovrebbe impostare isUpdated inizialmente a true (Unit Test) - AAA', () => {
+    /**
+     * In questo test controlliamo che la proprietà "isUpdated" 
+     * sia inizialmente impostata a true.
+     */
 
+    // AAA: Arrange
+    // (Fatto in beforeEach)
+
+    // AAA: Act
+    // (Nessuna azione specifica)
+
+    // AAA: Assert
+    expect(component.isUpdated).toBeTrue();
   });
 
-  // Test di Unità
-  it('Verifica che onToggleStatus() di ChatBadgeComponent chiami checkFileUpdates() di chatServiceSpy', () => {
-    // Act
+  it('Dovrebbe chiamare checkFileUpdates quando viene invocato onToggleStatus (Unit Test) - AAA', () => {
+    /**
+     * In questo test verifichiamo che richiamando onToggleStatus() 
+     * venga effettivamente invocato il metodo checkFileUpdates() del ChatService.
+     */
+
+    // AAA: Arrange
+
+    // AAA: Act
     component.onToggleStatus();
 
-    // Assert
+    // AAA: Assert
     expect(chatServiceSpy.checkFileUpdates).toHaveBeenCalled();
   });
 
-  // Test di Unità
-  it('Verifica che, al cambio di valore di isUpdated$ di chatServiceSpy, isUpdated di ChatBadgeComponent si aggiorni ' +
-    'correttamente', () => {
-    // Arrange
+  it('Dovrebbe aggiornare isUpdated al cambiamento di isUpdated$ (Unit Test) - AAA', () => {
+    /**
+     * In questo test verifichiamo che la proprietà isUpdated venga aggiornata correttamente
+     * quando il BehaviorSubject isUpdated$ emette un nuovo valore (false).
+     */
+
+    // AAA: Arrange
     chatServiceSpy.isUpdated$ = of(false);
     fixture = TestBed.createComponent(ChatBadgeComponent);
     component = fixture.componentInstance;
 
-    // Act
+    // AAA: Act
     fixture.detectChanges();
 
-    // Assert
+    // AAA: Assert
     expect(component.isUpdated).toBeFalse();
   });
 });

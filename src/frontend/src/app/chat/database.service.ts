@@ -1,19 +1,24 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable, map, BehaviorSubject } from 'rxjs';
 import { Message, MessageSender } from '../models/message.model';
+import { LastLoadOutcome } from '../models/badge.model';
+
 
 @Injectable({
   providedIn: 'root',
 })
 export class DatabaseService {
-  private readonly baseUrl = 'http://localhost:5000';
+  private readonly apiBaseUrl = 'http://localhost:5000';
+
+  private readonly lastLoadOutcomeSubject = new BehaviorSubject<LastLoadOutcome>(LastLoadOutcome.TRUE);
+  public lastLoadOutcome$ = this.lastLoadOutcomeSubject.asObservable();  
 
   constructor(private readonly http: HttpClient) {}
 
   getMessages(quantity: number): Observable<Message[]> {
     return this.http
-      .post<any[]>(`${this.baseUrl}/api/get_messages`, { quantity })
+      .post<any[]>(`${this.apiBaseUrl}/api/get_messages`, { quantity })
       .pipe(
         map((responseArray: any[]) => {
           return responseArray.map(obj => {
@@ -33,8 +38,28 @@ export class DatabaseService {
       timestamp: msg.timestamp,
     }
     return this.http.post<{ status: boolean | string }>(
-      `${this.baseUrl}/api/save_message`,
+      `${this.apiBaseUrl}/api/save_message`,
       payload
     )
+  }
+
+  loadLastLoadOutcome(): void {
+    this.http.post<string>(`${this.apiBaseUrl}/api/get_last_load_outcome`, {})
+      .subscribe({
+        next: (data) => {
+          console.log(data);
+          if (data === "True") {
+            this.lastLoadOutcomeSubject.next(LastLoadOutcome.TRUE);
+          } else if (data === "False") {
+            this.lastLoadOutcomeSubject.next(LastLoadOutcome.FALSE);
+          } else {
+            this.lastLoadOutcomeSubject.next(LastLoadOutcome.ERROR);
+          }
+        },
+        error: (err) => {
+          console.error('Errore nel recupero di get_last_load_outcome:', err);
+          this.lastLoadOutcomeSubject.next(LastLoadOutcome.ERROR);
+        }
+      });
   }
 }
