@@ -2,7 +2,7 @@ from utils.beartype_personalized import beartype_personalized
 
 @beartype_personalized
 class QueryResultEntity:
-    def __init__(self, documents=None, metadatas=None, distances=None):
+    def __init__(self, documents: list = None, metadatas: list = None, distances: list = None):
         self.__documents = documents if documents is not None else []
         self.__metadatas = metadatas if metadatas is not None else []
         self.__distances = distances if distances is not None else []
@@ -27,7 +27,7 @@ class QueryResultEntity:
         }
 
     @classmethod
-    def from_dict(cls, data):
+    def from_dict(cls, data: dict):
         return cls(
             documents=data.get("documents", []),
             metadatas=data.get("metadatas", []),
