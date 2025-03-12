@@ -16,7 +16,6 @@ class MessageDTO(BaseModel):
         self.__content = content
         self.__timestamp = timestamp
         self.__sender = sender
-    
 
     def get_content(self) -> str:
         return self.__content

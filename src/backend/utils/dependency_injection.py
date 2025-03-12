@@ -111,7 +111,7 @@ def initialize_postgres() -> PostgresAdapter:
             password=db_config["password"],
             dbname=db_config["dbname"]
         )
-        
+
         # Creazione delle tabelle necessarie
         with conn.cursor() as cursor:
             cursor.execute("""
