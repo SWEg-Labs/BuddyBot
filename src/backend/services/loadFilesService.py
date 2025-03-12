@@ -70,11 +70,11 @@ class LoadFilesService(LoadFilesUseCase):
             loading_attempt = LoadingAttempt(platform_logs, vector_store_log, starting_timestamp)
 
             db_save_operation_response = self.save_loading_attempt_in_db(loading_attempt)
-            if not db_save_operation_response.get_success():
+            if db_save_operation_response.get_success():
+                logger.info("Loading attempt correctly saved in Postgres database.")
+            else:
                 raise Exception("Failed to save loading attempt in Postgres database: Connection to the database failed. "
                                 "Details: " + db_save_operation_response.get_message())
-            else:
-                logger.info("Loading attempt correctly saved in Postgres database.")
 
             self.save_loading_attempt_in_txt(loading_attempt)
         except Exception as e:
