@@ -1,12 +1,14 @@
 import base64
-from typing import List, Tuple
+from beartype.typing import List, Tuple
 
 from models.document import Document
 from models.loggingModels import PlatformLog
 from ports.gitHubPort import GitHubPort
 from repositories.gitHubRepository import GitHubRepository
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class GitHubAdapter(GitHubPort):
     """
     Adapter class for interacting with a GitHub repository.
@@ -19,14 +21,8 @@ class GitHubAdapter(GitHubPort):
         Initialize the GitHubAdapter with a GitHubRepository instance.
         Args:
             github_repository (GitHubRepository): An instance of GitHubRepository to interact with GitHub.
-        Raises:
-            Exception: If there is an error during initialization.
         """
-        try:
-            self.__github_repository = github_repository
-        except Exception as e:
-            logger.error(f"Error initializing GitHubAdapter: {e}")
-            raise e
+        self.__github_repository = github_repository
 
     def load_github_commits(self) -> Tuple[PlatformLog, List[Document]]:
         """
@@ -50,7 +46,7 @@ class GitHubAdapter(GitHubPort):
                         "email": commit.get_author_email()
                         if commit.get_author_email() is not None
                         else "/",
-                        "date": commit.get_author_date()
+                        "date": commit.get_author_date().strftime('%Y-%m-%d %H:%M:%S')
                         if commit.get_author_date() is not None
                         else "/",
                         "files": [

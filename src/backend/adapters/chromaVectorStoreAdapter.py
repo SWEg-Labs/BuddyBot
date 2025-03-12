@@ -9,7 +9,9 @@ from ports.similaritySearchPort import SimilaritySearchPort
 from ports.loadFilesInVectorStorePort import LoadFilesInVectorStorePort
 from repositories.chromaVectorStoreRepository import ChromaVectorStoreRepository
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class ChromaVectorStoreAdapter(SimilaritySearchPort, LoadFilesInVectorStorePort):
     """
     Adapter class for interacting with a Chroma vector store repository.
@@ -27,12 +29,8 @@ class ChromaVectorStoreAdapter(SimilaritySearchPort, LoadFilesInVectorStorePort)
             max_chunk_size (int): Maximum size of each document chunk.
             chroma_vector_store_repository (ChromaVectorStoreRepository): Repository for interacting with the Chroma vector store.
         """
-        try:
-            self.__max_chunk_size = max_chunk_size
-            self.__chroma_vector_store_repository = chroma_vector_store_repository
-        except Exception as e:
-            logger.error(f"Error in initializing ChromaVectorStoreAdapter: {e}")
-            raise e
+        self.__max_chunk_size = max_chunk_size
+        self.__chroma_vector_store_repository = chroma_vector_store_repository
 
     def load(self, documents: list[Document]) -> VectorStoreLog:
         """
@@ -47,7 +45,7 @@ class ChromaVectorStoreAdapter(SimilaritySearchPort, LoadFilesInVectorStorePort)
             result = self.__chroma_vector_store_repository.load(chroma_documents)
             return result
         except Exception as e:
-            logger.error(f"Error in adapting documents to load: {e}")
+            logger.error(f"Error in adapting documents to load in Chroma: {e}")
             raise e
 
     def __split(self, documents: list[Document]) -> list[ChromaDocumentEntity]:
@@ -57,6 +55,8 @@ class ChromaVectorStoreAdapter(SimilaritySearchPort, LoadFilesInVectorStorePort)
             documents (list[Document]): List of documents to be split.
         Returns:
             list[ChromaDocumentEntity]: List of document chunks as ChromaDocumentEntity objects.
+        Raises:
+            ValueError: If a document does not have an 'id' field in its metadata.
         """
         try:
             chroma_documents = []
@@ -66,7 +66,9 @@ class ChromaVectorStoreAdapter(SimilaritySearchPort, LoadFilesInVectorStorePort)
             for document in documents:
                 page_content = document.get_page_content()
                 metadata = document.get_metadata()
-                doc_id = metadata.get("id", "")
+                doc_id = metadata.get("id")
+                if not doc_id:
+                    raise ValueError("Document metadata must contain an 'id' field.")
 
                 # Check for duplicate doc_id values
                 if doc_id in seen_doc_ids:
@@ -102,7 +104,7 @@ class ChromaVectorStoreAdapter(SimilaritySearchPort, LoadFilesInVectorStorePort)
 
             return chroma_documents
         except Exception as e:
-            logger.error(f"Error in splitting Documents: {e}")
+            logger.error(f"Error in splitting Documents before loading in Chroma: {e}")
             raise e
 
     def similarity_search(self, user_input: Question) -> list[Document]:

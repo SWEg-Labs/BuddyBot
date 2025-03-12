@@ -1,4 +1,5 @@
 from unittest.mock import MagicMock
+from datetime import datetime
 
 from dto.messageDTO import MessageDTO, MessageSenderDTO
 from models.quantity import Quantity
@@ -18,11 +19,11 @@ def test_get_messages_calls_use_case_method():
     quantity_dict = {"value": quantity}
     quantity_object = Quantity(quantity)
     expected_result = [
-        MessageDTO(content=f"Message {i}", timestamp=f"2021-10-10T10:10:0{i}",
+        MessageDTO(content=f"Message {i}", timestamp=datetime(2021, 10, 10, 10, 10, i),
                                         sender=MessageSenderDTO.USER) for i in range(quantity)
     ]
     use_case_result = [
-        Message(content=f"Message {i}", timestamp=f"2021-10-10T10:10:0{i}",
+        Message(content=f"Message {i}", timestamp=datetime(2021, 10, 10, 10, 10, i),
                                sender=MessageSender.USER) for i in range(quantity)
     ]
     mock_get_messages_use_case.get_messages.return_value = use_case_result

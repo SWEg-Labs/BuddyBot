@@ -1,10 +1,13 @@
 from use_cases.loadFilesUseCase import LoadFilesUseCase
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class LoadFilesController:
     """
     Controller class to manage file loading operations.
     """
+
     def __init__(self, load_files_use_case: LoadFilesUseCase):
         """
         Initializes the LoadFilesController with the given use case.

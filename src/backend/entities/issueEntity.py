@@ -1,5 +1,8 @@
+from utils.beartype_personalized import beartype_personalized
+
+@beartype_personalized
 class IssueEntity:
-    def __init__(self, id: str, key: str, summary: str, description: str, issuetype: dict, project: dict, status: dict, priority: dict, assignee: dict, reporter: dict, created: str, updated: str, attachment: list):
+    def __init__(self, id: str, key: str, summary: str, description: str | None, issuetype: dict, project: dict, status: dict, priority: dict, assignee: dict, reporter: dict, created: str, updated: str, attachment: list):
         """
         Inizializza un nuovo oggetto IssueEntity, basato su una issue di Jira.
 
@@ -7,7 +10,7 @@ class IssueEntity:
             id (str): L'ID dell'issue.
             key (str): La chiave dell'issue.
             summary (str): Un breve riassunto dell'issue.
-            description (str): Una descrizione dettagliata dell'issue.
+            description (str | None): Una descrizione dettagliata dell'issue oppure None se non presente.
             issuetype (dict): Un dizionario che descrive il tipo di issue.
             project (dict): Un dizionario che descrive il progetto a cui appartiene l'issue.
             status (dict): Un dizionario che descrive lo stato dell'issue.
@@ -41,7 +44,7 @@ class IssueEntity:
     def get_summary(self) -> str:
         return self.__summary
 
-    def get_description(self) -> str:
+    def get_description(self) -> str | None:
         return self.__description
 
     def get_issuetype(self) -> dict:

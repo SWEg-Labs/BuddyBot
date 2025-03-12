@@ -1,5 +1,6 @@
 from unittest.mock import MagicMock
 from datetime import datetime, timedelta
+
 from models.document import Document
 from models.loggingModels import PlatformLog, LoadingItems
 from adapters.confluenceAdapter import ConfluenceAdapter
@@ -7,7 +8,7 @@ from repositories.confluenceRepository import ConfluenceRepository
 from entities.pageEntity import PageEntity
 
 
-# Verifica che il metodo load_confluence_pages del ConfluenceAdapter chiami il metodo load_confluence_pages del ConfluenceRepository
+# Verifica che il metodo load_confluence_pages di ConfluenceAdapter chiami il metodo load_confluence_pages di ConfluenceRepository
 
 def test_load_confluence_pages_calls_repository_method():
     # Arrange

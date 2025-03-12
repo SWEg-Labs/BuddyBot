@@ -1,12 +1,14 @@
 import psycopg2
-from typing import Optional, Tuple
+from beartype.typing import Optional, Tuple
 
 from entities.loggingEntities import PostgresLoadingAttempt
 from entities.postgresSaveOperationResponse import PostgresSaveOperationResponse
 from entities.postgresMessage import PostgresMessage, PostgresMessageSender
 from entities.postgresLastLoadOutcome import PostgresLastLoadOutcome
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class PostgresRepository:
     '''
     A repository class for interacting with a PostgreSQL database.
@@ -19,14 +21,8 @@ class PostgresRepository:
         Initializes the PostgresRepository with the given database connection.
         Args:
             conn (psycopg2.extensions.connection): The connection object to the PostgreSQL database.
-        Raises:
-            psycopg2.Error: If an error occurs while initializing the PostgresRepository.
         '''
-        try:
-            self.__conn = conn
-        except Exception as e:
-            logger.error(f"An error occurred while initializing the PostgresRepository: {e}")
-            raise e
+        self.__conn = conn
 
     def __execute_query(self, query: str, params: Optional[Tuple] = None, fetch_one: bool = False, fetch_all: bool = False) -> tuple | list | None:
         '''
@@ -182,7 +178,7 @@ class PostgresRepository:
         except Exception as e:
             logger.error(f"An error occurred while saving the loading attempt in the Postgres database: {e}")
             raise e
-        
+
     def get_last_load_outcome(self) -> PostgresLastLoadOutcome:
         '''
         Retrieves the outcome of the most recent loading attempt from the PostgreSQL database.

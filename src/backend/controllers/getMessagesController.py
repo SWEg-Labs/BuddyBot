@@ -1,10 +1,12 @@
-from typing import List
+from beartype.typing import List
 
 from dto.messageDTO import MessageDTO, MessageSenderDTO
 from models.quantity import Quantity
 from use_cases.getMessagesUseCase import GetMessagesUseCase
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class GetMessagesController:
     """
     Controller class to handle the retrieval of messages.
@@ -16,14 +18,8 @@ class GetMessagesController:
         """
         Initialize the GetMessagesController with the provided use case.
             get_messages_use_case (GetMessagesUseCase): The use case instance to retrieve messages.
-        Raises:
-            Exception: If an error occurs during initialization.
         """
-        try:
-            self.__get_messages_use_case = get_messages_use_case
-        except Exception as e:
-            logger.error(f"An error occurred while initializing GetMessagesController: {e}")
-            raise e
+        self.__get_messages_use_case = get_messages_use_case
 
     def get_messages(self, quantity: dict[str, int]) -> List[MessageDTO]:
         """

@@ -1,7 +1,9 @@
 from dto.lastLoadOutcomeDTO import LastLoadOutcomeDTO
 from use_cases.getLastLoadOutcomeUseCase import GetLastLoadOutcomeUseCase
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class GetLastLoadOutcomeController:
     """
     Controller for handling the retrieval of the last load outcome.
@@ -14,14 +16,8 @@ class GetLastLoadOutcomeController:
         Initializes the GetLastLoadOutcomeController with the provided use case.
         Args:
             get_last_load_outcome_use_case (GetLastLoadOutcomeUseCase): The use case for getting the last load outcome.
-        Raises:
-            Exception: If there is an error during initialization.
         """
-        try:
-            self.get_last_load_outcome_use_case = get_last_load_outcome_use_case
-        except Exception as e:
-            logger.error(f"Error initializing GetLastLoadOutcomeController: {e}")
-            raise e
+        self.get_last_load_outcome_use_case = get_last_load_outcome_use_case
 
     def get_last_load_outcome(self) -> LastLoadOutcomeDTO:
         """

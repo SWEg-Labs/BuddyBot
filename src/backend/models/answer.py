@@ -1,3 +1,6 @@
+from utils.beartype_personalized import beartype_personalized
+
+@beartype_personalized
 class Answer:
     def __init__(self, content: str):
         self.__content = content

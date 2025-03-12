@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+
 from models.lastLoadOutcome import LastLoadOutcome
 
 class GetLastLoadOutcomePort(ABC):
@@ -13,4 +14,3 @@ class GetLastLoadOutcomePort(ABC):
         Returns:
             LastLoadOutcome: The last load outcome.
         """
-        pass

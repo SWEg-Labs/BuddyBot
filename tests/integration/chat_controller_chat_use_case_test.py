@@ -8,7 +8,7 @@ from models.answer import Answer
 from use_cases.chatUseCase import ChatUseCase
 from controllers.chatController import ChatController
 
-pytestmark = pytest.mark.asyncio  # ✅ Imposta asyncio per tutti i test nel file
+pytestmark = pytest.mark.asyncio  # Imposta asyncio per tutti i test nel file
 
 
 # Verifica che il metodo get_answer di ChatController chiami correttamente il metodo get_answer di ChatUseCase, in caso di messaggio non vuoto

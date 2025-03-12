@@ -10,13 +10,16 @@ from ports.generateAnswerPort import GenerateAnswerPort
 from ports.getNextPossibleQuestionsPort import GetNextPossibleQuestionsPort
 from repositories.langChainRepository import LangChainRepository
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class LangChainAdapter(GenerateAnswerPort, GetNextPossibleQuestionsPort):
     """
     Adapter class for integrating with the LangChainRepository. This class is responsible for
     adapting the input parameters to the format expected by the LangChainRepository and 
     generating answers based on user input and relevant documents.
     """
+
     def __init__(self, max_num_tokens: int, langchain_repository: LangChainRepository):
         """
         Initialize the LangChainAdapter with a LangChainRepository instance.
@@ -24,12 +27,8 @@ class LangChainAdapter(GenerateAnswerPort, GetNextPossibleQuestionsPort):
             max_num_tokens (int): The maximum number of tokens allowed for the LLM.
             langchain_repository (LangChainRepository): An instance of LangChainRepository used to generate answers.
         """
-        try:
-            self.__max_num_tokens = max_num_tokens
-            self.__langchain_repository = langchain_repository
-        except Exception as e:
-            logger.error(f"An error occurred during initialization: {e}")
-            raise e
+        self.__max_num_tokens = max_num_tokens
+        self.__langchain_repository = langchain_repository
 
     def generate_answer(self, user_input: Question, relevant_docs: list[Document], header: Header) -> Answer:
         """
@@ -43,7 +42,6 @@ class LangChainAdapter(GenerateAnswerPort, GetNextPossibleQuestionsPort):
         Raises:
             Exception: If an error occurs during answer generation
         """
-
         try:
             # Adapt the parameters to the format expected by LangChainRepository
             user_input = user_input.get_content()

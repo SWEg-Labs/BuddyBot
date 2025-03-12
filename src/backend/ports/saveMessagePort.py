@@ -19,4 +19,3 @@ class SaveMessagePort(ABC):
         Returns:
             DbSaveOperationResponse: The response object containing the result of the save operation.
         """
-        pass

@@ -1,4 +1,5 @@
 from unittest.mock import MagicMock
+from datetime import datetime
 
 from models.message import Message, MessageSender
 from models.dbSaveOperationResponse import DbSaveOperationResponse
@@ -14,7 +15,7 @@ def test_save_calls_port_method():
     save_message_service = SaveMessageService(mock_save_message_port)
 
     content = "test message"
-    timestamp = "2021-10-10T10:10:10"
+    timestamp = datetime(2021, 10, 10, 10, 10, 10)
     message = Message(content, timestamp, MessageSender.USER)
 
     expected_response = DbSaveOperationResponse(success=True, message="Message saved successfully")

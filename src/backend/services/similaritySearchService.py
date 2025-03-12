@@ -3,7 +3,9 @@ from models.document import Document
 from models.documentConstraints import DocumentConstraints
 from ports.similaritySearchPort import SimilaritySearchPort
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class SimilaritySearchService:
     """
     A service class for performing similarity searches on documents.
@@ -11,6 +13,7 @@ class SimilaritySearchService:
         document_constraints (DocumentConstraints): Constraints to apply during the similarity search.
         similarity_search_port (SimilaritySearchPort): The port used to perform the similarity search.
     """
+
     def __init__(self, document_constraints: DocumentConstraints, similarity_search_port: SimilaritySearchPort):
         """
         Initializes the SimilaritySearchService with the given document constraints and similarity search port.
@@ -18,12 +21,8 @@ class SimilaritySearchService:
             document_constraints (DocumentConstraints): Constraints to apply during the similarity search.
             similarity_search_port (SimilaritySearchPort): The port used to perform the similarity search.
         """
-        try:
-            self.__document_constraints = document_constraints
-            self.__similarity_search_port = similarity_search_port
-        except Exception as e:
-            logger.error(f"Error initializing SimilaritySearchService: {e}")
-            raise e
+        self.__document_constraints = document_constraints
+        self.__similarity_search_port = similarity_search_port
 
     def similarity_search(self, user_input: Question) -> list[Document]:
         """

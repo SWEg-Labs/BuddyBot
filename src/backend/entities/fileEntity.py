@@ -1,3 +1,6 @@
+from utils.beartype_personalized import beartype_personalized
+
+@beartype_personalized
 class FileEntity:
     def __init__(self, type: str, encoding: str, size: int, name: str, path: str, content: str, sha: str, url: str, html_url: str, download_url: str, git_url: str):
         """

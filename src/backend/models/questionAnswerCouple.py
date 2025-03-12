@@ -1,6 +1,8 @@
 from models.question import Question
 from models.answer import Answer
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class QuestionAnswerCouple:
     def __init__(self, question: Question, answer: Answer):
         self.__question = question

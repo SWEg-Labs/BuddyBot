@@ -2,7 +2,9 @@ from dto.messageDTO import MessageDTO
 from models.message import Message, MessageSender
 from use_cases.saveMessageUseCase import SaveMessageUseCase
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class SaveMessageController:
     """
     A controller class responsible for saving messages.
@@ -15,14 +17,8 @@ class SaveMessageController:
         Initializes the SaveMessagesController with the given SaveMessageUseCase.
         Args:
             save_message_use_case (SaveMessageUseCase): The use case instance responsible for saving messages.
-        Raises:
-            Exception: If there is an error during initialization.
         """
-        try:
-            self.__save_message_use_case = save_message_use_case
-        except Exception as e:
-            logger.error(f"Failed to initialize SaveMessagesController: {e}")
-            raise e
+        self.__save_message_use_case = save_message_use_case
 
     def save(self, message: MessageDTO) -> dict[str, bool | str]:
         """

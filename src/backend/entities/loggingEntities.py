@@ -1,12 +1,15 @@
 from enum import Enum
 from datetime import datetime
 
+from utils.beartype_personalized import beartype_personalized
+
 class PostgresLoadingItems(Enum):
     GitHubCommits = "GitHub Commits"
     GitHubFiles = "GitHub Files"
     JiraIssues = "Jira Issues"
     ConfluencePages = "Confluence Pages"
 
+@beartype_personalized
 class PostgresPlatformLog:
     def __init__(self, postgres_loading_items: PostgresLoadingItems, timestamp: datetime, outcome: bool):
         self.__postgres_loading_items = postgres_loading_items
@@ -29,6 +32,7 @@ class PostgresPlatformLog:
             self.__timestamp == other.get_timestamp() and
             self.__outcome == other.get_outcome())
 
+@beartype_personalized
 class PostgresVectorStoreLog:
     def __init__(self, timestamp: datetime, outcome: bool, num_added_items: int, num_modified_items: int, num_deleted_items: int):
         self.__timestamp = timestamp
@@ -61,6 +65,7 @@ class PostgresVectorStoreLog:
             self.__num_modified_items == other.get_num_modified_items() and
             self.__num_deleted_items == other.get_num_deleted_items())
 
+@beartype_personalized
 class PostgresLoadingAttempt:
     def __init__(self, postgres_platform_logs: list[PostgresPlatformLog], postgres_vector_store_log: PostgresVectorStoreLog, starting_timestamp: datetime):
         self.__postgres_platform_logs = postgres_platform_logs

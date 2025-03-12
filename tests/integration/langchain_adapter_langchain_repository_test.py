@@ -1,4 +1,5 @@
 from unittest.mock import MagicMock
+
 from models.document import Document
 from models.question import Question
 from models.header import Header
@@ -52,6 +53,11 @@ def test_get_next_possible_questions_calls_repository_method():
     question_answer_couple = QuestionAnswerCouple(question, answer)
     header = Header("test header with 3 questions requested")
 
+    expected_repo_couple_parameter = [
+        LangChainDocumentEntity(question_answer_couple.get_question().get_content()),
+        LangChainDocumentEntity(question_answer_couple.get_answer().get_content())
+    ]
+
     expected_repo_response = (
         "Chi ha risolto la issue BUD-240?___"
         "Cosa ha detto il cliente sulle metriche di qualità?___"
@@ -73,7 +79,7 @@ def test_get_next_possible_questions_calls_repository_method():
 
     # Assert
     mock_langchain_repository.get_next_possible_questions.assert_called_once_with(
-        [question.get_content(), answer.get_content()],
-        header.get_content()
+        question_answer_couple = expected_repo_couple_parameter,
+        header = header.get_content()
     )
     assert result == expected_possible_questions

@@ -1,4 +1,5 @@
 from unittest.mock import MagicMock
+from datetime import datetime
 
 from dto.messageDTO import MessageDTO, MessageSenderDTO
 from models.dbSaveOperationResponse import DbSaveOperationResponse
@@ -15,7 +16,7 @@ def test_save_calls_use_case_method():
     save_message_controller = SaveMessageController(mock_save_message_use_case)
 
     content = "test message"
-    timestamp = "2021-10-10T10:10:10"
+    timestamp = datetime(2021, 10, 10, 10, 10, 10)
     message_base_model = MessageDTO(content, timestamp, MessageSenderDTO.USER)
     message = Message(content, timestamp, MessageSender.USER)
 

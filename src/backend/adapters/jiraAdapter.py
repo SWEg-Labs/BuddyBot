@@ -1,11 +1,13 @@
-from typing import List, Tuple
+from beartype.typing import List, Tuple
 
 from models.document import Document
 from models.loggingModels import PlatformLog
 from ports.jiraPort import JiraPort
 from repositories.jiraRepository import JiraRepository
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class JiraAdapter(JiraPort):
     """
     Adapter class for interacting with Jira issues.
@@ -18,14 +20,8 @@ class JiraAdapter(JiraPort):
         Initializes the JiraAdapter with a JiraRepository instance.
         Args:
             jira_repository (JiraRepository): The repository instance for Jira operations.
-        Raises:
-            Exception: If an error occurs during initialization.
         """
-        try:
-            self.__jira_repository = jira_repository
-        except Exception as e:
-            logger.error(f"An error occurred while initializing JiraAdapter: {e}")
-            raise e
+        self.__jira_repository = jira_repository
 
     def load_jira_issues(self) -> Tuple[PlatformLog, List[Document]]:
         """
@@ -37,6 +33,7 @@ class JiraAdapter(JiraPort):
         """
         try:
             platform_log, issue_entities = self.__jira_repository.load_jira_issues()
+
             documents = [
                 Document(
                     page_content=issue.get_summary() if issue.get_summary() is not None else "/",
@@ -45,8 +42,8 @@ class JiraAdapter(JiraPort):
                                    if issue.get_project() and issue.get_project().get("name") is not None else "/",
                         "status": issue.get_status().get("name")
                                   if issue.get_status() and issue.get_status().get("name") is not None else "/",
-                        "assignee": issue.get_assignee().get("name")
-                                    if issue.get_assignee() and issue.get_assignee().get("name") is not None else "/",
+                        "assignee": issue.get_assignee().get("displayName")
+                                    if issue.get_assignee() and issue.get_assignee().get("displayName") is not None else "/",
                         "priority": issue.get_priority().get("name")
                                     if issue.get_priority() and issue.get_priority().get("name") is not None else "/",
                         "type": issue.get_issuetype().get("name")

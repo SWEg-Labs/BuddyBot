@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from beartype.typing import List, Tuple
 from datetime import datetime
 import pytz
 
@@ -13,7 +13,9 @@ from ports.loadFilesInVectorStorePort import LoadFilesInVectorStorePort
 from ports.saveLoadingAttemptInDbPort import SaveLoadingAttemptInDbPort
 from services.confluenceCleanerService import ConfluenceCleanerService
 from utils.logger import logger, file_logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class LoadFilesService(LoadFilesUseCase):
     """
     Service class responsible for loading files from various platforms (GitHub, Jira, Confluence),
@@ -39,16 +41,12 @@ class LoadFilesService(LoadFilesUseCase):
             save_loading_attempt_in_db_port (SaveLoadingAttemptInDbPort): Port for saving loading attempts in the database.
             confluence_cleaner_service (ConfluenceCleanerService): Service for cleaning Confluence pages.
         """
-        try:
-            self.__github_port = github_port
-            self.__jira_port = jira_port
-            self.__confluence_port = confluence_port
-            self.__confluence_cleaner_service = confluence_cleaner_service
-            self.__load_files_in_vector_store_port = load_files_in_vector_store_port
-            self.__save_loading_attempt_in_db_port = save_loading_attempt_in_db_port
-        except Exception as e:
-            logger.error(f"Error initializing LoadFilesService: {e}")
-            raise e
+        self.__github_port = github_port
+        self.__jira_port = jira_port
+        self.__confluence_port = confluence_port
+        self.__confluence_cleaner_service = confluence_cleaner_service
+        self.__load_files_in_vector_store_port = load_files_in_vector_store_port
+        self.__save_loading_attempt_in_db_port = save_loading_attempt_in_db_port
 
     def load(self):
         """
@@ -72,8 +70,10 @@ class LoadFilesService(LoadFilesUseCase):
             loading_attempt = LoadingAttempt(platform_logs, vector_store_log, starting_timestamp)
 
             db_save_operation_response = self.save_loading_attempt_in_db(loading_attempt)
-            if not db_save_operation_response.get_success():
-                raise Exception("Failed to save loading attempt in the database: Connection to the database failed. "
+            if db_save_operation_response.get_success():
+                logger.info("Loading attempt correctly saved in Postgres database.")
+            else:
+                raise Exception("Failed to save loading attempt in Postgres database: Connection to the database failed. "
                                 "Details: " + db_save_operation_response.get_message())
 
             self.save_loading_attempt_in_txt(loading_attempt)
@@ -191,6 +191,8 @@ class LoadFilesService(LoadFilesUseCase):
                 "=============================================\n"
             )
             file_logger.info(log_message)
+
+            logger.info("Loading attempt correctly saved in TXT file.")
         except Exception as e:
-            logger.error(f"Error saving loading attempt in TXT: {e}")
+            logger.error(f"Error saving loading attempt in TXT file: {e}")
             raise e

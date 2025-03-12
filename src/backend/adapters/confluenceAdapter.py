@@ -1,11 +1,13 @@
-from typing import List, Tuple
+from beartype.typing import List, Tuple
 
 from models.document import Document
 from models.loggingModels import PlatformLog
 from ports.confluencePort import ConfluencePort
 from repositories.confluenceRepository import ConfluenceRepository
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class ConfluenceAdapter(ConfluencePort):
     """
     Adapter class for interacting with Confluence through a repository.
@@ -18,14 +20,8 @@ class ConfluenceAdapter(ConfluencePort):
         Initializes the ConfluenceAdapter with the given repository.
         Args:
             confluence_repository (ConfluenceRepository): The repository used to interact with Confluence.
-        Raises:
-            Exception: If there is an error initializing the adapter.
         """
-        try:
-            self.__confluence_repository = confluence_repository
-        except Exception as e:
-            logger.error(f"Error initializing ConfluenceAdapter: {e}")
-            raise e
+        self.__confluence_repository = confluence_repository
 
     def load_confluence_pages(self) -> Tuple[PlatformLog, List[Document]]:
         """

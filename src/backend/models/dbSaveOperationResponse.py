@@ -1,3 +1,6 @@
+from utils.beartype_personalized import beartype_personalized
+
+@beartype_personalized
 class DbSaveOperationResponse:
     def __init__(self, success: bool, message: str):
         self.__success = success

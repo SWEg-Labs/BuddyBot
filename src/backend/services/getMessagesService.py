@@ -1,31 +1,27 @@
-from typing import List
+from beartype.typing import List
 
 from models.quantity import Quantity
 from models.message import Message
 from use_cases.getMessagesUseCase import GetMessagesUseCase
 from ports.getMessagesPort import GetMessagesPort
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
+@beartype_personalized
 class GetMessagesService(GetMessagesUseCase):
     """
     Service class to handle the retrieval of messages.
     This class implements the GetMessagesUseCase interface and uses a 
     GetMessagesPort to fetch messages.
-
     """
+
     def __init__(self, get_messages_port: GetMessagesPort):
         """
         Initialize the GetMessagesService with a GetMessagesPort.
         Args:
             get_messages_port (GetMessagesPort): The port to fetch messages.
-        Raises:
-            Exception: If initialization of GetMessagesService fails.
         """
-        try:
-            self.__get_messages_port = get_messages_port
-        except Exception as e:
-            logger.error(f"Failed to initialize GetMessagesService: {e}")
-            raise e
+        self.__get_messages_port = get_messages_port
 
     def get_messages(self, quantity: Quantity) -> List[Message]:
         """

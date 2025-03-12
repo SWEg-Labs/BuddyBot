@@ -36,8 +36,10 @@ from repositories.jiraRepository import JiraRepository
 from repositories.confluenceRepository import ConfluenceRepository
 from repositories.postgresRepository import PostgresRepository
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
 
+@beartype_personalized
 def initialize_langchain() -> LangChainAdapter:
     """
     Initializes and returns an instance of LangChainAdapter.
@@ -63,6 +65,7 @@ def initialize_langchain() -> LangChainAdapter:
         logger.error(f"Error during LangChain initialization: {e}")
         raise e
 
+@beartype_personalized
 def initialize_chroma() -> ChromaVectorStoreAdapter:
     """
     Initializes and returns an instance of ChromaVectorStoreAdapter.
@@ -87,6 +90,7 @@ def initialize_chroma() -> ChromaVectorStoreAdapter:
         logger.error(f"Error during Chroma initialization: {e}")
         raise e
 
+@beartype_personalized
 def initialize_postgres() -> PostgresAdapter:
     """
     Initializes and returns an instance of PostgresAdapter.
@@ -160,6 +164,7 @@ def initialize_postgres() -> PostgresAdapter:
         logger.error(f"Error during Postgres initialization: {e}")
         raise e
 
+@beartype_personalized
 def initialize_github() -> GitHubAdapter:
     """
     Initializes and returns an instance of GitHubAdapter.
@@ -181,6 +186,7 @@ def initialize_github() -> GitHubAdapter:
         logger.error(f"Error during GitHub initialization: {e}")
         raise e
 
+@beartype_personalized
 def initialize_atlassian() -> tuple[int, dict[str, str]]:
     """
     Initializes and returns the configuration parameters for Atlassian.
@@ -206,6 +212,7 @@ def initialize_atlassian() -> tuple[int, dict[str, str]]:
         logger.error(f"Error during Atlassian initialization: {e}")
         raise e
 
+@beartype_personalized
 def initialize_jira(requests_timeout: int, requests_headers: dict[str, str]) -> JiraAdapter:
     """
     Initializes and returns an instance of JiraAdapter.
@@ -229,6 +236,7 @@ def initialize_jira(requests_timeout: int, requests_headers: dict[str, str]) -> 
         logger.error(f"Error during Jira initialization: {e}")
         raise e
 
+@beartype_personalized
 def initialize_confluence(requests_timeout: int, requests_headers: dict[str, str]) -> ConfluenceAdapter:
     """
     Initializes and returns an instance of ConfluenceAdapter.
@@ -255,6 +263,7 @@ def initialize_confluence(requests_timeout: int, requests_headers: dict[str, str
 
 
 
+@beartype_personalized
 def dependency_injection_frontend() -> dict[str, object]:
     """
     Configures and returns the dependencies needed for the BuddyBot application frontend.
@@ -366,6 +375,7 @@ def dependency_injection_frontend() -> dict[str, object]:
 
 
 
+@beartype_personalized
 def dependency_injection_cron() -> dict[str, object]:
     """
     Configures and returns the dependencies needed for the cron functionality.
