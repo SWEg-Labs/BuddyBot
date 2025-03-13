@@ -197,7 +197,7 @@ class PostgresRepository:
             result = self.__execute_query(get_last_load_outcome_query, fetch_one=True)
 
             if result is None:
-                return PostgresLastLoadOutcome.ERROR
+                return PostgresLastLoadOutcome.FALSE  # Tabella vuota → FALSE
 
             logger.info("Last load outcome retrieved successfully from the Postgres database.")
 
