@@ -23,9 +23,7 @@ describe('ChatInputComponent', () => {
   // ------------------------------------------------------
   describe('Test di integrazione', () => {
     it("Verifica che il componente venga creato", () => {
-      // Arrange:
-      // Act:
-      // Assert:
+      // Act & Assert:
       expect(component).toBeTruthy();
     });
 
@@ -39,9 +37,10 @@ describe('ChatInputComponent', () => {
       expect(button.disabled).toBeTrue();
     });
 
-    it("Verifica che il bottone 'Invia' sia abilitato se isLoading è false", () => {
+    it("Verifica che il bottone 'Invia' sia abilitato se isLoading è false e userInput contiene un messaggio valido", () => {
       // Arrange:
       component.isLoading = false;
+      component.userInput = 'Test';
       fixture.detectChanges();
       // Act:
       const button = fixture.nativeElement.querySelector('button');
@@ -50,7 +49,6 @@ describe('ChatInputComponent', () => {
     });
 
     it("Verifica che l'input abbia il placeholder 'Scrivi un messaggio...'", () => {
-      // Arrange:
       // Act:
       const input = fixture.nativeElement.querySelector('input');
       // Assert:
@@ -64,10 +62,9 @@ describe('ChatInputComponent', () => {
       await fixture.whenStable();
       // Act:
       const input = fixture.nativeElement.querySelector('input');
-      // Assert (controllo dell'attributo 'disabled'):
+      // Assert
       expect(input.getAttribute('disabled')).not.toBeNull();
     });
-    
 
     it("Verifica che l'input non sia disabilitato se isLoading è false", () => {
       // Arrange:
@@ -116,6 +113,28 @@ describe('ChatInputComponent', () => {
       // Assert:
       expect(component.sendMessage.emit).toHaveBeenCalledWith('Hello World');
       expect(component.userInput).toBe('');
+    });
+
+    it("Verifica che il bottone 'Invia' sia disabilitato se userInput è vuoto", () => {
+      // Arrange:
+      component.isLoading = false;
+      component.userInput = '';
+      fixture.detectChanges();
+      // Act:
+      const button = fixture.nativeElement.querySelector('button');
+      // Assert:
+      expect(button.disabled).toBeTrue();
+    });
+
+    it("Verifica che il bottone 'Invia' sia disabilitato se userInput contiene solo spazi", () => {
+      // Arrange:
+      component.isLoading = false;
+      component.userInput = '    ';
+      fixture.detectChanges();
+      // Act:
+      const button = fixture.nativeElement.querySelector('button');
+      // Assert:
+      expect(button.disabled).toBeTrue();
     });
   });
 
