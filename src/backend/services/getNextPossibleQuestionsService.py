@@ -22,9 +22,18 @@ class GetNextPossibleQuestionsService(GetNextPossibleQuestionsUseCase):
         Args:
             header (Header): The header for the service.
             get_next_possible_questions_port (GetNextPossibleQuestionsPort): The port for getting the next possible questions.
+        Raises:
+            ValueError: If the header does not contain '***quantity***'.
         """
-        self.__header = header
-        self.__get_next_possible_questions_port = get_next_possible_questions_port
+        try:
+            if "***quantity***" not in header.get_content():
+                raise ValueError("Header does not contain '***quantity***'")
+
+            self.__header = header
+            self.__get_next_possible_questions_port = get_next_possible_questions_port
+        except Exception as e:
+            logger.error(f"Error while initializing GetNextPossibleQuestionsService: {e}")
+            raise e
 
     def get_next_possible_questions(self, question_answer_couple: QuestionAnswerCouple, quantity: Quantity) -> NextPossibleQuestions:
         """

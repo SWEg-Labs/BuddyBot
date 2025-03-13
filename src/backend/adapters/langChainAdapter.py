@@ -141,11 +141,5 @@ class LangChainAdapter(GenerateAnswerPort, GetNextPossibleQuestionsPort):
             text (str): The text for which to calculate the number of tokens.
         Returns:
             int: The approximate number of tokens.
-        Raises:
-            Exception: If an error occurs during token calculation.
         """
-        try:
-            return max(1, int(len(text) / 3))
-        except Exception as e:
-            logger.error(f"An error occurred during token calculation: {e}")
-            raise e
+        return max(1, int(len(text) / 3))
