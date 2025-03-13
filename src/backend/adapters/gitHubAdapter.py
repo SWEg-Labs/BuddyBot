@@ -65,6 +65,7 @@ class GitHubAdapter(GitHubPort):
                         if commit.get_url() is not None
                         else "/",
                         "id": commit.get_sha() if commit.get_sha() is not None else "/",
+                        "last_update": "/",
                     },
                 )
                 for commit in (commit_entities if commit_entities is not None else [])
@@ -99,6 +100,7 @@ class GitHubAdapter(GitHubPort):
                                 "item_type": "GitHub File",
                                 "url": file.get_html_url() if file.get_html_url() is not None else "/",
                                 "id": file.get_sha() if file.get_sha() is not None else "/",
+                                "last_update": "/",
                             },
                         )
                     )

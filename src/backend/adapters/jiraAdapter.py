@@ -55,6 +55,8 @@ class JiraAdapter(JiraPort):
                                 if self.__jira_repository.get_base_url() is not None and issue.get_key() is not None else "/"),
                         "id": issue.get_key()
                               if issue.get_key() is not None else "/",
+                        "last_update": issue.get_updated()
+                                if issue.get_updated() is not None else "/",
                     }
                 )
                 for issue in issue_entities

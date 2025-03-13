@@ -76,6 +76,11 @@ class ConfluenceAdapter(ConfluencePort):
                             if page.get_id() is not None
                             else "/"
                         ),
+                        "last_update": (
+                            page.get_version().get("when")
+                            if page.get_version().get("when") is not None
+                            else "/"
+                        ),
                     }
                 )
                 for page in page_entities

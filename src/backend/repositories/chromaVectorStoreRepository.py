@@ -41,14 +41,76 @@ class ChromaVectorStoreRepository:
             Exception: If an error occurs while loading the documents.
         """
         try:
-            ids = [doc.get_metadata()["doc_id"] for doc in documents]
-            documents_content = [doc.get_page_content() for doc in documents]
-            metadatas = [doc.get_metadata() for doc in documents]
+            '''
+            incoming_ids = [doc.get_metadata()["doc_id"] for doc in documents]
+            incoming_documents_content = [doc.get_page_content() for doc in documents]
+            incoming_metadatas = [doc.get_metadata() for doc in documents]
+            incoming_update_time = [doc.get_metadata()["vector_store_insertion_date"] for doc in documents] #sbagliato, serve la data in cui è stato modificato, non quella in cui è stato "vettorizzato"
+            '''
+            incoming_docs = {doc.get_metadata()["doc_id"]: (doc.get_metadata(),doc.get_page_content()) for doc in documents}
 
             # Initialize counters
             num_modified_items = 0
             num_deleted_items = 0
+            num_added_items = 0
 
+            # Fetch all ids and vector_store_insertion_date from db
+            db_docs = {id: date for id, date in self.__collection.get(include=["ids", "last_update"])}
+
+            # Create list of ids to be deleted from db
+            try:
+                db_ids_to_delete = [id for id in db_docs.keys() if id not in incoming_docs.keys()]
+                num_deleted_items += len(db_ids_to_delete)
+
+                for id in db_ids_to_delete:
+                    db_docs.pop(id)
+
+            except Exception as e:
+                logger.error(f"Error checking for obsolete documents: {e}")
+
+            # Create list of docs to be added to db from incoming
+            try:
+                incoming_docs_to_add = {id:value for id,value in incoming_docs.items() if id not in db_docs.keys()}
+                num_added_items += len(incoming_docs_to_add)
+                
+                for id in incoming_docs_to_add.keys():
+                    incoming_docs.pop(id)
+
+            except Exception as e:
+                logger.error(f"Error checking for new documents: {e}")
+
+            # Tolti tutti gli elementi presenti in db e non in incoming, tolti tutti gli elementi presenti in incoming e non in db, rimangono solo gli elementi presenti in entrambi
+
+            # Create list of ids to be updated
+
+            try:
+                for incoming_id, incoming_value in incoming_docs.items():
+                    if incoming_id in db_docs and incoming_value[0]["last_update"] > db_docs[incoming_id]:
+                        db_ids_to_delete.append(incoming_id)
+                        db_docs.pop(incoming_id) #operazione inutile, per mantenere coerenza
+                        incoming_docs_to_add[incoming_id] = incoming_value
+                        num_modified_items += 1
+            except Exception as e:
+                logger.error(f"Error checking for modified documents: {e}")
+
+            # Delete documents from db
+            try:
+                self.__collection.delete(ids=db_ids_to_delete)
+            except Exception as e:
+                logger.error(f"Error deleting documents from db: {e}")
+
+            # Add documents to db
+            try:
+                self.__collection.add(
+                    ids=[id for id in incoming_docs_to_add.keys()],
+                    documents=[doc[1] for doc in incoming_docs_to_add.values()],
+                    metadatas=[doc[0] for doc in incoming_docs_to_add.values()],
+                    vector_store_insertion_dates=[doc[0]["last_update"] for doc in incoming_docs_to_add.values()]
+                )
+            except Exception as e:
+                logger.error(f"Error adding documents to db: {e}")     
+           
+            '''
             # Check and delete existing documents with the same IDs
             for doc_id in ids:
                 try:
@@ -83,13 +145,14 @@ class ChromaVectorStoreRepository:
                 documents=documents_content,
                 metadatas=metadatas
             )
-
+            '''
+            
             logger.info(f"Successfully loaded {len(documents)} documents into Chroma vector store.")
             italy_tz = pytz.timezone('Europe/Rome')
             log = VectorStoreLog(
                 timestamp=datetime.now(italy_tz),
                 outcome=True,
-                num_added_items=len(documents) - num_modified_items,
+                num_added_items=num_added_items, #len(documents) - num_modified_items,
                 num_modified_items=num_modified_items,
                 num_deleted_items=num_deleted_items
             )
