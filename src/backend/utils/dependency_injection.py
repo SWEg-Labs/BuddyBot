@@ -292,7 +292,8 @@ def dependency_injection_frontend() -> dict[str, object]:
                   Al termine del messaggio, fornisci l'url del documento o dei documenti da cui hai tratto la risposta
                   (attenzione, non l'url dei primi documenti che vedi, bensì di quelli da cui hai tratto la risposta), presente
                   come metadato. Presenta i link come elenco puntato, introdotto sempre dalla scritta precisa "Link correlati:".
-                  Se il metadato url non è presente in nessuno dei documenti, rispondi con "Non sono stati trovati link correlati".
+                  Se è stata generata una risposta soddisfacente ma il metadato url non è presente in nessuno dei documenti utilizzati
+                  per generarla, rispondi con "Non sono stati trovati link correlati".
                   Se non riesci a trovare la risposta nei documenti forniti, ma la domanda è comunque legata all'informatica,
                   rispondi con "Informazione non trovata".
                   Se l'utente è uscito dal contesto informatico, rispondi con "La domanda è fuori contesto".

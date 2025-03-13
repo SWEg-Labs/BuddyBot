@@ -36,6 +36,15 @@ class GetNextPossibleQuestionsController:
             Exception: If there is an error during the retrieval process.
         """
         try:
+            if not all(key in question_answer_quantity for key in ["question", "answer", "quantity"]):
+                raise ValueError("The dictionary must contain 'question', 'answer', and 'quantity' keys.")
+            if not isinstance(question_answer_quantity["question"], str):
+                raise ValueError("'question' must be a string.")
+            if not isinstance(question_answer_quantity["answer"], str):
+                raise ValueError("'answer' must be a string.")
+            if not isinstance(question_answer_quantity["quantity"], int):
+                raise ValueError("'quantity' must be an integer.")
+
             question = Question(question_answer_quantity["question"])
             answer = Answer(question_answer_quantity["answer"])
             quantity = Quantity(question_answer_quantity["quantity"])
@@ -43,7 +52,12 @@ class GetNextPossibleQuestionsController:
 
             next_possible_questions_object = self.__get_next_possible_questions_use_case.get_next_possible_questions(question_answer_couple, quantity)
 
+            num_questions = next_possible_questions_object.get_num_questions()
             possible_questions = next_possible_questions_object.get_possible_questions()
+
+            if num_questions != len(possible_questions):
+                raise ValueError("The attribute for the number of questions does not match the length of the possible questions list.")
+
             next_possible_questions_dict = {
                 f"question {i + 1}": possible_question.get_content()
                 for i, possible_question in enumerate(possible_questions)
