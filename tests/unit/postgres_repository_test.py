@@ -84,6 +84,19 @@ def test_get_messages_success(postgres_repository):
     assert messages == expected_messages
 
 
+# Verifica che il metodo get_messages di PostgresRepository gestisca correttamente il caso in cui non ci siano messaggi nel database
+
+def test_get_messages_no_result(postgres_repository):
+    # Arrange
+    quantity = 5
+    with patch.object(postgres_repository, '_PostgresRepository__execute_query', return_value=None):
+        # Act
+        messages = postgres_repository.get_messages(quantity)
+
+    # Assert
+    assert messages == []
+
+
 # Verifica che il metodo get_messages di PostgresRepository gestisca correttamente un'eccezione generica
 
 def test_get_messages_exception(postgres_repository):
@@ -172,7 +185,7 @@ def test_get_last_load_outcome_no_result(postgres_repository):
         outcome = postgres_repository.get_last_load_outcome()
 
     # Assert
-    assert outcome == PostgresLastLoadOutcome.ERROR
+    assert outcome == PostgresLastLoadOutcome.FALSE
 
 
 # Verifica che il metodo get_last_load_outcome di PostgresRepository gestisca correttamente un errore del database
@@ -198,19 +211,6 @@ def test_get_last_load_outcome_exception(postgres_repository):
 
         # Assert
         assert str(exc_info.value) == "Unexpected error"
-
-
-# Verifica che il metodo get_messages di PostgresRepository gestisca correttamente il caso in cui non ci siano messaggi nel database
-
-def test_get_messages_no_result(postgres_repository):
-    # Arrange
-    quantity = 5
-    with patch.object(postgres_repository, '_PostgresRepository__execute_query', return_value=None):
-        # Act
-        messages = postgres_repository.get_messages(quantity)
-
-    # Assert
-    assert messages == []
 
 
 # Verifica che il metodo get_last_load_outcome di PostgresRepository gestisca correttamente il caso in cui l'esito recuperato sia False
