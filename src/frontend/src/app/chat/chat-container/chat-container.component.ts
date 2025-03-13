@@ -33,6 +33,7 @@ export class ChatContainerComponent implements OnInit {
   lastUserQuestion = '';
   lastBotAnswer = '';
   hideSuggestions = false;
+  errorMessage: string = '';
 
   @ViewChild(ChatMessagesComponent) messagesComponent!: ChatMessagesComponent;
 
@@ -57,12 +58,14 @@ export class ChatContainerComponent implements OnInit {
           m.copied = false;
           return m;
         });
+        this.errorMessage = '';
         setTimeout(() => {
           this.scrollToBottom();
         }, 0);
       },
       error: (err) => {
         console.error('Errore nel caricamento dei messaggi dal DB:', err);
+        this.errorMessage = "Errore nel recupero dello storico dei messaggi";
       }
     });
   }
