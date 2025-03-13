@@ -34,7 +34,7 @@ def test_save_message_success(postgres_repository):
     assert response == expected_response
 
 
-# Verifica che il metodo save_message di PostgresRepository gestisca correttamente un errore del database
+# Verifica che il metodo save_message di PostgresRepository restituisca False in caso di errore del database
 
 def test_save_message_psycopg2_error(postgres_repository):
     # Arrange
@@ -84,7 +84,8 @@ def test_get_messages_success(postgres_repository):
     assert messages == expected_messages
 
 
-# Verifica che il metodo get_messages di PostgresRepository gestisca correttamente il caso in cui non ci siano messaggi nel database
+# Verifica che il metodo get_messages di PostgresRepository restituisca una lista vuota nel caso in cui non ci
+# siano messaggi nel database
 
 def test_get_messages_no_result(postgres_repository):
     # Arrange
@@ -129,7 +130,7 @@ def test_save_loading_attempt_success(postgres_repository):
     assert response == expected_response
 
 
-# Verifica che il metodo save_loading_attempt di PostgresRepository gestisca correttamente un errore del database
+# Verifica che il metodo save_loading_attempt di PostgresRepository restituisca False in caso di errore del database
 
 def test_save_loading_attempt_psycopg2_error(postgres_repository):
     # Arrange
@@ -175,7 +176,7 @@ def test_get_last_load_outcome_success(postgres_repository):
     assert outcome == PostgresLastLoadOutcome.TRUE
 
 
-# Verifica che il metodo get_last_load_outcome di PostgresRepository gestisca correttamente il caso in cui non ci siano tuple
+# Verifica che il metodo get_last_load_outcome di PostgresRepository restituisca False nel caso in cui non ci siano tuple
 # nella tabella degli esiti di caricamento perchè ancora non è stato effettuato alcun caricamento
 
 def test_get_last_load_outcome_no_result(postgres_repository):
@@ -188,7 +189,7 @@ def test_get_last_load_outcome_no_result(postgres_repository):
     assert outcome == PostgresLastLoadOutcome.FALSE
 
 
-# Verifica che il metodo get_last_load_outcome di PostgresRepository gestisca correttamente un errore del database
+# Verifica che il metodo get_last_load_outcome di PostgresRepository restituisca Error in caso di errore del database
 
 def test_get_last_load_outcome_psycopg2_error(postgres_repository):
     # Arrange
