@@ -27,8 +27,6 @@ describe('ChatSuggestionsComponent', () => {
   // ------------------------------------------------------
   describe('Test di integrazione', () => {
     it("Verifica che il componente venga creato", () => {
-      // Arrange:
-      // Act:
       // Assert:
       expect(component).toBeTruthy();
     });
@@ -51,9 +49,10 @@ describe('ChatSuggestionsComponent', () => {
       // Assert:
       expect(component.continuationSuggestions).toEqual(Object.values(suggestionsResponse));
       expect(component.loadError).toBeFalse();
+      expect(component.errorMessage).toBe('');
     }));
 
-    it("Verifica che, se getContinuationSuggestions fallisce, loadError sia true", fakeAsync(() => {
+    it("Verifica che, se getContinuationSuggestions fallisce, loadError sia true e venga impostato il messaggio d'errore", fakeAsync(() => {
       // Arrange:
       component.question = "Domanda";
       component.answer = "Risposta";
@@ -69,6 +68,7 @@ describe('ChatSuggestionsComponent', () => {
       fixture.detectChanges();
       // Assert:
       expect(component.loadError).toBeTrue();
+      expect(component.errorMessage).toBe("Errore nella generazione delle domande per proseguire la conversazione");
     }));
 
     it("Verifica che, se hideSuggestions è true, le suggestions siano svuotate e loadError sia false", () => {
@@ -84,6 +84,7 @@ describe('ChatSuggestionsComponent', () => {
       // Assert:
       expect(component.continuationSuggestions).toEqual([]);
       expect(component.loadError).toBeFalse();
+      expect(component.errorMessage).toBe('');
     });
 
     it("Verifica che ngOnChanges non reagisca se non ci sono cambiamenti rilevanti", () => {
@@ -117,7 +118,6 @@ describe('ChatSuggestionsComponent', () => {
     it("Verifica che l'istanza del componente sia definita", () => {
       // Arrange:
       const localComponent = new ChatSuggestionsComponent(fakeChatService);
-      // Act:
       // Assert:
       expect(localComponent).toBeDefined();
     });
