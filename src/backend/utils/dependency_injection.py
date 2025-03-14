@@ -69,7 +69,7 @@ def initialize_langchain() -> LangChainAdapter:
 def initialize_chroma() -> ChromaVectorStoreAdapter:
     """
     Initializes and returns an instance of ChromaVectorStoreAdapter.
-    Configures the ChromaDB client and creates or retrieves an existing collection.
+    Configures the Chroma client and creates or retrieves an existing collection.
     Returns:
       - ChromaVectorStoreAdapter: An instance of ChromaVectorStoreAdapter.
     Raises:
@@ -77,14 +77,14 @@ def initialize_chroma() -> ChromaVectorStoreAdapter:
     """
     try:
         chroma_client = chromadb.HttpClient(host=os.getenv("CHROMA_HOST", "localhost"),
-                                            port=int(os.getenv("CHROMA_PORT", "8000")))  # Connessione al server ChromaDB
+                                            port=int(os.getenv("CHROMA_PORT", "8000")))  # Connessione al server Chroma
         chroma_client.heartbeat()  # Verifica connessione
         chroma_collection_name = "buddybot-vector-store"
         chroma_collection = chroma_client.get_or_create_collection(name=chroma_collection_name)  # Crea o ottieni una collezione esistente
         chroma_vector_store_repository = ChromaVectorStoreRepository(chroma_collection)
         max_chunk_size = 41666  # 42 KB
         chroma_vector_store_adapter = ChromaVectorStoreAdapter(max_chunk_size, chroma_vector_store_repository)
-        logger.info("ChromaDB collection loaded")
+        logger.info("Chroma collection loaded")
         return chroma_vector_store_adapter
     except Exception as e:
         logger.error(f"Error during Chroma initialization: {e}")
