@@ -47,7 +47,7 @@ describe('ChatHeaderComponent', () => {
       expect(h1.textContent).toContain('BuddyBot');
     });
 
-    it("Verifica che l'elemento con classe CSS app-chat-badge sia presente nel template HTML di ChatHeaderComponent", () => {
+    it("Verifica che il tag app-chat-badge sia presente nel template HTML di ChatHeaderComponent", () => {
       // Arrange:
       // Act:
       const badgeElement = fixture.debugElement.query(By.css('app-chat-badge'));
@@ -64,7 +64,7 @@ describe('ChatHeaderComponent', () => {
       expect(img.alt).toBe('Logo');
     });
 
-    it("Verifica che il tag header del template HTML di ChatHeaderComponent abbia la classe 'chat-header'", () => {
+    it("Verifica che il tag header del template HTML di ChatHeaderComponent abbia la classe CSS 'chat-header'", () => {
       // Arrange:
       // Act:
       const headerEl = fixture.nativeElement.querySelector('header');

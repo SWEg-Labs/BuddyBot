@@ -179,7 +179,7 @@ describe('ChatMessagesComponent', () => {
     }));
 
     it("Verifica che il metodo copySnippet di ChatMessagesComponent chiami il metodo navigator.clipboard.writeText e " +
-      "inserisca e poi rimuova oppurtanemente la classe CSS snippet-copied all'icona di copia", fakeAsync(() => {
+      "inserisca e poi rimuova oppurtanemente la classe CSS 'snippet-copied' all'icona di copia", fakeAsync(() => {
       // Arrange:
       const fakeIcon = document.createElement('span');
       fakeIcon.classList.add('copy-snippet-icon');

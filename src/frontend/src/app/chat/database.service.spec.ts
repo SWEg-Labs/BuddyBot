@@ -23,8 +23,14 @@ describe('DatabaseService', () => {
     httpMock.verify();
   });
 
-  describe('getMessages', () => {
-    it("Verifica che getMessages mappi correttamente la risposta in un array di Message", () => {
+
+  // ------------------------------------------------------
+  // Test di integrazione
+  // ------------------------------------------------------
+
+  describe('Test di integrazione', () => {
+    it("Verifica che il metodo getMessages di DatabaseService mappi correttamente la risposta dell'endpoint POST /api/get_messages " +
+      "in un array di Message", () => {
       // Arrange:
       const responseArray = [
         { content: "Ciao", timestamp: "2023-01-01T00:00:00Z", sender: "USER" },
@@ -45,10 +51,9 @@ describe('DatabaseService', () => {
       expect(req.request.body).toEqual({ quantity: 2 });
       req.flush(responseArray);
     });
-  });
 
-  describe('saveMessage', () => {
-    it("Verifica che saveMessage invii il payload corretto e gestisca la risposta", () => {
+    it("Verifica che il metodo saveMessage di DatabaseService invii il payload corretto all’endpoint POST /api/save_message " +
+      "e gestisca correttamente la risposta", () => {
       // Arrange:
       const message = new Message("Test", new Date("2023-01-01T00:00:00Z"), MessageSender.USER);
       const responseData = { status: true };
@@ -66,10 +71,9 @@ describe('DatabaseService', () => {
       });
       req.flush(responseData);
     });
-  });
 
-  describe('loadLastLoadOutcome', () => {
-    it("Verifica che loadLastLoadOutcome imposti TRUE se la risposta è 'True'", fakeAsync(() => {
+    it("Verifica che il metodo loadLastLoadOutcome di DatabaseService imposti TRUE se la risposta " +
+      "ricevuta dall'endpoint /api/get_last_load_outcome è 'True'", fakeAsync(() => {
       // Arrange:
       let outcome: LastLoadOutcome | undefined;
       service.lastLoadOutcome$.subscribe(val => outcome = val);
@@ -83,7 +87,8 @@ describe('DatabaseService', () => {
       expect(outcome).toBe(LastLoadOutcome.TRUE);
     }));
 
-    it("Verifica che loadLastLoadOutcome imposti FALSE se la risposta è 'False'", fakeAsync(() => {
+    it("Verifica che il metodo loadLastLoadOutcome di DatabaseService imposti FALSE se la risposta " +
+      "ricevuta dall'endpoint /api/get_last_load_outcome è 'False'", fakeAsync(() => {
       // Arrange:
       let outcome: LastLoadOutcome | undefined;
       service.lastLoadOutcome$.subscribe(val => outcome = val);
@@ -96,7 +101,8 @@ describe('DatabaseService', () => {
       expect(outcome).toBe(LastLoadOutcome.FALSE);
     }));
 
-    it("Verifica che loadLastLoadOutcome imposti ERROR se la risposta non è 'True' o 'False'", fakeAsync(() => {
+    it("Verifica che il metodo loadLastLoadOutcome di DatabaseService imposti ERROR se la risposta " +
+      "ricevuta dall'endpoint /api/get_last_load_outcome non è 'True' o 'False'", fakeAsync(() => {
       // Arrange:
       let outcome: LastLoadOutcome | undefined;
       service.lastLoadOutcome$.subscribe(val => outcome = val);
@@ -109,7 +115,8 @@ describe('DatabaseService', () => {
       expect(outcome).toBe(LastLoadOutcome.ERROR);
     }));
 
-    it("Verifica che loadLastLoadOutcome imposti ERROR in caso di errore", fakeAsync(() => {
+    it("Verifica che il metodo loadLastLoadOutcome di DatabaseService imposti ERROR in caso di errore " +
+      "ricevuto dall'endpoint /api/get_last_load_outcome", fakeAsync(() => {
       // Arrange:
       let outcome: LastLoadOutcome | undefined;
       service.lastLoadOutcome$.subscribe(val => outcome = val);
@@ -122,4 +129,5 @@ describe('DatabaseService', () => {
       expect(outcome).toBe(LastLoadOutcome.ERROR);
     }));
   });
+
 });
