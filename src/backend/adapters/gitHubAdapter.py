@@ -7,6 +7,8 @@ from ports.gitHubPort import GitHubPort
 from repositories.gitHubRepository import GitHubRepository
 from utils.logger import logger
 from utils.beartype_personalized import beartype_personalized
+from datetime import datetime
+from pytz import timezone
 
 @beartype_personalized
 class GitHubAdapter(GitHubPort):
@@ -65,7 +67,7 @@ class GitHubAdapter(GitHubPort):
                         if commit.get_url() is not None
                         else "/",
                         "id": commit.get_sha() if commit.get_sha() is not None else "/",
-                        "last_update": "/",
+                        "last_update": datetime.now(timezone('Europe/Rome')).strftime('%Y-%m-%dT%H:%M:%S.%f%z')
                     },
                 )
                 for commit in (commit_entities if commit_entities is not None else [])

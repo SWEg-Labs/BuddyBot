@@ -6,6 +6,8 @@ from ports.confluencePort import ConfluencePort
 from repositories.confluenceRepository import ConfluenceRepository
 from utils.logger import logger
 from utils.beartype_personalized import beartype_personalized
+from datetime import datetime
+from pytz import timezone
 
 @beartype_personalized
 class ConfluenceAdapter(ConfluencePort):
@@ -23,6 +25,24 @@ class ConfluenceAdapter(ConfluencePort):
         """
         self.__confluence_repository = confluence_repository
 
+    def __UTC_to_CET(self, timestamp: str) -> str:
+        '''
+        Converts a timestamp in string format (%Y-%m-%dT%H:%M:%S.%f%z) from UTC to CET.
+        Returns a timestamp in the same string format.
+        '''
+        try:
+            cet_timezone = timezone('Europe/Rome')
+            timestamp_dt = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%f%z")
+            timestamp_dt_tz = timestamp_dt.astimezone(cet_timezone)
+            timestamp_str_tz = timestamp_dt_tz.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+        except Exception as e:
+            logger.error(f"Error converting confluence pages timestamp: {e}")
+            raise e
+        return timestamp_str_tz
+        
+        
+
+    
     def load_confluence_pages(self) -> Tuple[PlatformLog, List[Document]]:
         """
         Loads Confluence pages and converts them to Document objects.
@@ -77,9 +97,9 @@ class ConfluenceAdapter(ConfluencePort):
                             else "/"
                         ),
                         "last_update": (
-                            page.get_version().get("when")
+                            self.__UTC_to_CET(page.get_version().get("when"))
                             if page.get_version().get("when") is not None
-                            else "/"
+                            else datetime.now(timezone('Europe/Rome')).strftime('%Y-%m-%dT%H:%M:%S.%f%z')
                         ),
                     }
                 )

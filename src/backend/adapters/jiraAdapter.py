@@ -6,6 +6,8 @@ from ports.jiraPort import JiraPort
 from repositories.jiraRepository import JiraRepository
 from utils.logger import logger
 from utils.beartype_personalized import beartype_personalized
+from datetime import datetime
+from pytz import timezone
 
 @beartype_personalized
 class JiraAdapter(JiraPort):
@@ -55,8 +57,9 @@ class JiraAdapter(JiraPort):
                                 if self.__jira_repository.get_base_url() is not None and issue.get_key() is not None else "/"),
                         "id": issue.get_key()
                               if issue.get_key() is not None else "/",
-                        "last_update": issue.get_updated()
-                                if issue.get_updated() is not None else "/",
+                        "last_update": issue.get_updated() #timestamp già in fuso orario CET
+                                if issue.get_updated() is not None 
+                                else datetime.now(timezone('Europe/Rome')).strftime('%Y-%m-%dT%H:%M:%S.%f%z')
                     }
                 )
                 for issue in issue_entities
