@@ -42,9 +42,11 @@ describe('ChatContainerComponent', () => {
     component.messagesComponent = { scrollToBottom: jasmine.createSpy('scrollToBottom') } as any;
   });
 
+
   // ------------------------------------------------------
   // Test di integrazione
   // ------------------------------------------------------
+
   describe('Test di integrazione', () => {
     it("Verifica che l'evento ngOnInit di ChatContainerComponent richiami il metodo loadLastLoadOutcome di DatabaseService", () => {
       // Arrange:
@@ -148,9 +150,11 @@ describe('ChatContainerComponent', () => {
     });
   });
 
+
   // ------------------------------------------------------
   // Test di unità
   // ------------------------------------------------------
+
   describe('Test di unità', () => {
     let localComponent: ChatContainerComponent;
     let localChatService: any;

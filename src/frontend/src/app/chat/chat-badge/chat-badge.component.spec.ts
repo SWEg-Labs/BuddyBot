@@ -31,9 +31,11 @@ describe('ChatBadgeComponent', () => {
     fixture.detectChanges();
   });
 
+
   // ------------------------------------------------------
   // Test di integrazione
   // ------------------------------------------------------
+
   describe('Test di integrazione', () => {
 
     it("Verifica che, durante l'inizializzazione di ChatBadgeComponent, la sottoscrizione a lastLoadOutcome$ di DatabaseService " +
@@ -58,9 +60,11 @@ describe('ChatBadgeComponent', () => {
     });
   });
 
+
   // ------------------------------------------------------
   // Test di unità
   // ------------------------------------------------------
+
   describe('Test di unità', () => {
     let localComponent: ChatBadgeComponent;
     let localDatabaseService: any;
