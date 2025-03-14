@@ -37,7 +37,7 @@ describe('ChatBadgeComponent', () => {
   describe('Test di integrazione', () => {
 
     it("Verifica che, durante l'inizializzazione di ChatBadgeComponent, la sottoscrizione a lastLoadOutcome$ di DatabaseService " +
-      "aggiorni la proprietà lastLoadOutcome di ChatBadgeComponent", () => {
+      "aggiorni l'attributo lastLoadOutcome di ChatBadgeComponent", () => {
       // Arrange:
       component.ngOnInit();
       // Act:
@@ -46,8 +46,8 @@ describe('ChatBadgeComponent', () => {
       expect(component.lastLoadOutcome).toBe(LastLoadOutcome.ERROR);
     });
 
-    it("Verifica che, al cambio di valore di lastLoadOutcome$ in DatabaseService, la proprietà lastLoadOutcome " +
-      "di ChatBadgeComponent venga aggiornata", () => {
+    it("Verifica che, al cambio di valore di lastLoadOutcome$ in DatabaseService, l'attributo lastLoadOutcome " +
+      "di ChatBadgeComponent venga aggiornato", () => {
       // Arrange:
       const nuovoValore = LastLoadOutcome.FALSE;
       // Act:
@@ -74,14 +74,14 @@ describe('ChatBadgeComponent', () => {
       localComponent = new ChatBadgeComponent(localDatabaseService);
     });
 
-    it("Verifica che il valore iniziale della proprietà lastLoadOutcome di ChatBadgeComponent sia TRUE", () => {
+    it("Verifica che il valore iniziale dell'attributo lastLoadOutcome di ChatBadgeComponent sia TRUE", () => {
       // Arrange:
       // Act:
       // Assert:
       expect(localComponent.lastLoadOutcome).toBe(LastLoadOutcome.TRUE);
     });
 
-    it("Verifica che il getter isUpdated di ChatBadgeComponent restituisca il valore corretto in base alla proprietà " +
+    it("Verifica che il getter isUpdated di ChatBadgeComponent restituisca il valore corretto, corrispondente all'attributo " +
       "lastLoadOutcome", () => {
       // Arrange:
       localComponent.lastLoadOutcome = LastLoadOutcome.TRUE;
