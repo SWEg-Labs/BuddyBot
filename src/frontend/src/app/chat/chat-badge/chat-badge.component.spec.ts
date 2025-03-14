@@ -8,20 +8,20 @@ import { Subject } from 'rxjs';
 describe('ChatBadgeComponent', () => {
   let component: ChatBadgeComponent;
   let fixture: ComponentFixture<ChatBadgeComponent>;
-  let mockChatService: any;
   let mockDatabaseService: any;
+  let mockDatabaseServiceSpy: any;
   let lastLoadOutcomeSubject: Subject<LastLoadOutcome>;
 
   beforeEach(async () => {
     // Arrange:
-    mockChatService = { checkFileUpdates: jasmine.createSpy('checkFileUpdates') };
+    mockDatabaseServiceSpy = { checkFileUpdates: jasmine.createSpy('checkFileUpdates') };
     lastLoadOutcomeSubject = new Subject<LastLoadOutcome>();
     mockDatabaseService = { lastLoadOutcome$: lastLoadOutcomeSubject.asObservable() };
     // Arrange:
     await TestBed.configureTestingModule({
       imports: [ChatBadgeComponent],
       providers: [
-        { provide: ChatService, useValue: mockChatService },
+        { provide: DatabaseService, useValue: mockDatabaseServiceSpy },
         { provide: DatabaseService, useValue: mockDatabaseService },
       ],
     }).compileComponents();
@@ -35,14 +35,19 @@ describe('ChatBadgeComponent', () => {
   // Test di integrazione
   // ------------------------------------------------------
   describe('Test di integrazione', () => {
-    it("Verifica che il valore iniziale di lastLoadOutcome sia TRUE", () => {
+
+    it("Verifica che, durante l'inizializzazione di ChatBadgeComponent, la sottoscrizione a lastLoadOutcome$ di DatabaseService " +
+      "aggiorni la proprietà lastLoadOutcome di ChatBadgeComponent", () => {
       // Arrange:
+      component.ngOnInit();
       // Act:
+      lastLoadOutcomeSubject.next(LastLoadOutcome.ERROR);
       // Assert:
-      expect(component.lastLoadOutcome).toBe(LastLoadOutcome.TRUE);
+      expect(component.lastLoadOutcome).toBe(LastLoadOutcome.ERROR);
     });
 
-    it("Verifica che, al cambio di valore di lastLoadOutcome$, la proprietà lastLoadOutcome venga aggiornata", () => {
+    it("Verifica che, al cambio di valore di lastLoadOutcome$ in DatabaseService, la proprietà lastLoadOutcome " +
+      "di ChatBadgeComponent venga aggiornata", () => {
       // Arrange:
       const nuovoValore = LastLoadOutcome.FALSE;
       // Act:
@@ -51,32 +56,6 @@ describe('ChatBadgeComponent', () => {
       // Assert:
       expect(component.lastLoadOutcome).toBe(nuovoValore);
     });
-
-    it("Verifica che il getter isUpdated restituisca true se lastLoadOutcome è TRUE", () => {
-      // Arrange:
-      component.lastLoadOutcome = LastLoadOutcome.TRUE;
-      // Act:
-      const isUpdated = component.isUpdated;
-      // Assert:
-      expect(isUpdated).toBeTrue();
-    });
-
-    it("Verifica che il getter isUpdated restituisca false se lastLoadOutcome non è TRUE", () => {
-      // Arrange:
-      component.lastLoadOutcome = LastLoadOutcome.ERROR;
-      // Act:
-      const isUpdated = component.isUpdated;
-      // Assert:
-      expect(isUpdated).toBeFalse();
-    });
-
-    it("Verifica che, alla chiamata del metodo onToggleStatus, venga chiamato il metodo checkFileUpdates di ChatService", () => {
-      // Arrange:
-      // Act:
-      component.onToggleStatus();
-      // Assert:
-      expect(mockChatService.checkFileUpdates).toHaveBeenCalled();
-    });
   });
 
   // ------------------------------------------------------
@@ -84,36 +63,26 @@ describe('ChatBadgeComponent', () => {
   // ------------------------------------------------------
   describe('Test di unità', () => {
     let localComponent: ChatBadgeComponent;
-    let localChatService: any;
     let localDatabaseService: any;
     let localSubject: Subject<LastLoadOutcome>;
 
     beforeEach(() => {
       // Arrange:
-      localChatService = { checkFileUpdates: jasmine.createSpy('checkFileUpdates') };
       localSubject = new Subject<LastLoadOutcome>();
       localDatabaseService = { lastLoadOutcome$: localSubject.asObservable() };
       // Arrange:
-      localComponent = new ChatBadgeComponent(localChatService, localDatabaseService);
+      localComponent = new ChatBadgeComponent(localDatabaseService);
     });
 
-    it("Verifica che il valore iniziale di lastLoadOutcome sia TRUE", () => {
+    it("Verifica che il valore iniziale della proprietà lastLoadOutcome di ChatBadgeComponent sia TRUE", () => {
       // Arrange:
       // Act:
       // Assert:
       expect(localComponent.lastLoadOutcome).toBe(LastLoadOutcome.TRUE);
     });
 
-    it("Verifica che, durante l'inizializzazione, la sottoscrizione a lastLoadOutcome$ aggiorni lastLoadOutcome", () => {
-      // Arrange:
-      localComponent.ngOnInit();
-      // Act:
-      localSubject.next(LastLoadOutcome.ERROR);
-      // Assert:
-      expect(localComponent.lastLoadOutcome).toBe(LastLoadOutcome.ERROR);
-    });
-
-    it("Verifica che il getter isUpdated restituisca il valore corretto in base a lastLoadOutcome", () => {
+    it("Verifica che il getter isUpdated di ChatBadgeComponent restituisca il valore corretto in base alla proprietà " +
+      "lastLoadOutcome", () => {
       // Arrange:
       localComponent.lastLoadOutcome = LastLoadOutcome.TRUE;
       // Act:
@@ -126,14 +95,6 @@ describe('ChatBadgeComponent', () => {
       result = localComponent.isUpdated;
       // Assert:
       expect(result).toBeFalse();
-    });
-
-    it("Verifica che, alla chiamata del metodo onToggleStatus, venga invocato il metodo checkFileUpdates di ChatService", () => {
-      // Arrange:
-      // Act:
-      localComponent.onToggleStatus();
-      // Assert:
-      expect(localChatService.checkFileUpdates).toHaveBeenCalled();
     });
   });
 });

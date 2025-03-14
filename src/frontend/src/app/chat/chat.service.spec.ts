@@ -21,20 +21,6 @@ describe('ChatService', () => {
     httpMock.verify();
   });
 
-  describe('checkFileUpdates', () => {
-    it("Verifica che, alla chiamata del metodo checkFileUpdates, venga invertito il valore della variabile booleana isUpdatedSubject", () => {
-      // Arrange:
-      let value: boolean | undefined;
-      service.isUpdated$.subscribe(val => value = val);
-      // Act & Assert:
-      expect(value).toBeTrue();
-      service.checkFileUpdates();
-      expect(value).toBeFalse();
-      service.checkFileUpdates();
-      expect(value).toBeTrue();
-    });
-  });
-
   describe('getLastMessageTimestamp e setLastMessageTimestamp', () => {
     it("Verifica che ChatService restituisca e imposti il valore corretto di lastMessageTimestamp", () => {
       // Arrange:
