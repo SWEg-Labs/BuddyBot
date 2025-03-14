@@ -33,7 +33,7 @@ export class ChatContainerComponent implements OnInit {
   lastUserQuestion = '';
   lastBotAnswer = '';
   hideSuggestions = false;
-  errorMessage: string = '';
+  errorMessage = '';
 
   @ViewChild(ChatMessagesComponent) messagesComponent!: ChatMessagesComponent;
 
