@@ -156,37 +156,15 @@ describe('ChatContainerComponent', () => {
   // ------------------------------------------------------
 
   describe('Test di unità', () => {
-    let localComponent: ChatContainerComponent;
-    let localChatService: any;
-    let localDatabaseService: any;
-    let localSanitizer: any;
-
-    beforeEach(() => {
-      // Arrange:
-      localChatService = {
-        sendMessage: jasmine.createSpy('sendMessage')
-      };
-      localDatabaseService = {
-        getMessages: jasmine.createSpy('getMessages'),
-        saveMessage: jasmine.createSpy('saveMessage'),
-        loadLastLoadOutcome: jasmine.createSpy('loadLastLoadOutcome')
-      };
-      localSanitizer = {
-        bypassSecurityTrustHtml: (value: string) => value
-      };
-      // Arrange:
-      localComponent = new ChatContainerComponent(localChatService, localSanitizer, localDatabaseService);
-      localComponent.messagesComponent = { scrollToBottom: jasmine.createSpy('scrollToBottom') } as any;
-    });
 
     it("Verifica che l'evento ngOnInit di ChatContainerComponent richiami il metodo loadOldMessages con l'intero 50" +
       "come parametro", () => {
       // Arrange:
-      spyOn(localComponent, 'loadOldMessages');
+      spyOn(component, 'loadOldMessages');
       // Act:
-      localComponent.ngOnInit();
+      component.ngOnInit();
       // Assert:
-      expect(localComponent.loadOldMessages).toHaveBeenCalledWith(50);
+      expect(component.loadOldMessages).toHaveBeenCalledWith(50);
     });
 
     it("Verifica che il metodo onScrollChange di ChatContainerComponent, chiamato con valore true," +
@@ -200,19 +178,19 @@ describe('ChatContainerComponent', () => {
     it("Verifica che il metodo onScrollChange di ChatContainerComponent, chiamato con valore false," +
       "aggiorni l'attributo showScrollToBottom a false", () => {
       // Act:
-      localComponent.onScrollChange(false);
+      component.onScrollChange(false);
       // Assert:
-      expect(localComponent.showScrollToBottom).toBeFalse();
+      expect(component.showScrollToBottom).toBeFalse();
     });
 
     it("Verifica che il metodo onSendMessage di ChatContainerComponent non faccia nulla se il testo ricevuto in input è vuoto " +
       "oppure contiene solo spazi", () => {
       // Arrange:
-      const initialMessagesLength = localComponent.messages.length;
+      const initialMessagesLength = component.messages.length;
       // Act:
-      localComponent.onSendMessage("   ");
+      component.onSendMessage("   ");
       // Assert:
-      expect(localComponent.messages.length).toBe(initialMessagesLength);
+      expect(component.messages.length).toBe(initialMessagesLength);
     });
 
     it("Verifica che il metodo onSuggestionClicked di ChatContainerComponent, invocato con un suggerimento, richiami il metodo" +
@@ -239,25 +217,25 @@ describe('ChatContainerComponent', () => {
     it("Verifica che il metodo loadOldMessages di ChatContainerComponent, in caso di errore nel recupero dei messaggi, imposti " +
       "l'attributo errorMessage come equivalente al messaggio di errore", fakeAsync(() => {
       // Arrange:
-      localDatabaseService.getMessages.and.returnValue(throwError(() => new Error("Test Error")));
+      mockDatabaseService.getMessages.and.returnValue(throwError(() => new Error("Test Error")));
       // Act:
-      localComponent.loadOldMessages(50);
+      component.loadOldMessages(50);
       tick(0);
       // Assert:
-      expect(localComponent.errorMessage).toBe("Errore nel recupero dello storico dei messaggi");
+      expect(component.errorMessage).toBe("Errore nel recupero dello storico dei messaggi");
     }));
 
     it("Verifica che il metodo loadOldMessages di ChatContainerComponent, se il recupero dei messaggi ha successo, resetti " +
       "l'attributo errorMessage ad una stringa vuota", fakeAsync(() => {
       // Arrange:
       const msg1 = new Message('UnitTest message', new Date(), MessageSender.USER);
-      localComponent.errorMessage = "Errore nel recupero dello storico dei messaggi";
-      localDatabaseService.getMessages.and.returnValue(of([msg1]));
+      component.errorMessage = "Errore nel recupero dello storico dei messaggi";
+      mockDatabaseService.getMessages.and.returnValue(of([msg1]));
       // Act:
-      localComponent.loadOldMessages(50);
+      component.loadOldMessages(50);
       tick(0);
       // Assert:
-      expect(localComponent.errorMessage).toBe('');
+      expect(component.errorMessage).toBe('');
     }));
   });
 });
