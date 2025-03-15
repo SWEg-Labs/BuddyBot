@@ -26,10 +26,15 @@ class ConfluenceAdapter(ConfluencePort):
         self.__confluence_repository = confluence_repository
 
     def __UTC_to_CET(self, timestamp: str) -> str:
-        '''
-        Converts a timestamp in string format (%Y-%m-%dT%H:%M:%S.%f%z) from UTC to CET.
-        Returns a timestamp in the same string format.
-        '''
+        """
+        Converts a timestamp from UTC to CET.
+        Args:
+            timestamp (str): The timestamp in string format (%Y-%m-%dT%H:%M:%S.%f%z) to be converted.
+        Returns:
+            str: The converted timestamp in CET in the same string format.
+        Raises:
+            Exception: If there is an error during the conversion process.
+        """
         try:
             cet_timezone = timezone('Europe/Rome')
             timestamp_dt = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%f%z")
@@ -39,10 +44,7 @@ class ConfluenceAdapter(ConfluencePort):
             logger.error(f"Error converting confluence pages timestamp: {e}")
             raise e
         return timestamp_str_tz
-        
-        
 
-    
     def load_confluence_pages(self) -> Tuple[PlatformLog, List[Document]]:
         """
         Loads Confluence pages and converts them to Document objects.

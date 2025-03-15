@@ -67,7 +67,8 @@ class GitHubAdapter(GitHubPort):
                         if commit.get_url() is not None
                         else "/",
                         "id": commit.get_sha() if commit.get_sha() is not None else "/",
-                        "last_update": datetime.now(timezone('Europe/Rome')).strftime('%Y-%m-%dT%H:%M:%S.%f%z')
+                        "last_update": commit.get_author_date().strftime('%Y-%m-%d %H:%M:%S')
+                        if commit.get_author_date() is not None else "/"
                     },
                 )
                 for commit in (commit_entities if commit_entities is not None else [])
@@ -103,6 +104,7 @@ class GitHubAdapter(GitHubPort):
                                 "url": file.get_html_url() if file.get_html_url() is not None else "/",
                                 "id": file.get_sha() if file.get_sha() is not None else "/",
                                 "last_update": "/",
+                                "creation_date": "/",
                             },
                         )
                     )

@@ -48,7 +48,7 @@ class ChromaVectorStoreRepository:
             incoming_update_time = [doc.get_metadata()["vector_store_insertion_date"] for doc in documents] #sbagliato, serve la data in cui è stato modificato, non quella in cui è stato "vettorizzato"
             '''
             try:
-                incoming_docs = {doc.get_metadata()["doc_id"]: (doc.get_metadata(),doc.get_page_content()) for doc in documents}
+                incoming_docs = {doc.get_metadata()["doc_id"]: (doc.get_metadata(), doc.get_page_content()) for doc in documents}
             except Exception as e:
                 logger.error(f"Error preparing new data for update: {e}")
                 raise e
@@ -62,7 +62,7 @@ class ChromaVectorStoreRepository:
             try:
                 db_docs = {}
                 chroma = self.__collection.get(include=["metadatas"])
-                
+
                 # chroma è un dizionario con chiavi 'ids', 'embeddings', 'metadatas', 'documents', 'data', 'uris', 'included'
                 # ids è una lista di tutti gli id del database
                 # metadatas è una lista di dizionari con i metadati di ogni documento (ovviamente nello stesso ordine di ids)
@@ -75,7 +75,7 @@ class ChromaVectorStoreRepository:
                 for id in chroma['ids']:
                     db_docs[id] = chroma['metadatas'][i]
                     i += 1
-                
+
             except Exception as e:
                 logger.error(f"Error getting old data from chroma: {e}")
                 raise e
@@ -95,26 +95,27 @@ class ChromaVectorStoreRepository:
             try:
                 incoming_docs_to_add = {id:value for id,value in incoming_docs.items() if id not in db_docs.keys()}
                 num_added_items += len(incoming_docs_to_add)
-                
+
                 for id in incoming_docs_to_add.keys():
                     incoming_docs.pop(id)
 
             except Exception as e:
                 logger.error(f"Error checking for new documents: {e}")
 
-            # Tolti tutti gli elementi presenti in db e non in incoming, tolti tutti gli elementi presenti in incoming e non in db, rimangono solo gli elementi presenti in entrambi
+            # Tolti tutti gli elementi presenti in db e non in incoming, tolti tutti gli elementi presenti in incoming e non in db, 
+            # rimangono solo gli elementi presenti in entrambi
 
             # Create list of ids to be updated
 
             try:
                 for incoming_id, incoming_value in incoming_docs.items():
-                    
+
                     try:
                         datetime.strptime(db_docs[incoming_id]["last_update"], '%Y-%m-%dT%H:%M:%S.%f%z')
                     except Exception as e:
                         logger.error(f"Error parsing datetime from db: {e}")
                         raise e
-                    
+
                     if incoming_id in db_docs and datetime.strptime(incoming_value[0]["last_update"], '%Y-%m-%dT%H:%M:%S.%f%z') > datetime.strptime(db_docs[incoming_id]["last_update"], '%Y-%m-%dT%H:%M:%S.%f%z'):
                         db_ids_to_delete.append(incoming_id)
                         db_docs.pop(incoming_id) #operazione inutile, per mantenere coerenza
@@ -177,7 +178,7 @@ class ChromaVectorStoreRepository:
                 metadatas=metadatas
             )
             '''
-            
+
             logger.info(f"Successfully loaded {len(documents)} documents into Chroma vector store.")
             italy_tz = pytz.timezone('Europe/Rome')
             log = VectorStoreLog(
