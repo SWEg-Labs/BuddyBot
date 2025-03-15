@@ -33,16 +33,10 @@ class GitHubAdapter(GitHubPort):
             timestamp (datetime): The timestamp as a datetime object to be converted.
         Returns:
             str: The converted timestamp in CET in the string format '%Y-%m-%d %H:%M:%S'.
-        Raises:
-            Exception: If there is an error during the conversion process.
         """
-        try:
-            cet_timezone = timezone('Europe/Rome')
-            timestamp_tz = timestamp.astimezone(cet_timezone)
-            timestamp_str_tz = timestamp_tz.strftime("%Y-%m-%d %H:%M:%S")
-        except Exception as e:
-            logger.error(f"Error converting timestamp: {e}")
-            raise e
+        cet_timezone = timezone('Europe/Rome')
+        timestamp_tz = timestamp.astimezone(cet_timezone)
+        timestamp_str_tz = timestamp_tz.strftime("%Y-%m-%d %H:%M:%S")
         return timestamp_str_tz
 
     def load_github_commits(self) -> Tuple[PlatformLog, List[Document]]:

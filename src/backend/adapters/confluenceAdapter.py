@@ -40,10 +40,10 @@ class ConfluenceAdapter(ConfluencePort):
             timestamp_dt = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
             timestamp_dt_tz = timestamp_dt.astimezone(cet_timezone)
             timestamp_str_tz = timestamp_dt_tz.strftime("%Y-%m-%d %H:%M:%S")
+            return timestamp_str_tz
         except Exception as e:
-            logger.error(f"Error converting confluence pages timestamp: {e}")
+            logger.error(f"Error converting Confluence pages timestamp: {e}")
             raise e
-        return timestamp_str_tz
 
     def load_confluence_pages(self) -> Tuple[PlatformLog, List[Document]]:
         """
