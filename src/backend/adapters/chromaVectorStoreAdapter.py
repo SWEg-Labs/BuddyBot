@@ -76,8 +76,9 @@ class ChromaVectorStoreAdapter(SimilaritySearchPort, LoadFilesInVectorStorePort)
                     continue
                 seen_doc_ids.add(doc_id)
 
-                logger.info(f"Splitting document {doc_id} into chunks...")
                 chunks = [page_content[i:i + self.__max_chunk_size] for i in range(0, len(page_content), self.__max_chunk_size)]
+                if len(chunks) > 1:
+                    logger.info(f"Splitted document {doc_id} into {len(chunks)} chunks")
 
                 for chunk_index, chunk in enumerate(chunks):
                     chunk_metadata = metadata.copy()
@@ -91,6 +92,8 @@ class ChromaVectorStoreAdapter(SimilaritySearchPort, LoadFilesInVectorStorePort)
                         chunk_metadata["date"] = chunk_metadata["date"].strftime(date_format)
                     if "creation_date" in chunk_metadata and hasattr(chunk_metadata["creation_date"], "strftime"):
                         chunk_metadata["creation_date"] = chunk_metadata["creation_date"].strftime(date_format)
+                    if "last_update" in chunk_metadata and hasattr(chunk_metadata["last_update"], "strftime"):
+                        chunk_metadata["last_update"] = chunk_metadata["last_update"].strftime(date_format)
 
                     # Add vector store insertion date
                     italy_tz = pytz.timezone('Europe/Rome')

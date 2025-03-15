@@ -48,6 +48,8 @@ class ChromaVectorStoreRepository:
             Exception: If an error occurs while loading the documents.
         """
         try:
+            date_format = "%Y-%m-%dT%H:%M:%S"
+
             # Preparazione dei documenti in arrivo: mappatura doc_id -> (metadata, page_content)
             try:
                 incoming_docs = {
@@ -74,6 +76,8 @@ class ChromaVectorStoreRepository:
             except Exception as e:
                 logger.error(f"Error getting old data from chroma: {e}")
                 raise e
+
+            logger.info(f"Fetched {len(db_docs)} documents from Chroma vector store.")
 
             # Creazione della lista degli id da eliminare: documenti presenti in DB ma non negli incoming
             try:
@@ -109,10 +113,10 @@ class ChromaVectorStoreRepository:
                         continue
                     try:
                         incoming_last_update = datetime.strptime(
-                            metadata.get("last_update"), '%Y-%m-%d %H:%M:%S'
+                            metadata.get("last_update"), date_format
                         )
                         db_last_update = datetime.strptime(
-                            db_docs[incoming_id]["last_update"], '%Y-%m-%d %H:%M:%S'
+                            db_docs[incoming_id]["last_update"], date_format
                         )
                     except Exception as e:
                         logger.error(f"Error parsing datetime for doc_id {incoming_id}: {e}")
@@ -153,10 +157,10 @@ class ChromaVectorStoreRepository:
                         db_metadata = db_github_by_path[path]
                         try:
                             incoming_creation_date = datetime.strptime(
-                                metadata.get("creation_date"), '%Y-%m-%d %H:%M:%S'
+                                metadata.get("creation_date"), date_format
                             )
                             db_insertion_date = datetime.strptime(
-                                db_metadata.get("insertion_date"), '%Y-%m-%d %H:%M:%S'
+                                db_metadata.get("insertion_date"), date_format
                             )
                         except Exception as e:
                             logger.error(f"Error parsing dates for GitHub File with path {path}: {e}")
@@ -173,21 +177,26 @@ class ChromaVectorStoreRepository:
             # Aggiornamento del DB: eliminazione e aggiunta dei documenti identificati
             # -------------------------------------------------------------------------------
             try:
-                self.__collection.delete(ids=db_ids_to_delete)
+                if db_ids_to_delete:
+                    self.__collection.delete(ids=db_ids_to_delete)
             except Exception as e:
                 logger.error(f"Error deleting documents from db: {e}")
 
+            logger.info(f"Deleted {num_deleted_items} documents from Chroma vector store.")
+
             try:
-                self.__collection.add(
-                    ids=[doc_id for doc_id in incoming_docs_to_add.keys()],
-                    documents=[doc[1] for doc in incoming_docs_to_add.values()],
-                    metadatas=[doc[0] for doc in incoming_docs_to_add.values()],
-                )
+                if incoming_docs_to_add:
+                    self.__collection.add(
+                        ids=[doc_id for doc_id in incoming_docs_to_add.keys()],
+                        documents=[doc[1] for doc in incoming_docs_to_add.values()],
+                        metadatas=[doc[0] for doc in incoming_docs_to_add.values()],
+                    )
             except Exception as e:
                 logger.error(f"Error adding documents to db: {e}")
 
             logger.info(f"Successfully loaded documents into Chroma vector store. "
-                        f"Added: {num_added_items}, Modified: {num_modified_items}, Deleted: {num_deleted_items}.")
+                        f"Added: {num_added_items}, Modified: {num_modified_items}.")
+
             italy_tz = pytz.timezone('Europe/Rome')
             log = VectorStoreLog(
                 timestamp=datetime.now(italy_tz),
