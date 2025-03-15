@@ -36,7 +36,7 @@ class ChatController:
 
             if not user_message:
                 return JSONResponse(content={"error": "Messaggio vuoto"}, status_code=400)
-            
+
             # Converti il messaggio dell'utente in un oggetto Question
             user_message = Question(content=user_message)
 
