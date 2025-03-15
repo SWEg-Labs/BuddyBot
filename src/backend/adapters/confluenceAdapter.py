@@ -29,15 +29,15 @@ class ConfluenceAdapter(ConfluencePort):
         """
         Converts a timestamp from UTC to CET.
         Args:
-            timestamp (str): The timestamp in string format (%Y-%m-%d %H:%M:%S) to be converted.
+            timestamp (str): The timestamp in string format '%Y-%m-%dT%H:%M:%S.%fZ' to be converted.
         Returns:
-            str: The converted timestamp in CET in the same string format.
+            str: The converted timestamp in CET in the string format '%Y-%m-%d %H:%M:%S'.
         Raises:
             Exception: If there is an error during the conversion process.
         """
         try:
             cet_timezone = timezone('Europe/Rome')
-            timestamp_dt = datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
+            timestamp_dt = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
             timestamp_dt_tz = timestamp_dt.astimezone(cet_timezone)
             timestamp_str_tz = timestamp_dt_tz.strftime("%Y-%m-%d %H:%M:%S")
         except Exception as e:
