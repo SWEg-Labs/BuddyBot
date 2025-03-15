@@ -41,12 +41,6 @@ class ChromaVectorStoreRepository:
             Exception: If an error occurs while loading the documents.
         """
         try:
-            '''
-            incoming_ids = [doc.get_metadata()["doc_id"] for doc in documents]
-            incoming_documents_content = [doc.get_page_content() for doc in documents]
-            incoming_metadatas = [doc.get_metadata() for doc in documents]
-            incoming_update_time = [doc.get_metadata()["vector_store_insertion_date"] for doc in documents] #sbagliato, serve la data in cui è stato modificato, non quella in cui è stato "vettorizzato"
-            '''
             try:
                 incoming_docs = {doc.get_metadata()["doc_id"]: (doc.get_metadata(), doc.get_page_content()) for doc in documents}
             except Exception as e:
@@ -102,8 +96,11 @@ class ChromaVectorStoreRepository:
             except Exception as e:
                 logger.error(f"Error checking for new documents: {e}")
 
-            # Tolti tutti gli elementi presenti in db e non in incoming, tolti tutti gli elementi presenti in incoming e non in db, 
+            # Tolti tutti gli elementi presenti in db e non in incoming, tolti tutti gli elementi presenti in incoming e non in db,
             # rimangono solo gli elementi presenti in entrambi
+
+            # If the GitHub File has already a correspondent path in Chroma (which centainly needs to be deleted),
+            # we need to check if it has been modified or it's been created a new file with the same path (added).
 
             # Create list of ids to be updated
 
@@ -140,44 +137,7 @@ class ChromaVectorStoreRepository:
                     metadatas=[doc[0] for doc in incoming_docs_to_add.values()],
                 )
             except Exception as e:
-                logger.error(f"Error adding documents to db: {e}")     
-           
-            '''
-            # Check and delete existing documents with the same IDs
-            for doc_id in ids:
-                try:
-                    # Check if document exists by trying to retrieve it
-                    existing_docs = self.__collection.get(ids=[doc_id])
-                    if existing_docs and len(existing_docs.get('ids', [])) > 0:
-                        # Document exists, delete it
-                        self.__collection.delete(ids=[doc_id])
-                        num_modified_items += 1
-                        logger.info(f"Deleted existing document with ID: {doc_id} for update")
-                except Exception as e:
-                    logger.error(f"Error checking document existence: {e}")
-                    raise e
-
-            # Check for documents in collection that are not in the current batch
-            try:
-                all_docs = self.__collection.get()
-                all_ids = all_docs.get('ids', []) if all_docs else []
-
-                for existing_id in all_ids:
-                    if existing_id not in ids:
-                        # This document is not in the new batch, delete it
-                        self.__collection.delete(ids=[existing_id])
-                        num_deleted_items += 1
-                        logger.info(f"Deleted obsolete document with ID: {existing_id}")
-            except Exception as e:
-                logger.error(f"Error checking for obsolete documents: {e}")
-                raise e
-
-            self.__collection.add(
-                ids=ids,
-                documents=documents_content,
-                metadatas=metadatas
-            )
-            '''
+                logger.error(f"Error adding documents to db: {e}")
 
             logger.info(f"Successfully loaded {len(documents)} documents into Chroma vector store.")
             italy_tz = pytz.timezone('Europe/Rome')
