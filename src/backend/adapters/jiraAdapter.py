@@ -58,8 +58,8 @@ class JiraAdapter(JiraPort):
                         "id": issue.get_key()
                               if issue.get_key() is not None else "/",
                         "last_update": issue.get_updated() #timestamp già in fuso orario CET
-                                if issue.get_updated() is not None 
-                                else datetime.now(timezone('Europe/Rome')).strftime('%Y-%m-%dT%H:%M:%S.%f%z')
+                                if issue.get_updated() is not None
+                                else datetime.now(timezone('Europe/Rome')).strftime('%Y-%m-%d %H:%M:%S')
                     }
                 )
                 for issue in issue_entities

@@ -29,7 +29,7 @@ class ConfluenceAdapter(ConfluencePort):
         """
         Converts a timestamp from UTC to CET.
         Args:
-            timestamp (str): The timestamp in string format (%Y-%m-%dT%H:%M:%S.%f%z) to be converted.
+            timestamp (str): The timestamp in string format (%Y-%m-%d %H:%M:%S) to be converted.
         Returns:
             str: The converted timestamp in CET in the same string format.
         Raises:
@@ -37,9 +37,9 @@ class ConfluenceAdapter(ConfluencePort):
         """
         try:
             cet_timezone = timezone('Europe/Rome')
-            timestamp_dt = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%f%z")
+            timestamp_dt = datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
             timestamp_dt_tz = timestamp_dt.astimezone(cet_timezone)
-            timestamp_str_tz = timestamp_dt_tz.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+            timestamp_str_tz = timestamp_dt_tz.strftime("%Y-%m-%d %H:%M:%S")
         except Exception as e:
             logger.error(f"Error converting confluence pages timestamp: {e}")
             raise e
@@ -101,7 +101,7 @@ class ConfluenceAdapter(ConfluencePort):
                         "last_update": (
                             self.__UTC_to_CET(page.get_version().get("when"))
                             if page.get_version().get("when") is not None
-                            else datetime.now(timezone('Europe/Rome')).strftime('%Y-%m-%dT%H:%M:%S.%f%z')
+                            else datetime.now(timezone('Europe/Rome')).strftime('%Y-%m-%d %H:%M:%S')
                         ),
                     }
                 )

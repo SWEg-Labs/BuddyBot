@@ -194,7 +194,7 @@ class ChromaVectorStoreRepository:
             except Exception as e:
                 logger.error(f"Error adding documents to db: {e}")
 
-            logger.info(f"Successfully loaded documents into Chroma vector store. "
+            logger.info(f"Successfully loaded documents into Chroma vector store -> "
                         f"Added: {num_added_items}, Modified: {num_modified_items}.")
 
             italy_tz = pytz.timezone('Europe/Rome')

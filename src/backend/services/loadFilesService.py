@@ -142,6 +142,13 @@ class LoadFilesService(LoadFilesUseCase):
         Utilizziamo una espressione regolare per estrarre:
         - Il filename, cioè il testo compreso tra "- " e " (Status: "
         - Lo status, cioè il testo compreso tra " (Status: " e ", Changes: "
+
+        Args:
+            github_files (List[Document]): La lista di file caricati da GitHub.
+            github_commits (List[Document]): La lista di commit caricati da GitHub.
+
+        Returns:
+            List[Document]: La lista di file con i metadati aggiornati.
         """
         # L'espressione regolare per estrarre il percorso del file e lo status:
         # - Cattura il filename: tutto ciò che si trova tra "- " e " (Status: "
