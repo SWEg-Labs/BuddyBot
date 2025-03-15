@@ -82,6 +82,7 @@ class ChromaVectorStoreRepository:
             # Creazione della lista degli id da eliminare: documenti presenti in DB ma non negli incoming
             try:
                 db_ids_to_delete = [doc_id for doc_id in db_docs.keys() if doc_id not in incoming_docs.keys()]
+                db_docs_to_delete = {doc_id: db_docs[doc_id] for doc_id in db_ids_to_delete}
                 num_deleted_items += len(db_ids_to_delete)
                 for doc_id in db_ids_to_delete:
                     db_docs.pop(doc_id)
@@ -140,13 +141,13 @@ class ChromaVectorStoreRepository:
             try:
                 # Costruiamo una mapping per i GitHub File già presenti in Chroma basata sul campo "path"
                 db_github_by_path = {}
-                for db_id, metadata in db_docs.items():
+                for db_id, metadata in db_docs_to_delete.items():
                     if metadata.get("item_type") == "GitHub File":
                         path = metadata.get("path")
                         if path:
                             db_github_by_path[path] = metadata
 
-                for incoming_id, incoming_value in incoming_docs.items():
+                for incoming_id, incoming_value in incoming_docs_to_add.items():
                     metadata = incoming_value[0]
                     if metadata.get("item_type") != "GitHub File":
                         continue
@@ -160,15 +161,18 @@ class ChromaVectorStoreRepository:
                                 metadata.get("creation_date"), date_format
                             )
                             db_insertion_date = datetime.strptime(
-                                db_metadata.get("insertion_date"), date_format
+                                db_metadata.get("vector_store_insertion_date"), date_format
                             )
                         except Exception as e:
                             logger.error(f"Error parsing dates for GitHub File with path {path}: {e}")
                             continue
-                        if incoming_creation_date > db_insertion_date:
-                            num_added_items += 1
-                        else:
+                        if incoming_creation_date < db_insertion_date:
+                            # Il file è stato creato prima dell'ultimo aggiornamento, quindi in questo aggiornamento viene solo modificato.
+                            # Non si considera quindi aggiunto (ricreato), ma bensì modificato.
                             num_modified_items += 1
+                            num_added_items -= 1
+                            num_deleted_items -= 1
+
             except Exception as e:
                 logger.error(f"Error checking for GitHub File modifications: {e}")
                 raise e
