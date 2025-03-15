@@ -61,7 +61,7 @@ class ChromaVectorStoreAdapter(SimilaritySearchPort, LoadFilesInVectorStorePort)
         try:
             chroma_documents = []
             seen_doc_ids = set()
-            date_format = "%Y-%m-%dT%H:%M:%S"
+            date_format = "%Y-%m-%d %H:%M:%S"
 
             for document in documents:
                 page_content = document.get_page_content()

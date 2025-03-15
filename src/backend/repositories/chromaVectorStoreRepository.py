@@ -48,7 +48,7 @@ class ChromaVectorStoreRepository:
             Exception: If an error occurs while loading the documents.
         """
         try:
-            date_format = "%Y-%m-%dT%H:%M:%S"
+            date_format = "%Y-%m-%d %H:%M:%S"
 
             # Preparazione dei documenti in arrivo: mappatura doc_id -> (metadata, page_content)
             try:
