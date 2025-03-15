@@ -32,8 +32,8 @@ try:
     '''
 
     # Inizializza cron
-    cron = CronTab(tabfile=crontab_path)
-    # cron = CronTab(user=True)   # Per debug in locale
+    # cron = CronTab(tabfile=crontab_path)
+    cron = CronTab(user=True)   # Per debug in locale
 
     # Ottiene il controller per il caricamento dei file
     cron_dependencies = dependency_injection_cron()

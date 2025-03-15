@@ -109,10 +109,10 @@ class ChromaVectorStoreRepository:
                         continue
                     try:
                         incoming_last_update = datetime.strptime(
-                            metadata.get("last_update"), '%Y-%m-%dT%H:%M:%S.%f%z'
+                            metadata.get("last_update"), '%Y-%m-%d %H:%M:%S'
                         )
                         db_last_update = datetime.strptime(
-                            db_docs[incoming_id]["last_update"], '%Y-%m-%dT%H:%M:%S.%f%z'
+                            db_docs[incoming_id]["last_update"], '%Y-%m-%d %H:%M:%S'
                         )
                     except Exception as e:
                         logger.error(f"Error parsing datetime for doc_id {incoming_id}: {e}")
@@ -153,10 +153,10 @@ class ChromaVectorStoreRepository:
                         db_metadata = db_github_by_path[path]
                         try:
                             incoming_creation_date = datetime.strptime(
-                                metadata.get("creation_date"), '%Y-%m-%dT%H:%M:%S.%f%z'
+                                metadata.get("creation_date"), '%Y-%m-%d %H:%M:%S'
                             )
                             db_insertion_date = datetime.strptime(
-                                db_metadata.get("insertion_date"), '%Y-%m-%dT%H:%M:%S.%f%z'
+                                db_metadata.get("insertion_date"), '%Y-%m-%d %H:%M:%S'
                             )
                         except Exception as e:
                             logger.error(f"Error parsing dates for GitHub File with path {path}: {e}")

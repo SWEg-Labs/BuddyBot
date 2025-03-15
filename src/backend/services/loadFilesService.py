@@ -62,7 +62,7 @@ class LoadFilesService(LoadFilesUseCase):
             jira_issues_log, jira_issues = self.load_jira_issues()
             confluence_pages_log, confluence_pages = self.load_confluence_pages()
 
-            github_files_with_new_metadata = get_github_files_new_metadata(github_files, github_commits)
+            github_files_with_new_metadata = self.get_github_files_new_metadata(github_files, github_commits)
             cleaned_confluence_pages = self.clean_confluence_pages(confluence_pages)
 
             documents = github_commits + github_files_with_new_metadata + jira_issues + cleaned_confluence_pages
@@ -150,7 +150,7 @@ class LoadFilesService(LoadFilesUseCase):
 
         # Itera su ogni file caricato da GitHub
         for gh_file in github_files:
-            file_path = gh_file.metadata.get("path", "").strip()
+            file_path = gh_file.get_metadata().get("path", "").strip()
             if not file_path:
                 continue  # Se non c'è il percorso, passa al prossimo file
 
@@ -159,14 +159,14 @@ class LoadFilesService(LoadFilesUseCase):
 
             # Scorri tutti i commit per cercare quelli che riguardano questo file
             for commit in github_commits:
-                commit_date_str = commit.metadata.get("date", "")
+                commit_date_str = commit.get_metadata().get("date", "")
                 try:
                     commit_date = datetime.strptime(commit_date_str, '%Y-%m-%d %H:%M:%S')
                 except Exception:
                     continue  # Se la data non può essere parsata, passa al commit successivo
 
                 # Il campo "files" del commit è una lista di stringhe
-                commit_files_list = commit.metadata.get("files", [])
+                commit_files_list = commit.get_metadata().get("files", [])
                 for file_str in commit_files_list:
                     # Estrae filename e status utilizzando la regex
                     match = file_info_pattern.search(file_str)
@@ -183,11 +183,17 @@ class LoadFilesService(LoadFilesUseCase):
                                 if (creation_date_date is None) or (commit_date > creation_date_date):
                                     creation_date_date = commit_date
 
+            # Crea un dizionario temporaneo per i metadati aggiornati
+            updated_metadata = gh_file.get_metadata().copy()
+
             # Aggiorna i metadati del file se sono state trovate date valide
             if last_update_date is not None:
-                gh_file.metadata["last_update"] = last_update_date.strftime('%Y-%m-%d %H:%M:%S')
+                updated_metadata["last_update"] = last_update_date.strftime('%Y-%m-%d %H:%M:%S')
             if creation_date_date is not None:
-                gh_file.metadata["creation_date"] = creation_date_date.strftime('%Y-%m-%d %H:%M:%S')
+                updated_metadata["creation_date"] = creation_date_date.strftime('%Y-%m-%d %H:%M:%S')
+
+            # Imposta i metadati aggiornati utilizzando il setter
+            gh_file.set_metadata(updated_metadata)
 
         return github_files
 
