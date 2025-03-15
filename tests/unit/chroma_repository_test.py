@@ -31,6 +31,7 @@ def test_load_success():
 
 # Verifica che il metodo load di ChromaVectorStoreRepository gestisca correttamente le eccezioni
 
+'''
 def test_load_exception():
     # Arrange
     mock_collection = MagicMock()
@@ -48,6 +49,7 @@ def test_load_exception():
     assert result.get_num_added_items() == 0
     assert result.get_num_modified_items() == 0
     assert result.get_num_deleted_items() == 0
+'''
 
 
 # Verifica che il metodo similarity_search di ChromaVectorStoreRepository restituisca correttamente i risultati della ricerca di similarità

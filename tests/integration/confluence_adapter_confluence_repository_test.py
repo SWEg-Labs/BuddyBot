@@ -31,9 +31,10 @@ def test_load_confluence_pages_calls_repository_method():
                     "space": "Space Name",
                     "created_by": "John Doe",
                     "item_type": "Confluence Page",
-                    "creation_date": "2025-02-28T12:34:56.000+0000",
+                    "creation_date": "2025-02-28 13:34:56",
                     "url": "https://confluence.example.com/spaces/SPACEKEY/pages/12345/Example+Page", # Unione dei due campi dentro "links"
                     "id": "12345",
+                    "last_update": "2025-02-28 13:34:56",
                 }
             )
         ]
@@ -66,7 +67,7 @@ def test_load_confluence_pages_calls_repository_method():
                         "username": "john.doe",
                         "displayName": "John Doe"
                     },
-                    "when": "2025-02-28T12:34:56.000+0000",
+                    "when": "2025-02-28T12:34:56.000Z",
                     "number": 1,
                     "minorEdit": False
                 },

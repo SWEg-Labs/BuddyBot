@@ -62,7 +62,7 @@ def test_split_vector_store_insertion_date():
     result = adapter._ChromaVectorStoreAdapter__split(documents)
 
     # Assert
-    assert result[0].get_metadata()["vector_store_insertion_date"] == "2025-03-01T13:00:00"
+    assert result[0].get_metadata()["vector_store_insertion_date"] == "2025-03-01 13:00:00"
 
 
 # Verifica che il metodo split di ChromaVectorStoreAdapter gestisca correttamente i documenti con id duplicato
@@ -121,8 +121,8 @@ def test_split_date_formatting():
     result = adapter._ChromaVectorStoreAdapter__split(documents)
 
     # Assert
-    assert result[0].get_metadata()["date"] == "2025-03-01T12:00:00"
-    assert result[0].get_metadata()["creation_date"] == "2025-03-01T12:00:00"
+    assert result[0].get_metadata()["date"] == "2025-03-01 12:00:00"
+    assert result[0].get_metadata()["creation_date"] == "2025-03-01 12:00:00"
 
 
 # Verifica che il metodo similarity_search di ChromaVectorStoreAdapter gestisca correttamente le eccezioni
