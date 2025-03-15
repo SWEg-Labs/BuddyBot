@@ -83,7 +83,7 @@ class ConfluenceAdapter(ConfluencePort):
                         ),
                         "item_type": "Confluence Page",
                         "creation_date": (
-                            page.get_version().get("when")
+                            self.__UTC_to_CET(page.get_version().get("when"))
                             if page.get_version().get("when") is not None
                             else "/"
                         ),
