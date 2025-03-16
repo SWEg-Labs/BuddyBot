@@ -181,27 +181,27 @@
 
 .scroll-to-bottom-btn {
   position: fixed;
-  bottom: 80px;
+  bottom: 130px;
   right: 20px;
-  width: 50px;
-  height: 50px;
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
-  background-color: #007bff;
+  background-color: #5c6bc0;
   color: white;
   border: none;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 100;
   transition: all 0.2s ease;
   animation: fadeIn 0.3s ease;
   
   &:hover {
-    background-color: #0056b3;
+    background-color: #3f51b5;
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   }
   
   &:active {
@@ -210,7 +210,7 @@
   }
   
   .arrow-icon {
-    font-size: 24px;
+    font-size: 20px;
     font-weight: bold;
   }
 }
