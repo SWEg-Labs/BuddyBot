@@ -1,5 +1,5 @@
 import psycopg2
-from beartype.typing import Optional, Tuple
+from beartype.typing import Optional, Tuple, List
 
 from entities.loggingEntities import PostgresLoadingAttempt
 from entities.postgresSaveOperationResponse import PostgresSaveOperationResponse
@@ -29,9 +29,9 @@ class PostgresRepository:
         Executes a given SQL query with optional parameters and fetch options.
         Args:
             query (str): The SQL query to be executed.
-            params (tuple, optional): The parameters to be used in the SQL query. Defaults to None.
-            fetch_one (bool, optional): Whether to fetch a single result. Defaults to False.
-            fetch_all (bool, optional): Whether to fetch all results. Defaults to False.
+            params (tuple [optional]): The parameters to be used in the SQL query. Defaults to None.
+            fetch_one (bool [optional]): Whether to fetch a single result. Defaults to False.
+            fetch_all (bool [optional]): Whether to fetch all results. Defaults to False.
         Returns:
             tuple or list: The fetched result(s) if fetch_one or fetch_all is True, otherwise None.
         Raises:
@@ -82,29 +82,31 @@ class PostgresRepository:
             logger.error(f"An error occurred while saving the message in the Postgres database: {e}")
             raise e
 
-    def get_messages(self, quantity: int) -> list[PostgresMessage]:
+    def get_messages(self, quantity: int, page: int = 1) -> List[PostgresMessage]:
         '''
-        Retrieves the specified number of messages from the PostgreSQL database.
+        Retrieves the specified number of messages from the PostgreSQL database with pagination support.
         Args:
-            quantity (int): The number of messages to retrieve.
+            quantity (int): The number of messages to retrieve per page.
+            page (int [optional]): The page number to retrieve, defaults to 1.
         Returns:
-            list[PostgresMessage]: The list of retrieved messages.
+            List[PostgresMessage]: The list of retrieved messages.
         Raises:
             psycopg2.Error: If an error occurs while retrieving the messages from the PostgreSQL database.
         '''
         try:
+            offset = (page - 1) * quantity
             get_messages_query = """
             SELECT content, timestamp, sender
             FROM messages
             ORDER BY timestamp DESC
-            LIMIT %s;
+            LIMIT %s OFFSET %s;
             """
-            messages = self.__execute_query(get_messages_query, params=(quantity,), fetch_all=True)
+            messages = self.__execute_query(get_messages_query, params=(quantity, offset), fetch_all=True)
 
             if messages is None:
                 return []
 
-            logger.info("Messages retrieved successfully from the Postgres database.")
+            logger.info(f"Messages (page {page}) retrieved successfully from the Postgres database.")
 
             return [PostgresMessage(content=message[0], timestamp=message[1], sender=PostgresMessageSender(message[2])) for message in messages]
 

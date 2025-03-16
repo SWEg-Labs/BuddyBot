@@ -14,10 +14,15 @@ import { ChatLoadingIndicatorComponent } from '../chat-loading-indicator/chat-lo
 export class ChatMessagesComponent implements AfterViewInit {
   @Input() messages: Message[] = []
   @Input() isLoading = false
+  @Input() loadingOlderMessages = false
+  @Input() showScrollToBottom = false
   @Output() isScrolledUp = new EventEmitter<boolean>()
+  @Output() loadMoreMessages = new EventEmitter<void>()
   @ViewChild('scrollMe') private readonly messagesContainer!: ElementRef
   messageSender = MessageSender
   private keepScrollBottom = true
+  private prevScrollHeight = 0
+  private scrollPosition = 0
 
   ngAfterViewInit(): void {
     const el = this.messagesContainer.nativeElement as HTMLElement
@@ -40,10 +45,28 @@ export class ChatMessagesComponent implements AfterViewInit {
     if (!this.messagesContainer) return
     const el = this.messagesContainer.nativeElement
     const threshold = 50
+    
+    this.scrollPosition = el.scrollTop
+    this.prevScrollHeight = el.scrollHeight
+    
     const distanceFromBottom = el.scrollHeight - (el.scrollTop + el.clientHeight)
     this.keepScrollBottom = distanceFromBottom < threshold
     const isAtBottom = distanceFromBottom < 10
     this.isScrolledUp.emit(!isAtBottom)
+    
+    if (el.scrollTop < threshold && this.messages.length > 0) {
+      this.loadMoreMessages.emit()
+    }
+  }
+
+  maintainScrollPosition(): void {
+    if (!this.messagesContainer) return
+    const el = this.messagesContainer.nativeElement
+    
+    if (el.scrollHeight > this.prevScrollHeight) {
+      const heightDifference = el.scrollHeight - this.prevScrollHeight
+      el.scrollTop = this.scrollPosition + heightDifference
+    }
   }
 
   scrollToBottom(): void {

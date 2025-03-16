@@ -2,21 +2,28 @@
   <!-- HEADER -->
   <app-chat-header></app-chat-header>
 
+  <!-- Visualizzazione dell'errore -->
+  <div *ngIf="errorMessage" class="error-alert">
+    {{ errorMessage }}
+  </div>
+
   <!-- MESSAGGI -->
   <app-chat-messages
     [messages]="messages"
     [isLoading]="isLoading"
+    [loadingOlderMessages]="loadingOlderMessages"
+    [showScrollToBottom]="showScrollToBottom"
     (isScrolledUp)="onScrollChange($event)"
+    (loadMoreMessages)="onLoadMoreMessages()"
   ></app-chat-messages>
 
   <!-- SUGGERIMENTI -->
   <app-chat-suggestions
-  [question]="lastUserQuestion"
-  [answer]="lastBotAnswer"
-  [hideSuggestions]="hideSuggestions"
-  (suggestionClicked)="onSuggestionClicked($event)"
-></app-chat-suggestions>
-
+    [question]="lastUserQuestion"
+    [answer]="lastBotAnswer"
+    [hideSuggestions]="hideSuggestions"
+    (suggestionClicked)="onSuggestionClicked($event)"
+  ></app-chat-suggestions>
 
   <!-- INPUT -->
   <app-chat-input

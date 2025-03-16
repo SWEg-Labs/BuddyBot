@@ -29,23 +29,20 @@ describe('AppComponent', () => {
     fixture.detectChanges();
   });
 
+
   // ------------------------------------------------------
   // Test di integrazione
   // ------------------------------------------------------
-  describe('Test di integrazione', () => {
-    it("Verifica che il componente venga creato", () => {
-      // Act & Assert:
-      expect(component).toBeTruthy();
-    });
 
-    it("Verifica che il template contenga l'elemento app-chat-container", () => {
+  describe('Test di integrazione', () => {
+    it("Verifica che il template HTML di AppComponent contenga il tag app-chat-container di ChatContainerComponent", () => {
       // Act:
       const containerElem = fixture.nativeElement.querySelector('app-chat-container');
       // Assert:
       expect(containerElem).toBeTruthy();
     });
 
-    it("Verifica che il contenuto del chat container venga renderizzato", () => {
+    it("Verifica che il contenuto del template HTML di ChatContainerComponent venga renderizzato in AppComponent", () => {
       // Act:
       const stubElement = fixture.nativeElement.querySelector('.stub-chat-container');
       // Assert:
@@ -54,11 +51,18 @@ describe('AppComponent', () => {
     });
   });
 
+
   // ------------------------------------------------------
   // Test di unità
   // ------------------------------------------------------
+
   describe('Test di unità', () => {
-    it("Verifica che l'istanza del componente sia definita", () => {
+    it("Verifica che il componente AppComponent venga creato", () => {
+      // Act & Assert:
+      expect(component).toBeTruthy();
+    });
+
+    it("Verifica che l'istanza del componente AppComponent sia definita", () => {
       // Act:
       const localComponent = new AppComponent();
       // Assert:

@@ -22,5 +22,5 @@ export class ChatInputComponent {
     }
     this.sendMessage.emit(this.userInput.trim());
     this.userInput = '';
-  }  
+  }
 }

@@ -18,18 +18,28 @@ describe('ChatHeaderComponent', () => {
     fixture.detectChanges();
   });
 
+
   // ------------------------------------------------------
-  // Test di integrazione
+  // Test di unità
   // ------------------------------------------------------
-  describe('Test di integrazione', () => {
-    it("Verifica che il componente venga creato", () => {
+
+  describe('Test di unità', () => {
+    it("Verifica che il componente ChatHeaderComponent venga creato", () => {
       // Arrange:
       // Act:
       // Assert:
       expect(component).toBeTruthy();
     });
 
-    it("Verifica che il titolo contenga 'BuddyBot'", () => {
+    it("Verifica che l'istanza del componente ChatHeaderComponent sia definita", () => {
+      // Arrange:
+      const localComponent = new ChatHeaderComponent();
+      // Act:
+      // Assert:
+      expect(localComponent).toBeDefined();
+    });
+
+    it("Verifica che il titolo h1 del template HTML di ChatHeaderComponent contenga 'BuddyBot'", () => {
       // Arrange:
       // Act:
       const h1 = fixture.nativeElement.querySelector('h1');
@@ -37,7 +47,7 @@ describe('ChatHeaderComponent', () => {
       expect(h1.textContent).toContain('BuddyBot');
     });
 
-    it("Verifica che l'elemento app-chat-badge sia presente", () => {
+    it("Verifica che il tag app-chat-badge sia presente nel template HTML di ChatHeaderComponent", () => {
       // Arrange:
       // Act:
       const badgeElement = fixture.debugElement.query(By.css('app-chat-badge'));
@@ -45,7 +55,7 @@ describe('ChatHeaderComponent', () => {
       expect(badgeElement).toBeTruthy();
     });
 
-    it("Verifica che l'immagine del logo abbia src e alt corretti", () => {
+    it("Verifica che l'immagine del logo di ChatHeaderComponent, in HTML, abbia gli attributi src e alt corretti", () => {
       // Arrange:
       // Act:
       const img = fixture.nativeElement.querySelector('.logo-container img');
@@ -54,25 +64,12 @@ describe('ChatHeaderComponent', () => {
       expect(img.alt).toBe('Logo');
     });
 
-    it("Verifica che il tag header abbia la classe 'chat-header'", () => {
+    it("Verifica che il tag header del template HTML di ChatHeaderComponent abbia la classe CSS 'chat-header'", () => {
       // Arrange:
       // Act:
       const headerEl = fixture.nativeElement.querySelector('header');
       // Assert:
       expect(headerEl.classList).toContain('chat-header');
-    });
-  });
-
-  // ------------------------------------------------------
-  // Test di unità
-  // ------------------------------------------------------
-  describe('Test di unità', () => {
-    it("Verifica che l'istanza del componente sia definita", () => {
-      // Arrange:
-      const localComponent = new ChatHeaderComponent();
-      // Act:
-      // Assert:
-      expect(localComponent).toBeDefined();
     });
   });
 });

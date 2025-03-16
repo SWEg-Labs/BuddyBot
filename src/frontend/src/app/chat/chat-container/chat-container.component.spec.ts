@@ -42,21 +42,23 @@ describe('ChatContainerComponent', () => {
     component.messagesComponent = { scrollToBottom: jasmine.createSpy('scrollToBottom') } as any;
   });
 
+
   // ------------------------------------------------------
   // Test di integrazione
   // ------------------------------------------------------
+
   describe('Test di integrazione', () => {
-    it("Verifica che ngOnInit richiami loadOldMessages e loadLastLoadOutcome", () => {
+    it("Verifica che l'evento ngOnInit di ChatContainerComponent richiami il metodo loadLastLoadOutcome di DatabaseService", () => {
       // Arrange:
       spyOn(component, 'loadOldMessages');
       // Act:
       component.ngOnInit();
       // Assert:
-      expect(component.loadOldMessages).toHaveBeenCalledWith(50);
       expect(mockDatabaseService.loadLastLoadOutcome).toHaveBeenCalled();
     });
 
-    it("Verifica che loadOldMessages ordini e formatti correttamente i messaggi", fakeAsync(() => {
+    it("Verifica che il metodo loadOldMessages di ChatContainerComponent ordini e formatti correttamente i messaggi" +
+      "ricevuti da DatabaseService", fakeAsync(() => {
       // Arrange:
       const msg1 = new Message('B', new Date(2020, 1, 2), MessageSender.USER);
       const msg2 = new Message('A', new Date(2020, 1, 1), MessageSender.CHATBOT);
@@ -73,15 +75,33 @@ describe('ChatContainerComponent', () => {
       expect(component.scrollToBottom).toHaveBeenCalled();
     }));
 
-    it("Verifica che onScrollChange aggiorni showScrollToBottom", () => {
+    it("Verifica che il metodo loadOldMessages di ChatContainerComponent imposti errorMessage in caso di errore" +
+      "nel recupero dei messaggi restituito da DatabaseService", fakeAsync(() => {
       // Arrange:
+      mockDatabaseService.getMessages.and.returnValue(throwError(() => new Error("Test Error")));
       // Act:
-      component.onScrollChange(true);
+      component.loadOldMessages(50);
+      tick(0);
       // Assert:
-      expect(component.showScrollToBottom).toBeTrue();
-    });
+      expect(component.errorMessage).toBe("Errore nel recupero dello storico dei messaggi");
+    }));
 
-    it("Verifica che onSendMessage gestisca correttamente il caso di invio con risposta positiva", fakeAsync(() => {
+    it("Verifica che il metodo loadOldMessages di ChatContainerComponent resetti errorMessage se il recupero" +
+      "dei messaggi da DatabaseService ha successo", fakeAsync(() => {
+      // Arrange:
+      const msg1 = new Message('Test message', new Date(), MessageSender.USER);
+      // Imposto un errore preesistente:
+      component.errorMessage = "Errore nel recupero dello storico dei messaggi";
+      mockDatabaseService.getMessages.and.returnValue(of([msg1]));
+      // Act:
+      component.loadOldMessages(50);
+      tick(0);
+      // Assert:
+      expect(component.errorMessage).toBe('');
+    }));
+
+    it("Verifica che il metodo onSendMessage di ChatContainerComponent gestisca correttamente il caso di invio di una domanda " +
+      "a ChatService a seguito della quale viene restituita una risposta positiva", fakeAsync(() => {
       // Arrange:
       const inputText = "Test";
       const trimmedText = "Test";
@@ -103,10 +123,10 @@ describe('ChatContainerComponent', () => {
       expect(component.scrollToBottom).toHaveBeenCalled();
     }));
 
-    it("Verifica che onSendMessage gestisca correttamente il caso di invio con errore", fakeAsync(() => {
+    it("Verifica che il metodo onSendMessage di ChatContainerComponent gestisca correttamente il caso di invio di una domanda " +
+      "a ChatService a seguito della quale viene restituito un errore", fakeAsync(() => {
       // Arrange:
       const inputText = "ErroreTest";
-      const trimmedText = "ErroreTest";
       mockChatService.sendMessage.and.returnValue(throwError(() => new Error("Error")));
       mockDatabaseService.saveMessage.and.returnValue(of({ status: true }));
       spyOn(component, 'scrollToBottom');
@@ -114,32 +134,13 @@ describe('ChatContainerComponent', () => {
       component.onSendMessage(inputText);
       tick(0);
       // Assert:
-      expect(component.messages.some(m => m.sender === MessageSender.CHATBOT && m.content === "C’è stato un errore!")).toBeTrue();
+      expect(component.messages.some(m => m.sender === MessageSender.CHATBOT && m.content === "C'è stato un errore!")).toBeTrue();
       expect(component.isLoading).toBeFalse();
       expect(component.scrollToBottom).toHaveBeenCalled();
     }));
 
-    it("Verifica che onSuggestionClicked invochi onSendMessage con il suggerimento", () => {
-      // Arrange:
-      spyOn(component, 'onSendMessage');
-      const suggestion = "Suggerimento";
-      // Act:
-      component.onSuggestionClicked(suggestion);
-      // Assert:
-      expect(component.onSendMessage).toHaveBeenCalledWith(suggestion);
-    });
-
-    it("Verifica che formatResponse trasformi correttamente la stringa", () => {
-      // Arrange:
-      const input = "Test **grassetto** http://esempio.com";
-      // Act:
-      const output = component.formatResponse(input);
-      // Assert:
-      expect(output).toContain("<strong>grassetto</strong>");
-      expect(output).toContain('<a href="http://esempio.com" target="_blank">http://esempio.com</a>');
-    });
-
-    it("Verifica che scrollToBottom invochi il metodo scrollToBottom di messagesComponent", () => {
+    it("Verifica che il metodo scrollToBottom di ChatContainerComponent invochi il metodo scrollToBottom di " +
+      "ChatMessagesComponent", () => {
       // Arrange:
       component.messagesComponent = { scrollToBottom: jasmine.createSpy('scrollToBottom') } as any;
       // Act:
@@ -149,124 +150,92 @@ describe('ChatContainerComponent', () => {
     });
   });
 
+
   // ------------------------------------------------------
   // Test di unità
   // ------------------------------------------------------
+
   describe('Test di unità', () => {
-    let localComponent: ChatContainerComponent;
-    let localChatService: any;
-    let localDatabaseService: any;
-    let localSanitizer: any;
 
-    beforeEach(() => {
+    it("Verifica che l'evento ngOnInit di ChatContainerComponent richiami il metodo loadOldMessages con l'intero 50 " +
+      "come parametro", () => {
       // Arrange:
-      localChatService = {
-        sendMessage: jasmine.createSpy('sendMessage')
-      };
-      localDatabaseService = {
-        getMessages: jasmine.createSpy('getMessages'),
-        saveMessage: jasmine.createSpy('saveMessage'),
-        loadLastLoadOutcome: jasmine.createSpy('loadLastLoadOutcome')
-      };
-      localSanitizer = {
-        bypassSecurityTrustHtml: (value: string) => value
-      };
-      // Arrange:
-      localComponent = new ChatContainerComponent(localChatService, localSanitizer, localDatabaseService);
-      localComponent.messagesComponent = { scrollToBottom: jasmine.createSpy('scrollToBottom') } as any;
-    });
-
-    it("Verifica che ngOnInit richiami loadOldMessages e loadLastLoadOutcome", () => {
-      // Arrange:
-      spyOn(localComponent, 'loadOldMessages');
+      spyOn(component, 'loadOldMessages');
       // Act:
-      localComponent.ngOnInit();
+      component.ngOnInit();
       // Assert:
-      expect(localComponent.loadOldMessages).toHaveBeenCalledWith(50);
-      expect(localDatabaseService.loadLastLoadOutcome).toHaveBeenCalled();
+      expect(component.loadOldMessages).toHaveBeenCalledWith(component.messagesPerPage, 1);
     });
 
-    it("Verifica che onScrollChange aggiorni showScrollToBottom (unità)", () => {
-      // Arrange:
+    it("Verifica che il metodo onScrollChange di ChatContainerComponent, chiamato con valore true," +
+      "aggiorni l'attributo showScrollToBottom a true", () => {
       // Act:
-      localComponent.onScrollChange(false);
+      component.onScrollChange(true);
       // Assert:
-      expect(localComponent.showScrollToBottom).toBeFalse();
+      expect(component.showScrollToBottom).toBeTrue();
     });
 
-    it("Verifica che onSendMessage non faccia nulla se il testo è vuoto", () => {
-      // Arrange:
-      const initialMessagesLength = localComponent.messages.length;
+    it("Verifica che il metodo onScrollChange di ChatContainerComponent, chiamato con valore false," +
+      "aggiorni l'attributo showScrollToBottom a false", () => {
       // Act:
-      localComponent.onSendMessage("   ");
+      component.onScrollChange(false);
       // Assert:
-      expect(localComponent.messages.length).toBe(initialMessagesLength);
+      expect(component.showScrollToBottom).toBeFalse();
     });
 
-    it("Verifica che onSendMessage gestisca correttamente il caso positivo", fakeAsync(() => {
+    it("Verifica che il metodo onSendMessage di ChatContainerComponent non faccia nulla se il testo ricevuto in input è vuoto " +
+      "oppure contiene solo spazi", () => {
       // Arrange:
-      const inputText = "UnitTest";
-      const trimmedText = "UnitTest";
-      const botResponse = { response: "RispostaUnitBot" };
-      localChatService.sendMessage.and.returnValue(of(botResponse));
-      localDatabaseService.saveMessage.and.returnValue(of({ status: true }));
-      spyOn(localComponent, 'scrollToBottom');
+      const initialMessagesLength = component.messages.length;
       // Act:
-      localComponent.onSendMessage(inputText);
+      component.onSendMessage("   ");
+      // Assert:
+      expect(component.messages.length).toBe(initialMessagesLength);
+    });
+
+    it("Verifica che il metodo onSuggestionClicked di ChatContainerComponent, invocato con un suggerimento, richiami il metodo" +
+      " onSendMessage passando come parametro il suggerimento ricevuto", () => {
+      // Arrange:
+      spyOn(component, 'onSendMessage');
+      const suggestion = "Suggerimento";
+      // Act:
+      component.onSuggestionClicked(suggestion);
+      // Assert:
+      expect(component.onSendMessage).toHaveBeenCalledWith(suggestion);
+    });
+
+    it("Verifica che il metodo formatResponse di ChatContainerComponent trasformi correttamente la stringa ricevuta in input", () => {
+      // Arrange:
+      const input = "Test **grassetto** http://esempio.com";
+      // Act:
+      const output = component.formatResponse(input);
+      // Assert:
+      expect(output).toContain("<strong>grassetto</strong>");
+      expect(output).toContain('<a href="http://esempio.com" target="_blank">http://esempio.com</a>');
+    });
+
+    it("Verifica che il metodo loadOldMessages di ChatContainerComponent, in caso di errore nel recupero dei messaggi, imposti " +
+      "l'attributo errorMessage come equivalente al messaggio di errore", fakeAsync(() => {
+      // Arrange:
+      mockDatabaseService.getMessages.and.returnValue(throwError(() => new Error("Test Error")));
+      // Act:
+      component.loadOldMessages(50);
       tick(0);
       // Assert:
-      expect(localComponent.messages.some(m => m.sender === MessageSender.USER && m.content === trimmedText)).toBeTrue();
-      expect(localChatService.sendMessage).toHaveBeenCalledWith(trimmedText);
-      expect(localComponent.messages.some(m => m.sender === MessageSender.CHATBOT && m.content === botResponse.response)).toBeTrue();
-      expect(localComponent.isLoading).toBeFalse();
-      expect(localComponent.lastUserQuestion).toBe(trimmedText);
-      expect(localComponent.lastBotAnswer).toBe(botResponse.response);
-      expect(localComponent.hideSuggestions).toBeFalse();
-      expect(localComponent.scrollToBottom).toHaveBeenCalled();
+      expect(component.errorMessage).toBe("Errore nel recupero dello storico dei messaggi");
     }));
 
-    it("Verifica che onSendMessage gestisca correttamente il caso di errore", fakeAsync(() => {
+    it("Verifica che il metodo loadOldMessages di ChatContainerComponent, se il recupero dei messaggi ha successo, resetti " +
+      "l'attributo errorMessage ad una stringa vuota", fakeAsync(() => {
       // Arrange:
-      const inputText = "UnitError";
-      localChatService.sendMessage.and.returnValue(throwError(() => new Error("Error")));
-      localDatabaseService.saveMessage.and.returnValue(of({ status: true }));
-      spyOn(localComponent, 'scrollToBottom');
+      const msg1 = new Message('UnitTest message', new Date(), MessageSender.USER);
+      component.errorMessage = "Errore nel recupero dello storico dei messaggi";
+      mockDatabaseService.getMessages.and.returnValue(of([msg1]));
       // Act:
-      localComponent.onSendMessage(inputText);
+      component.loadOldMessages(50);
       tick(0);
       // Assert:
-      expect(localComponent.messages.some(m => m.sender === MessageSender.CHATBOT && m.content === "C’è stato un errore!")).toBeTrue();
-      expect(localComponent.isLoading).toBeFalse();
-      expect(localComponent.scrollToBottom).toHaveBeenCalled();
+      expect(component.errorMessage).toBe('');
     }));
-
-    it("Verifica che onSuggestionClicked invochi onSendMessage", () => {
-      // Arrange:
-      spyOn(localComponent, 'onSendMessage');
-      const suggestion = "UnitSuggerimento";
-      // Act:
-      localComponent.onSuggestionClicked(suggestion);
-      // Assert:
-      expect(localComponent.onSendMessage).toHaveBeenCalledWith(suggestion);
-    });
-
-    it("Verifica che formatResponse trasformi correttamente la stringa", () => {
-      // Arrange:
-      const input = "Unit **Bold** http://link.com";
-      // Act:
-      const output = localComponent.formatResponse(input);
-      // Assert:
-      expect(output).toContain("<strong>Bold</strong>");
-      expect(output).toContain('<a href="http://link.com" target="_blank">http://link.com</a>');
-    });
-
-    it("Verifica che scrollToBottom invochi il metodo scrollToBottom di messagesComponent", () => {
-      // Arrange:
-      localComponent.messagesComponent = { scrollToBottom: jasmine.createSpy('scrollToBottom') } as any;
-      // Act:
-      localComponent.scrollToBottom();
-      // Assert:
-      expect(localComponent.messagesComponent.scrollToBottom).toHaveBeenCalled();
-    });
   });
 });

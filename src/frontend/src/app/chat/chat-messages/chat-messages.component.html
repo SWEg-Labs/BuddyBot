@@ -1,4 +1,9 @@
 <div #scrollMe class="messages" (scroll)="onScroll()">
+  <div *ngIf="loadingOlderMessages" class="message bot-message loading-older-messages">
+    <app-chat-loading-indicator></app-chat-loading-indicator>
+    <span class="text">Caricamento messaggi precedenti...</span>
+  </div>
+
   <div
     class="message"
     *ngFor="let msg of messages"
@@ -27,4 +32,14 @@
     <app-chat-loading-indicator></app-chat-loading-indicator>
     <span class="text"></span>
   </div>
+  
+<!-- Pulsante scroll to button -->
+<button 
+  *ngIf="showScrollToBottom" 
+  class="scroll-to-bottom-btn" 
+  (click)="scrollToBottom()"
+  title="Torna ai messaggi recenti"
+>
+  <mat-icon>arrow_downward</mat-icon>
+</button>
 </div>

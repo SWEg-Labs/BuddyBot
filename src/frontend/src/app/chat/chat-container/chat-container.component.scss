@@ -29,4 +29,17 @@
     right: 0;
     z-index: 999;
   }
+
+  .error-alert {
+    align-self: center;
+    background-color: #f8d7da;
+    color: #721c24;
+    max-width: 300px;
+    padding: 10px;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+    margin: 10px;
+    text-align: center;
+  }
+  
 }

@@ -18,16 +18,25 @@ describe('ChatMessagesComponent', () => {
     fixture.detectChanges();
   });
 
+
   // ------------------------------------------------------
-  // Test di integrazione
+  // Test di unità
   // ------------------------------------------------------
-  describe('Test di integrazione', () => {
-    it("Verifica che il componente venga creato", () => {
+
+  describe('Test di unità', () => {
+    it("Verifica che il componente ChatMessagesComponent venga creato", () => {
       // Act & Assert:
       expect(component).toBeTruthy();
     });
 
-    it("Verifica che onScroll emetta true se non siamo in fondo", () => {
+    it("Verifica che l'istanza del componente ChatMessagesComponent sia definita", () => {
+      // Arrange:
+      const localComponent = new ChatMessagesComponent();
+      // Act & Assert:
+      expect(localComponent).toBeDefined();
+    });
+
+    it("Verifica che il metodo onScroll di ChatMessagesComponent emetta true se non si è in fondo", () => {
       // Arrange:
       const fakeEl = { scrollHeight: 200, scrollTop: 30, clientHeight: 150 }; // distance = 20, isAtBottom = false
       Object.defineProperty(component, 'messagesContainer', { value: { nativeElement: fakeEl } });
@@ -39,7 +48,7 @@ describe('ChatMessagesComponent', () => {
       expect(emittedValue).toBeTrue();
     });
 
-    it("Verifica che onScroll emetta false se siamo in fondo", () => {
+    it("Verifica che onScroll di ChatMessagesComponent emetta false se si è in fondo", () => {
       // Arrange:
       const fakeEl = { scrollHeight: 200, scrollTop: 150, clientHeight: 50 }; // distance = 0, isAtBottom = true
       Object.defineProperty(component, 'messagesContainer', { value: { nativeElement: fakeEl } });
@@ -51,7 +60,8 @@ describe('ChatMessagesComponent', () => {
       expect(emittedValue).toBeFalse();
     });
 
-    it("Verifica che scrollToBottom imposti scrollTop uguale a scrollHeight", () => {
+    it("Verifica che il metodo scrollToBottom di ChatMessagesComponent imposti scrollTop (la posizione di scorrimento verticale " +
+      "corrente) uguale a scrollHeight (l'altezza totale del contenuto dell'elemento HTML)", () => {
       // Arrange:
       const fakeEl = { scrollHeight: 250, scrollTop: 0 };
       Object.defineProperty(component, 'messagesContainer', { value: { nativeElement: fakeEl } });
@@ -61,21 +71,21 @@ describe('ChatMessagesComponent', () => {
       expect(fakeEl.scrollTop).toBe(250);
     });
 
-    it("Verifica che onScroll non fallisca se messagesContainer è undefined", () => {
+    it("Verifica che il metodo onScroll di ChatMessagesComponent non fallisca se l'attributo messagesContainer è undefined", () => {
       // Arrange:
       Object.defineProperty(component, 'messagesContainer', { value: undefined });
       // Act & Assert:
       expect(() => component.onScroll()).not.toThrow();
     });
 
-    it("Verifica che scrollToBottom non fallisca se messagesContainer è undefined", () => {
+    it("Verifica che il metodo scrollToBottom di ChatMessagesComponent non fallisca se l'attributo messagesContainer è undefined", () => {
       // Arrange:
       Object.defineProperty(component, 'messagesContainer', { value: undefined });
       // Act & Assert:
       expect(() => component.scrollToBottom()).not.toThrow();
     });
 
-    it("Verifica che ngAfterViewInit aggiunga un event listener sul container", () => {
+    it("Verifica che l'evento ngAfterViewInit di ChatMessagesComponent aggiunga un event listener sull'attributo messagesContainer", () => {
       // Arrange:
       const fakeEl = document.createElement('div');
       spyOn(fakeEl, 'addEventListener').and.callThrough();
@@ -86,7 +96,8 @@ describe('ChatMessagesComponent', () => {
       expect(fakeEl.addEventListener).toHaveBeenCalledWith('click', jasmine.any(Function));
     });
 
-    it("Verifica che il click sull'elemento con classe 'copy-snippet-icon' chiami copySnippet", () => {
+    it("Verifica che il click sull'elemento HTML con classe CSS 'copy-snippet-icon' di ChatMessagesComponent chiami " +
+      "il metodo copySnippet", () => {
       // Arrange:
       const container = document.createElement('div');
       container.classList.add('code-container');
@@ -106,14 +117,16 @@ describe('ChatMessagesComponent', () => {
       Object.defineProperty(component, 'messagesContainer', { value: { nativeElement: fakeEl } });
       
       const spyCopySnippet = spyOn<any>(component, 'copySnippet').and.callThrough();
+
       // Act:
       component.ngAfterViewInit();
       copyIcon.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
       // Assert:
       expect(spyCopySnippet).toHaveBeenCalledWith('sample code', copyIcon);
     });
 
-    it("Verifica che stripHtml converta correttamente l'HTML in testo", () => {
+    it("Verifica che stripHtml di ChatMessagesComponent converta correttamente l'HTML in testo", () => {
       // Arrange:
       const htmlString = "<div>Hello <strong>World</strong></div>";
       // Act:
@@ -123,7 +136,7 @@ describe('ChatMessagesComponent', () => {
       expect(result).toContain("World");
     });
 
-    it("Verifica che stripHtml ritorni una stringa vuota se input è vuoto", () => {
+    it("Verifica che il metodo stripHtml di ChatMessagesComponent ritorni una stringa vuota se il parametro in input è vuoto", () => {
       // Arrange:
       const htmlString = "";
       // Act:
@@ -132,7 +145,8 @@ describe('ChatMessagesComponent', () => {
       expect(result).toBe("");
     });
 
-    it("Verifica che copyToClipboard rimuova 'content_copy' multiplo e modifichi msg.copied", fakeAsync(() => {
+    it("Verifica che il metodo copyToClipboard di ChatMessagesComponent rimuova 'content_copy' multiplo e modifichi " +
+      "msg.copied", fakeAsync(() => {
       // Arrange:
       const msg: Message = new Message('content_copy some text content_copy', new Date(), MessageSender.CHATBOT);
       msg.copied = false;
@@ -148,7 +162,8 @@ describe('ChatMessagesComponent', () => {
       expect(msg.copied).toBeFalse();
     }));
 
-    it("Verifica che copyToClipboard usi msg.sanitizedContent se disponibile", fakeAsync(() => {
+    it("Verifica che il metodo copyToClipboard di ChatMessagesComponent usi l'attributo msg.sanitizedContent " +
+      "del parametro msg se disponibile", fakeAsync(() => {
       // Arrange:
       const msg: Message = new Message('Fallback text', new Date(), MessageSender.CHATBOT);
       (msg as any).sanitizedContent = "Sanitized <br> text";
@@ -163,7 +178,8 @@ describe('ChatMessagesComponent', () => {
       tick(1000);
     }));
 
-    it("Verifica che copySnippet utilizzi navigator.clipboard.writeText e modifichi le classi", fakeAsync(() => {
+    it("Verifica che il metodo copySnippet di ChatMessagesComponent chiami il metodo navigator.clipboard.writeText e " +
+      "inserisca e poi rimuova oppurtanemente la classe CSS 'snippet-copied' all'icona di copia", fakeAsync(() => {
       // Arrange:
       const fakeIcon = document.createElement('span');
       fakeIcon.classList.add('copy-snippet-icon');
@@ -179,17 +195,5 @@ describe('ChatMessagesComponent', () => {
       tick(1000);
       expect(fakeIcon.classList.remove).toHaveBeenCalledWith('snippet-copied');
     }));
-  });
-
-  // ------------------------------------------------------
-  // Test di unità
-  // ------------------------------------------------------
-  describe('Test di unità', () => {
-    it("Verifica che l'istanza del componente sia definita", () => {
-      // Arrange:
-      const localComponent = new ChatMessagesComponent();
-      // Act & Assert:
-      expect(localComponent).toBeDefined();
-    });
   });
 });
