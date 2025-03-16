@@ -22,11 +22,11 @@ class GetMessagesController:
         """
         self.__get_messages_use_case = get_messages_use_case
 
-    def get_messages(self, request_data: dict) -> List[MessageDTO]:
+    def get_messages(self, request_data: dict[str, int]) -> List[MessageDTO]:
         """
         Retrieve a list of messages based on the provided request data with pagination support.
         Args:
-            request_data (dict): A dictionary containing:
+            request_data (dict[str, int]): A dictionary containing:
                 - quantity (int): The number of messages to retrieve per page
                 - page (int [optional]): The page number, defaults to 1    
         Returns:

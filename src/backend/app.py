@@ -105,11 +105,11 @@ async def save_message(message: MessageDTO) -> dict[str, bool | str] | JSONRespo
 
 @beartype_personalized
 @app.post("/api/get_messages", summary="Get messages from the Postgres database", response_model=List[MessageDTO])
-async def get_messages(request_data: dict) -> List[MessageDTO] | JSONResponse:
+async def get_messages(request_data: dict[str, int]) -> List[MessageDTO] | JSONResponse:
     """
     Retrieves a specified quantity of messages from the chat history with pagination support.
     Args:
-        request_data (dict): A dictionary containing:
+        request_data (dict[str, int]): A dictionary containing:
             - quantity (int): The number of messages to retrieve per page
             - page (int [optional]): The page number, defaults to 1
     Returns:
@@ -123,6 +123,7 @@ async def get_messages(request_data: dict) -> List[MessageDTO] | JSONResponse:
         error_message = f"Error getting the previous messages: {e}"
         logger.error(error_message)
         return JSONResponse(content={"status": "error", "message": error_message}, status_code=500)
+
 
 @beartype_personalized
 @app.post("/api/get_last_load_outcome", summary="Get the last load outcome", response_model=LastLoadOutcomeDTO)
