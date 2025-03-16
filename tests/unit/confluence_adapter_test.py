@@ -1,5 +1,6 @@
 import pytest
 from unittest.mock import MagicMock
+
 from adapters.confluenceAdapter import ConfluenceAdapter
 from repositories.confluenceRepository import ConfluenceRepository
 
