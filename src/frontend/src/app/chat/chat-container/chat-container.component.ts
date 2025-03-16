@@ -89,11 +89,11 @@ export class ChatContainerComponent implements OnInit {
     this.lastUserQuestion = trimmed;
     this.isLoading = true;
 
-    this.databaseService.saveMessage(userMsg).subscribe();
-
     setTimeout(() => {
       this.scrollToBottom();
     }, 0);
+
+    this.databaseService.saveMessage(userMsg).subscribe();
 
     this.chatService.sendMessage(trimmed).subscribe({
       next: (res) => {
