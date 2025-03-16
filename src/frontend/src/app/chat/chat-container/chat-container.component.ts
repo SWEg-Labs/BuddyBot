@@ -53,9 +53,11 @@ export class ChatContainerComponent implements OnInit {
       next: (serverMessages: Message[]) => {
         serverMessages.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
         this.messages = serverMessages.map((m) => {
-          const rawFormatted = this.formatResponse(m.content);
-          m.sanitizedContent = this.sanitizer.bypassSecurityTrustHtml(rawFormatted);
-          m.copied = false;
+            if (m.sender === MessageSender.CHATBOT) {
+              const rawFormatted = this.formatResponse(m.content);
+              m.sanitizedContent = this.sanitizer.bypassSecurityTrustHtml(rawFormatted);
+              m.copied = false;
+            }
           return m;
         });
         this.errorMessage = '';
