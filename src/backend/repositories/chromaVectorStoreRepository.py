@@ -80,25 +80,19 @@ class ChromaVectorStoreRepository:
             logger.info(f"Fetched {len(db_docs)} documents from Chroma vector store.")
 
             # Creazione della lista degli id da eliminare: documenti presenti in DB ma non negli incoming
-            try:
-                db_ids_to_delete = [doc_id for doc_id in db_docs.keys() if doc_id not in incoming_docs.keys()]
-                db_docs_to_delete = {doc_id: db_docs[doc_id] for doc_id in db_ids_to_delete}
-                num_deleted_items += len(db_ids_to_delete)
-                for doc_id in db_ids_to_delete:
-                    db_docs.pop(doc_id)
-            except Exception as e:
-                logger.error(f"Error checking for obsolete documents: {e}")
+            db_ids_to_delete = [doc_id for doc_id in db_docs.keys() if doc_id not in incoming_docs.keys()]
+            db_docs_to_delete = {doc_id: db_docs[doc_id] for doc_id in db_ids_to_delete}
+            num_deleted_items += len(db_ids_to_delete)
+            for doc_id in db_ids_to_delete:
+                db_docs.pop(doc_id)
 
             # Creazione del dizionario dei documenti da aggiungere: quelli presenti negli incoming ma non in DB
-            try:
-                incoming_docs_to_add = {
-                    doc_id: value for doc_id, value in incoming_docs.items() if doc_id not in db_docs.keys()
-                }
-                num_added_items += len(incoming_docs_to_add)
-                for doc_id in list(incoming_docs_to_add.keys()):
-                    incoming_docs.pop(doc_id)
-            except Exception as e:
-                logger.error(f"Error checking for new documents: {e}")
+            incoming_docs_to_add = {
+                doc_id: value for doc_id, value in incoming_docs.items() if doc_id not in db_docs.keys()
+            }
+            num_added_items += len(incoming_docs_to_add)
+            for doc_id in list(incoming_docs_to_add.keys()):
+                incoming_docs.pop(doc_id)
 
             # Tolti tutti gli elementi presenti in db e non in incoming, tolti tutti gli elementi presenti in incoming e non in db,
             # rimangono solo gli elementi presenti in entrambi.
@@ -141,7 +135,7 @@ class ChromaVectorStoreRepository:
             try:
                 # Costruiamo una mapping per i GitHub File già presenti in Chroma basata sul campo "path"
                 db_github_by_path = {}
-                for db_id, metadata in db_docs_to_delete.items():
+                for _, metadata in db_docs_to_delete.items():
                     if metadata.get("item_type") == "GitHub File":
                         path = metadata.get("path")
                         if path:
@@ -153,7 +147,7 @@ class ChromaVectorStoreRepository:
                         continue
                     path = metadata.get("path")
                     if not path:
-                        continue
+                        raise ValueError(f"Missing 'path' field in metadata for GitHub File with doc_id {incoming_id}")
                     if path in db_github_by_path:
                         db_metadata = db_github_by_path[path]
                         try:
@@ -165,7 +159,7 @@ class ChromaVectorStoreRepository:
                             )
                         except Exception as e:
                             logger.error(f"Error parsing dates for GitHub File with path {path}: {e}")
-                            continue
+                            raise e
                         if incoming_creation_date < db_insertion_date:
                             # Il file è stato creato prima dell'ultimo aggiornamento, quindi in questo aggiornamento viene solo modificato.
                             # Non si considera quindi aggiunto (ricreato), ma bensì modificato.
@@ -185,6 +179,7 @@ class ChromaVectorStoreRepository:
                     self.__collection.delete(ids=db_ids_to_delete)
             except Exception as e:
                 logger.error(f"Error deleting documents from db: {e}")
+                raise e
 
             logger.info(f"Deleted {num_deleted_items} documents from Chroma vector store.")
 
@@ -197,6 +192,7 @@ class ChromaVectorStoreRepository:
                     )
             except Exception as e:
                 logger.error(f"Error adding documents to db: {e}")
+                raise e
 
             logger.info(f"Successfully loaded documents into Chroma vector store -> "
                         f"Added: {num_added_items}, Modified: {num_modified_items}.")

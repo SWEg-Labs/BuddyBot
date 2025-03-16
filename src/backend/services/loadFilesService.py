@@ -149,60 +149,68 @@ class LoadFilesService(LoadFilesUseCase):
 
         Returns:
             List[Document]: La lista di file con i metadati aggiornati.
+
+        Raises:
+            ValueError: Se il percorso del file non è presente nei metadati del file
+                        o se il formato della data nei commit di GitHub non è valido.
         """
-        # L'espressione regolare per estrarre il percorso del file e lo status:
-        # - Cattura il filename: tutto ciò che si trova tra "- " e " (Status: "
-        # - Cattura lo status: tutto ciò che si trova tra " (Status: " e ", Changes: "
-        file_info_pattern = re.compile(r'-\s+(.*?)\s+\(Status:\s+([^,]+),')
+        try:
+            # L'espressione regolare per estrarre il percorso del file e lo status:
+            # - Cattura il filename: tutto ciò che si trova tra "- " e " (Status: "
+            # - Cattura lo status: tutto ciò che si trova tra " (Status: " e ", Changes: "
+            file_info_pattern = re.compile(r'-\s+(.*?)\s+\(Status:\s+([^,]+),')
 
-        # Itera su ogni file caricato da GitHub
-        for gh_file in github_files:
-            file_path = gh_file.get_metadata().get("path", "").strip()
-            if not file_path:
-                continue  # Se non c'è il percorso, passa al prossimo file
+            # Itera su ogni file caricato da GitHub
+            for gh_file in github_files:
+                file_path = gh_file.get_metadata().get("path", "").strip()
+                if not file_path:
+                    raise ValueError("File path not found in GitHub file metadata.")
 
-            last_update_date = None
-            creation_date_date = None
+                last_update_date = None
+                creation_date_date = None
 
-            # Scorri tutti i commit per cercare quelli che riguardano questo file
-            for commit in github_commits:
-                commit_date_str = commit.get_metadata().get("date", "")
-                try:
-                    commit_date = datetime.strptime(commit_date_str, '%Y-%m-%d %H:%M:%S')
-                except Exception:
-                    continue  # Se la data non può essere parsata, passa al commit successivo
+                # Scorri tutti i commit per cercare quelli che riguardano questo file
+                for commit in github_commits:
+                    commit_date_str = commit.get_metadata().get("date", "")
+                    try:
+                        commit_date = datetime.strptime(commit_date_str, '%Y-%m-%d %H:%M:%S')
+                    except Exception as e:
+                        raise ValueError(f"Invalid date format in GitHub commit: {commit_date_str}") from e
 
-                # Il campo "files" del commit è una lista di stringhe
-                commit_files_list = commit.get_metadata().get("files", [])
-                for file_str in commit_files_list:
-                    # Estrae filename e status utilizzando la regex
-                    match = file_info_pattern.search(file_str)
-                    if match:
-                        commit_file_path = match.group(1).strip()
-                        status = match.group(2).strip().lower()
-                        # Se il filename del commit corrisponde al path del file corrente
-                        if commit_file_path == file_path:
-                            # Aggiorna "last_update" se il commit è più recente
-                            if (last_update_date is None) or (commit_date > last_update_date):
-                                last_update_date = commit_date
-                            # Se lo status è "added" o "renamed", aggiorna "creation_date"
-                            if status in ["added", "renamed"]:
-                                if (creation_date_date is None) or (commit_date > creation_date_date):
-                                    creation_date_date = commit_date
+                    # Il campo "files" del commit è una lista di stringhe
+                    commit_files_list = commit.get_metadata().get("files", [])
+                    for file_str in commit_files_list:
+                        # Estrae filename e status utilizzando la regex
+                        match = file_info_pattern.search(file_str)
+                        if match:
+                            commit_file_path = match.group(1).strip()
+                            status = match.group(2).strip().lower()
+                            # Se il filename del commit corrisponde al path del file corrente
+                            if commit_file_path == file_path:
+                                # Aggiorna "last_update" se il commit è più recente
+                                if (last_update_date is None) or (commit_date > last_update_date):
+                                    last_update_date = commit_date
+                                # Se lo status è "added" o "renamed", aggiorna "creation_date"
+                                if status in ["added", "renamed"]:
+                                    if (creation_date_date is None) or (commit_date > creation_date_date):
+                                        creation_date_date = commit_date
 
-            # Crea un dizionario temporaneo per i metadati aggiornati
-            updated_metadata = gh_file.get_metadata().copy()
+                # Crea un dizionario temporaneo per i metadati aggiornati
+                updated_metadata = gh_file.get_metadata().copy()
 
-            # Aggiorna i metadati del file se sono state trovate date valide
-            if last_update_date is not None:
-                updated_metadata["last_update"] = last_update_date.strftime('%Y-%m-%d %H:%M:%S')
-            if creation_date_date is not None:
-                updated_metadata["creation_date"] = creation_date_date.strftime('%Y-%m-%d %H:%M:%S')
+                # Aggiorna i metadati del file se sono state trovate date valide
+                if last_update_date is not None:
+                    updated_metadata["last_update"] = last_update_date.strftime('%Y-%m-%d %H:%M:%S')
+                if creation_date_date is not None:
+                    updated_metadata["creation_date"] = creation_date_date.strftime('%Y-%m-%d %H:%M:%S')
 
-            # Imposta i metadati aggiornati utilizzando il setter
-            gh_file.set_metadata(updated_metadata)
+                # Imposta i metadati aggiornati utilizzando il setter
+                gh_file.set_metadata(updated_metadata)
 
-        return github_files
+            return github_files
+        except Exception as e:
+            logger.error(f"Error in get_github_files_new_metadata: {e}")
+            raise e
 
     def clean_confluence_pages(self, pages: List[Document]) -> List[Document]:
         """
