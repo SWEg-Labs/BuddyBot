@@ -103,15 +103,17 @@ export class ChatContainerComponent implements OnInit {
         botMsg.copied = false;
         this.messages.push(botMsg);
         this.lastBotAnswer = res.response;
-        this.databaseService.saveMessage(botMsg).subscribe();
         this.isLoading = false;
         this.lastUserQuestion = trimmed;
         this.lastBotAnswer = res.response;
-        this.hideSuggestions = false;
 
         setTimeout(() => {
           this.scrollToBottom();
         }, 0);
+
+        this.databaseService.saveMessage(botMsg).subscribe();
+
+        this.hideSuggestions = false;
       },
       error: () => {
         const errorMsg = new Message('C’è stato un errore!', new Date(), MessageSender.CHATBOT);
