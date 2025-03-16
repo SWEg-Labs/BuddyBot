@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import MagicMock
 
 from models.quantity import Quantity
+from models.page import Page
 from services.getMessagesService import GetMessagesService
 from ports.getMessagesPort import GetMessagesPort
 
@@ -13,13 +14,13 @@ def test_get_messages_exception():
     mock_get_messages_port = MagicMock(spec=GetMessagesPort)
     get_messages_service = GetMessagesService(mock_get_messages_port)
 
-    quantity = 5
-    quantity_object = Quantity(quantity)
+    quantity = Quantity(50)
+    page = Page(1)
     mock_get_messages_port.get_messages.side_effect = Exception("Port error")
 
     # Act
     with pytest.raises(Exception) as exc_info:
-        get_messages_service.get_messages(quantity_object)
+        get_messages_service.get_messages(quantity, page)
 
     # Assert
     assert str(exc_info.value) == "Port error"
