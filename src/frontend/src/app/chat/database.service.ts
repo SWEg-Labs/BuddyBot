@@ -31,16 +31,16 @@ export class DatabaseService {
       )
   }
 
-  saveMessage(msg: Message): Observable<{ status: boolean | string }> {
+  saveMessage(msg: Message): Observable<{ success: boolean; message: string }> {
     const payload = {
       content: msg.content,
       sender: msg.sender,
       timestamp: msg.timestamp,
-    }
-    return this.http.post<{ status: boolean | string }>(
+    };
+    return this.http.post<{ success: boolean; message: string }>(
       `${this.apiBaseUrl}/api/save_message`,
       payload
-    )
+    );
   }
 
   loadLastLoadOutcome(): void {

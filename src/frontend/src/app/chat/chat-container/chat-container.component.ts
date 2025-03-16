@@ -71,10 +71,12 @@ export class ChatContainerComponent implements OnInit {
         }
 
         serverMessages.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
-        const formattedMessages = serverMessages.map((m) => {
-          const rawFormatted = this.formatResponse(m.content);
-          m.sanitizedContent = this.sanitizer.bypassSecurityTrustHtml(rawFormatted);
-          m.copied = false;
+            const formattedMessages = serverMessages.map((m) => {
+            if (m.sender === MessageSender.CHATBOT) {
+              const rawFormatted = this.formatResponse(m.content);
+              m.sanitizedContent = this.sanitizer.bypassSecurityTrustHtml(rawFormatted);
+              m.copied = false;
+            }
           return m;
         });
         if (page > 1) {
@@ -154,11 +156,19 @@ export class ChatContainerComponent implements OnInit {
     this.lastUserQuestion = trimmed;
     this.isLoading = true;
 
-    this.databaseService.saveMessage(userMsg).subscribe();
-
     setTimeout(() => {
       this.scrollToBottom();
     }, 0);
+
+    this.databaseService.saveMessage(userMsg).subscribe({
+      next: (response) => {
+        console.log('Risultato del salvataggio del messaggio dell\'utente nel database:', response.success);
+        console.log('Messaggio di risposta del database:', response.message);
+      },
+      error: (err) => {
+        console.error('Errore durante il salvataggio del messaggio dell\'utente nel database:', err);
+      },
+    });
 
     this.chatService.sendMessage(trimmed).subscribe({
       next: (res) => {
@@ -168,16 +178,25 @@ export class ChatContainerComponent implements OnInit {
         botMsg.copied = false;
         this.messages.push(botMsg);
         this.lastBotAnswer = res.response;
-        this.databaseService.saveMessage(botMsg).subscribe();
         this.isLoading = false;
         this.lastUserQuestion = trimmed;
         this.lastBotAnswer = res.response;
-        this.hideSuggestions = false;
-        this.clearErrorMessage();
 
         setTimeout(() => {
           this.scrollToBottom();
         }, 0);
+
+        this.databaseService.saveMessage(botMsg).subscribe({
+          next: (response) => {
+            console.log('Risultato del salvataggio del messaggio del chatbot nel database:', response.success);
+        console.log('Messaggio di risposta del database:', response.message);
+          },
+          error: (err) => {
+            console.error('Errore durante il salvataggio del messaggio del chatbot nel database:', err);
+          },
+        });
+
+        this.hideSuggestions = false;
       },
       error: () => {
         const errorMsg = new Message("C'è stato un errore!", new Date(), MessageSender.CHATBOT);
