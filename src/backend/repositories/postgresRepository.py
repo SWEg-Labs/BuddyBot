@@ -29,22 +29,22 @@ class PostgresRepository:
         Executes a given SQL query with optional parameters and fetch options.
         Args:
             query (str): The SQL query to be executed.
-            params (tuple, optional): The parameters to be used in the SQL query. Defaults to None.
-            fetch_one (bool, optional): Whether to fetch a single result. Defaults to False.
-            fetch_all (bool, optional): Whether to fetch all results. Defaults to False.
+            params (tuple [optional]): The parameters to be used in the SQL query. Defaults to None.
+            fetch_one (bool [optional]): Whether to fetch a single result. Defaults to False.
+            fetch_all (bool [optional]): Whether to fetch all results. Defaults to False.
         Returns:
             tuple or list: The fetched result(s) if fetch_one or fetch_all is True, otherwise None.
         Raises:
             psycopg2.Error: If an error occurs while executing the query.
         '''
         try:
-            with self.__conn.cursor() as cur:
+            with self.__conn.cursor() as cur:  # Cursor creato nel contesto e chiuso automaticamente
                 cur.execute(query, params or ())
                 if fetch_one:
                     return cur.fetchone()
                 if fetch_all:
                     return cur.fetchall()
-                self.__conn.commit()
+                self.__conn.commit()  # Commit solo per operazioni di scrittura
         except Exception as e:
             logger.error(f"An error occurred while executing the query: {e}")
             raise e
@@ -60,11 +60,13 @@ class PostgresRepository:
             psycopg2.Error: If an error occurs while saving the message in the PostgreSQL database.
         '''
         try:
+            # Template
             insert_message_query = """
             INSERT INTO messages (content, timestamp, sender)
             VALUES (%s, %s, %s);
             """
 
+            # Insert message
             params = (message.get_content(), message.get_timestamp(), message.get_sender().value)
             self.__execute_query(insert_message_query, params=params)
 
@@ -85,7 +87,7 @@ class PostgresRepository:
         Retrieves the specified number of messages from the PostgreSQL database with pagination support.
         Args:
             quantity (int): The number of messages to retrieve per page.
-            page (int, optional): The page number to retrieve, defaults to 1.
+            page (int [optional]): The page number to retrieve, defaults to 1.
         Returns:
             List[PostgresMessage]: The list of retrieved messages.
         Raises:
@@ -124,6 +126,7 @@ class PostgresRepository:
             psycopg2.Error: If an error occurs while saving the loading attempt in the PostgreSQL database.
         '''
         try:
+            # Templates
             insert_loading_attempt_query = """
             INSERT INTO loading_attempts (starting_timestamp, ending_timestamp, outcome)
             VALUES (%s, %s, %s)
@@ -138,6 +141,7 @@ class PostgresRepository:
             VALUES (%s, %s, %s, %s, %s, %s);
             """
 
+            # Insert loading attempt
             params = (
                 postgres_loading_attempt.get_starting_timestamp(),
                 postgres_loading_attempt.get_ending_timestamp(),
@@ -145,6 +149,7 @@ class PostgresRepository:
             )
             loading_attempt_id = self.__execute_query(insert_loading_attempt_query, params=params, fetch_one=True)[0]
 
+            # Insert platform logs
             for log in postgres_loading_attempt.get_postgres_platform_logs():
                 self.__execute_query(insert_platform_logs_query, params=(
                     loading_attempt_id,
@@ -153,6 +158,7 @@ class PostgresRepository:
                     log.get_outcome()
                 ))
 
+            # Insert vector store log
             vector_log = postgres_loading_attempt.get_postgres_vector_store_log()
             self.__execute_query(insert_vector_store_logs_query, params=(
                 loading_attempt_id,
@@ -193,7 +199,7 @@ class PostgresRepository:
             result = self.__execute_query(get_last_load_outcome_query, fetch_one=True)
 
             if result is None:
-                return PostgresLastLoadOutcome.FALSE
+                return PostgresLastLoadOutcome.FALSE  # Tabella vuota → FALSE
 
             logger.info("Last load outcome retrieved successfully from the Postgres database.")
 

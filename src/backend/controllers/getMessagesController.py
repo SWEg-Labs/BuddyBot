@@ -2,6 +2,7 @@ from beartype.typing import List
 
 from dto.messageDTO import MessageDTO
 from models.quantity import Quantity
+from models.page import Page
 from use_cases.getMessagesUseCase import GetMessagesUseCase
 from utils.logger import logger
 from utils.beartype_personalized import beartype_personalized
@@ -27,7 +28,7 @@ class GetMessagesController:
         Args:
             request_data (dict): A dictionary containing:
                 - quantity (int): The number of messages to retrieve per page
-                - page (int, optional): The page number, defaults to 1    
+                - page (int [optional]): The page number, defaults to 1    
         Returns:
             List[MessageDTO]: A list of messages, each represented as a MessageDTO instance.
         Raises:
@@ -38,11 +39,11 @@ class GetMessagesController:
             page_value = request_data.get("page", 1)
             message_list = self.__get_messages_use_case.get_messages(
                 Quantity(quantity_value), 
-                page_value
+                Page(page_value)
             )
             if not message_list:
                 return []
-            
+
             return_list = []
             for message in message_list:
                 timestamp_str = message.get_timestamp().strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'

@@ -3,6 +3,7 @@ from beartype.typing import List
 from models.dbSaveOperationResponse import DbSaveOperationResponse
 from models.loggingModels import LoadingAttempt
 from models.quantity import Quantity
+from models.page import Page
 from models.message import Message, MessageSender
 from models.lastLoadOutcome import LastLoadOutcome
 from entities.postgresSaveOperationResponse import PostgresSaveOperationResponse
@@ -53,19 +54,19 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort, SaveMessagePort, GetMessagesPo
             logger.error(f"Error in save_message of PostgresAdapter: {e}")
             raise e
 
-    def get_messages(self, quantity: Quantity, page: int = 1) -> List[Message]:
+    def get_messages(self, quantity: Quantity, page: Page) -> List[Message]:
         """
         Retrieve a specified quantity of messages with pagination support.
         Args:
             quantity (Quantity): The number of messages to retrieve per page.
-            page (int, optional): The page number to retrieve, defaults to 1.
+            page (Page): The page number to retrieve.
         Returns:
             List[Message]: A list of retrieved messages.
         Raises:
             Exception: If there is an error during the retrieval operation.
         """
         try:
-            postgres_messages = self.__repository.get_messages(quantity.get_value(), page)
+            postgres_messages = self.__repository.get_messages(quantity.get_value(), page.get_value())
 
             if not postgres_messages:
                 return []

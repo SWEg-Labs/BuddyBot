@@ -1,6 +1,7 @@
 from beartype.typing import List
 
 from models.quantity import Quantity
+from models.page import Page
 from models.message import Message
 from use_cases.getMessagesUseCase import GetMessagesUseCase
 from ports.getMessagesPort import GetMessagesPort
@@ -23,13 +24,12 @@ class GetMessagesService(GetMessagesUseCase):
         """
         self.__get_messages_port = get_messages_port
 
-    def get_messages(self, quantity: Quantity, page: int = 1) -> List[Message]:
+    def get_messages(self, quantity: Quantity, page: Page) -> List[Message]:
         """
         Retrieve a specified quantity of messages with pagination support.
-        
         Args:
             quantity (Quantity): The number of messages to retrieve per page.
-            page (int, optional): The page number to retrieve, defaults to 1.
+            page (Page): The page number to retrieve.
         Returns:
             List[Message]: A list of retrieved messages.
         Raises:
