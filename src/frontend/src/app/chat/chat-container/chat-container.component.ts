@@ -175,12 +175,14 @@ export class ChatContainerComponent implements OnInit {
         const botMsg = new Message(res.response, new Date(), MessageSender.CHATBOT);
         const rawFormatted = this.formatResponse(botMsg.content);
         botMsg.sanitizedContent = this.sanitizer.bypassSecurityTrustHtml(rawFormatted);
-        botMsg.copied = false;
         this.messages.push(botMsg);
         this.lastBotAnswer = res.response;
-        this.isLoading = false;
         this.lastUserQuestion = trimmed;
         this.lastBotAnswer = res.response;
+
+        botMsg.copied = false;
+        this.isLoading = false;
+        this.clearErrorMessage();
 
         setTimeout(() => {
           this.scrollToBottom();
