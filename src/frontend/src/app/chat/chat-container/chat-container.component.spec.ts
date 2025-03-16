@@ -134,7 +134,7 @@ describe('ChatContainerComponent', () => {
       component.onSendMessage(inputText);
       tick(0);
       // Assert:
-      expect(component.messages.some(m => m.sender === MessageSender.CHATBOT && m.content === "C’è stato un errore!")).toBeTrue();
+      expect(component.messages.some(m => m.sender === MessageSender.CHATBOT && m.content === "C'è stato un errore!")).toBeTrue();
       expect(component.isLoading).toBeFalse();
       expect(component.scrollToBottom).toHaveBeenCalled();
     }));
@@ -157,14 +157,14 @@ describe('ChatContainerComponent', () => {
 
   describe('Test di unità', () => {
 
-    it("Verifica che l'evento ngOnInit di ChatContainerComponent richiami il metodo loadOldMessages con l'intero 50" +
+    it("Verifica che l'evento ngOnInit di ChatContainerComponent richiami il metodo loadOldMessages con l'intero 50 " +
       "come parametro", () => {
       // Arrange:
       spyOn(component, 'loadOldMessages');
       // Act:
       component.ngOnInit();
       // Assert:
-      expect(component.loadOldMessages).toHaveBeenCalledWith(50);
+      expect(component.loadOldMessages).toHaveBeenCalledWith(component.messagesPerPage, 1);
     });
 
     it("Verifica che il metodo onScrollChange di ChatContainerComponent, chiamato con valore true," +

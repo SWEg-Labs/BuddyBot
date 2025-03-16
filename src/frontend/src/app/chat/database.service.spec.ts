@@ -37,7 +37,7 @@ describe('DatabaseService', () => {
         { content: "Salve", timestamp: "2023-01-01T00:01:00Z", sender: "CHATBOT" }
       ];
       // Act:
-      service.getMessages(2).subscribe(messages => {
+      service.getMessages(2, 1).subscribe(messages => {
         // Assert:
         expect(messages.length).toBe(2);
         expect(messages[0].content).toBe("Ciao");
@@ -48,7 +48,7 @@ describe('DatabaseService', () => {
       });
       const req = httpMock.expectOne("http://localhost:5000/api/get_messages");
       expect(req.request.method).toBe("POST");
-      expect(req.request.body).toEqual({ quantity: 2 });
+      expect(req.request.body).toEqual({ quantity: 2, page: 1 });
       req.flush(responseArray);
     });
 
@@ -56,7 +56,7 @@ describe('DatabaseService', () => {
       "e gestisca correttamente la risposta", () => {
       // Arrange:
       const message = new Message("Test", new Date("2023-01-01T00:00:00Z"), MessageSender.USER);
-      const responseData = { status: true };
+      const responseData = { success: true, message: "Message saved" };
       // Act:
       service.saveMessage(message).subscribe(response => {
         // Assert:
