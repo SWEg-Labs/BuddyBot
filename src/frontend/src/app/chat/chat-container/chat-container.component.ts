@@ -93,7 +93,15 @@ export class ChatContainerComponent implements OnInit {
       this.scrollToBottom();
     }, 0);
 
-    this.databaseService.saveMessage(userMsg).subscribe();
+    this.databaseService.saveMessage(userMsg).subscribe({
+      next: (response) => {
+        console.log('Risultato del salvataggio del messaggio dell\'utente nel database:', response.success);
+        console.log('Messaggio di risposta del database:', response.message);
+      },
+      error: (err) => {
+        console.error('Errore durante il salvataggio del messaggio dell\'utente nel database:', err);
+      },
+    });
 
     this.chatService.sendMessage(trimmed).subscribe({
       next: (res) => {
@@ -111,7 +119,15 @@ export class ChatContainerComponent implements OnInit {
           this.scrollToBottom();
         }, 0);
 
-        this.databaseService.saveMessage(botMsg).subscribe();
+        this.databaseService.saveMessage(botMsg).subscribe({
+          next: (response) => {
+            console.log('Risultato del salvataggio del messaggio del chatbot nel database:', response.success);
+        console.log('Messaggio di risposta del database:', response.message);
+          },
+          error: (err) => {
+            console.error('Errore durante il salvataggio del messaggio del chatbot nel database:', err);
+          },
+        });
 
         this.hideSuggestions = false;
       },
