@@ -233,6 +233,7 @@ export class ChatContainerComponent implements OnInit {
     formatted = formatted
       .replace(/^### (.+)$/gm, '<h3>$1</h3>')
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/`([^`]+)`/g, '<em>$1</em>')
       .replace(linkRegex, '<a href="$1" target="_blank">$1</a>')
       .replace(/\n/g, '<br>');
 
