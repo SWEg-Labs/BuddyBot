@@ -29,11 +29,16 @@ import { DatabaseService } from '../database.service';
 export class ChatContainerComponent implements OnInit {
   messages: Message[] = [];
   isLoading = false;
+  loadingOlderMessages = false;
   showScrollToBottom = false;
   lastUserQuestion = '';
   lastBotAnswer = '';
   hideSuggestions = false;
   errorMessage = '';
+  errorTimeout: any = null;
+  currentPage = 1;
+  messagesPerPage = 50;
+  allMessagesLoaded = false;
 
   @ViewChild(ChatMessagesComponent) messagesComponent!: ChatMessagesComponent;
 
@@ -44,30 +49,92 @@ export class ChatContainerComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadOldMessages(50);
+    this.loadOldMessages(this.messagesPerPage, 1);
     this.databaseService.loadLastLoadOutcome();
   }
 
-  loadOldMessages(quantity: number) {
-    this.databaseService.getMessages(quantity).subscribe({
+  loadOldMessages(quantity: number, page: number = 1): void {
+    if (page === 1) {
+      this.isLoading = true;
+    } else {
+      this.loadingOlderMessages = true;
+    }
+
+    this.databaseService.getMessages(quantity, page).subscribe({
       next: (serverMessages: Message[]) => {
+        this.clearErrorMessage();
+        if (serverMessages.length === 0) {
+          this.allMessagesLoaded = true;
+          this.isLoading = false;
+          this.loadingOlderMessages = false;
+          return;
+        }
+
         serverMessages.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
-        this.messages = serverMessages.map((m) => {
+        const formattedMessages = serverMessages.map((m) => {
           const rawFormatted = this.formatResponse(m.content);
           m.sanitizedContent = this.sanitizer.bypassSecurityTrustHtml(rawFormatted);
           m.copied = false;
           return m;
         });
-        this.errorMessage = '';
-        setTimeout(() => {
-          this.scrollToBottom();
-        }, 0);
+        if (page > 1) {
+          this.messages = [...formattedMessages, ...this.messages];
+          setTimeout(() => {
+            if (this.messagesComponent) {
+              this.messagesComponent.maintainScrollPosition();
+            }
+          }, 0);
+        } else {
+          this.messages = formattedMessages;
+          setTimeout(() => {
+            this.scrollToBottom();
+          }, 0);
+        }
+
+        this.isLoading = false;
+        this.loadingOlderMessages = false;
       },
       error: (err) => {
         console.error('Errore nel caricamento dei messaggi dal DB:', err);
-        this.errorMessage = "Errore nel recupero dello storico dei messaggi";
+        if (this.messages.length === 0 || page === 1) {
+          this.showErrorMessage("Errore nel recupero dello storico dei messaggi");
+        } else if (page > 1) {
+          this.showTemporaryErrorMessage("Errore nel caricamento dei messaggi precedenti. Riprova tra poco.");
+        }
+        
+        this.isLoading = false;
+        this.loadingOlderMessages = false;
       }
     });
+  }
+
+  showErrorMessage(message: string): void {
+    this.errorMessage = message;
+  }
+  showTemporaryErrorMessage(message: string, duration: number = 5000): void {
+    this.errorMessage = message;
+    
+    if (this.errorTimeout) {
+      clearTimeout(this.errorTimeout);
+    }
+      this.errorTimeout = setTimeout(() => {
+      this.clearErrorMessage();
+    }, duration);
+  }
+  
+  clearErrorMessage(): void {
+    this.errorMessage = '';
+    if (this.errorTimeout) {
+      clearTimeout(this.errorTimeout);
+      this.errorTimeout = null;
+    }
+  }
+
+  onLoadMoreMessages(): void {
+    if (this.loadingOlderMessages || this.allMessagesLoaded || this.isLoading) return;
+    
+    this.currentPage++;
+    this.loadOldMessages(this.messagesPerPage, this.currentPage);
   }
 
   onScrollChange(isScrolledUp: boolean): void {
@@ -106,16 +173,19 @@ export class ChatContainerComponent implements OnInit {
         this.lastUserQuestion = trimmed;
         this.lastBotAnswer = res.response;
         this.hideSuggestions = false;
+        this.clearErrorMessage();
 
         setTimeout(() => {
           this.scrollToBottom();
         }, 0);
       },
       error: () => {
-        const errorMsg = new Message('C’è stato un errore!', new Date(), MessageSender.CHATBOT);
+        const errorMsg = new Message("C'è stato un errore!", new Date(), MessageSender.CHATBOT);
         this.messages.push(errorMsg);
         this.databaseService.saveMessage(errorMsg).subscribe();
         this.isLoading = false;
+        this.showTemporaryErrorMessage("Errore nell'invio del messaggio. Riprova tra poco.");
+        
         setTimeout(() => {
           this.scrollToBottom();
         }, 0);

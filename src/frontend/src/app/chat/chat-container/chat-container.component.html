@@ -11,7 +11,9 @@
   <app-chat-messages
     [messages]="messages"
     [isLoading]="isLoading"
+    [loadingOlderMessages]="loadingOlderMessages"
     (isScrolledUp)="onScrollChange($event)"
+    (loadMoreMessages)="onLoadMoreMessages()"
   ></app-chat-messages>
 
   <!-- SUGGERIMENTI -->

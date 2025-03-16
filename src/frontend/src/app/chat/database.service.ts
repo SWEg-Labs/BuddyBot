@@ -16,9 +16,9 @@ export class DatabaseService {
 
   constructor(private readonly http: HttpClient) {}
 
-  getMessages(quantity: number): Observable<Message[]> {
+  getMessages(quantity: number, page: number = 1): Observable<Message[]> {
     return this.http
-      .post<any[]>(`${this.apiBaseUrl}/api/get_messages`, { quantity })
+      .post<any[]>(`${this.apiBaseUrl}/api/get_messages`, { quantity, page })
       .pipe(
         map((responseArray: any[]) => {
           return responseArray.map(obj => {

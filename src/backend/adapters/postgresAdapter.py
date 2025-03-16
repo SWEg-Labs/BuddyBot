@@ -53,18 +53,19 @@ class PostgresAdapter(SaveLoadingAttemptInDbPort, SaveMessagePort, GetMessagesPo
             logger.error(f"Error in save_message of PostgresAdapter: {e}")
             raise e
 
-    def get_messages(self, quantity: Quantity) -> List[Message]:
+    def get_messages(self, quantity: Quantity, page: int = 1) -> List[Message]:
         """
-        Retrieve a specified quantity of messages.
+        Retrieve a specified quantity of messages with pagination support.
         Args:
-            quantity (Quantity): The number of messages to retrieve.
+            quantity (Quantity): The number of messages to retrieve per page.
+            page (int, optional): The page number to retrieve, defaults to 1.
         Returns:
             List[Message]: A list of retrieved messages.
         Raises:
             Exception: If there is an error during the retrieval operation.
         """
         try:
-            postgres_messages = self.__repository.get_messages(quantity.get_value())
+            postgres_messages = self.__repository.get_messages(quantity.get_value(), page)
 
             if not postgres_messages:
                 return []

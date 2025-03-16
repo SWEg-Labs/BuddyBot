@@ -23,18 +23,20 @@ class GetMessagesService(GetMessagesUseCase):
         """
         self.__get_messages_port = get_messages_port
 
-    def get_messages(self, quantity: Quantity) -> List[Message]:
+    def get_messages(self, quantity: Quantity, page: int = 1) -> List[Message]:
         """
-        Retrieve a specified quantity of messages.
+        Retrieve a specified quantity of messages with pagination support.
+        
         Args:
-            quantity (Quantity): The number of messages to retrieve.
+            quantity (Quantity): The number of messages to retrieve per page.
+            page (int, optional): The page number to retrieve, defaults to 1.
         Returns:
             List[Message]: A list of retrieved messages.
         Raises:
             Exception: If retrieval of messages fails.
         """
         try:
-            return self.__get_messages_port.get_messages(quantity)
+            return self.__get_messages_port.get_messages(quantity, page)
         except Exception as e:
             logger.error(f"Failed to retrieve messages: {e}")
             raise e

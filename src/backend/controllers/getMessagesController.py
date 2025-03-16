@@ -21,29 +21,37 @@ class GetMessagesController:
         """
         self.__get_messages_use_case = get_messages_use_case
 
-    def get_messages(self, quantity: dict[str, int]) -> List[MessageDTO]:
+    def get_messages(self, request_data: dict) -> List[MessageDTO]:
         """
-        Retrieve a list of messages based on the provided quantity dictionary.
+        Retrieve a list of messages based on the provided request data with pagination support.
         Args:
-            quantity (dict[str, int]): A dictionary with a single key-value pair where the key is a string and the value
-            is the number of messages to retrieve.
+            request_data (dict): A dictionary containing:
+                - quantity (int): The number of messages to retrieve per page
+                - page (int, optional): The page number, defaults to 1    
         Returns:
             List[MessageDTO]: A list of messages, each represented as a MessageDTO instance.
         Raises:
             Exception: If an error occurs while retrieving messages.
         """
         try:
-            quantity_value = list(quantity.values())[0]
-            message_list = self.__get_messages_use_case.get_messages(Quantity(quantity_value))
-
+            quantity_value = request_data.get("quantity", 50)
+            page_value = request_data.get("page", 1)
+            message_list = self.__get_messages_use_case.get_messages(
+                Quantity(quantity_value), 
+                page_value
+            )
             if not message_list:
                 return []
-
+            
             return_list = []
             for message in message_list:
                 timestamp_str = message.get_timestamp().strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
                 sender_str = message.get_sender().name
-                return_list.append(MessageDTO(content=message.get_content(), timestamp=timestamp_str, sender=sender_str))
+                return_list.append(MessageDTO(
+                    content=message.get_content(), 
+                    timestamp=timestamp_str, 
+                    sender=sender_str
+                ))
             return return_list
         except Exception as e:
             logger.error(f"An error occurred while retrieving messages: {e}")
