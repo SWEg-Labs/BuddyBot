@@ -29,9 +29,9 @@ class PostgresRepository:
         Executes a given SQL query with optional parameters and fetch options.
         Args:
             query (str): The SQL query to be executed.
-            params (tuple [optional]): The parameters to be used in the SQL query. Defaults to None.
-            fetch_one (bool [optional]): Whether to fetch a single result. Defaults to False.
-            fetch_all (bool [optional]): Whether to fetch all results. Defaults to False.
+            params (tuple), optional: The parameters to be used in the SQL query. Defaults to None.
+            fetch_one (bool), optional: Whether to fetch a single result. Defaults to False.
+            fetch_all (bool), optional: Whether to fetch all results. Defaults to False.
         Returns:
             tuple or list: The fetched result(s) if fetch_one or fetch_all is True, otherwise None.
         Raises:
@@ -87,7 +87,7 @@ class PostgresRepository:
         Retrieves the specified number of messages from the PostgreSQL database with pagination support.
         Args:
             quantity (int): The number of messages to retrieve per page.
-            page (int [optional]): The page number to retrieve, defaults to 1.
+            page (int), optional: The page number to retrieve, defaults to 1.
         Returns:
             List[PostgresMessage]: The list of retrieved messages.
         Raises:
