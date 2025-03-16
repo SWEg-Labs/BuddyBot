@@ -111,7 +111,7 @@ async def get_messages(request_data: dict[str, int]) -> List[MessageDTO] | JSONR
     Args:
         request_data (dict[str, int]): A dictionary containing:
             - quantity (int): The number of messages to retrieve per page
-            - page (int [optional]): The page number, defaults to 1
+            - page (int), optional: The page number, defaults to 1
     Returns:
         Union[List[MessageDTO], JSONResponse]: 
             - If successful, returns a list of MessageDTO objects containing the messages

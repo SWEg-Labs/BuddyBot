@@ -28,7 +28,7 @@ class GetMessagesController:
         Args:
             request_data (dict[str, int]): A dictionary containing:
                 - quantity (int): The number of messages to retrieve per page
-                - page (int [optional]): The page number, defaults to 1    
+                - page (int), optional: The page number, defaults to 1    
         Returns:
             List[MessageDTO]: A list of messages, each represented as a MessageDTO instance.
         Raises:
