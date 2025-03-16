@@ -1,5 +1,7 @@
 import chromadb
 import pytz
+import requests
+from requests.exceptions import ConnectTimeout
 
 from models.loggingModels import VectorStoreLog
 from entities.chromaDocumentEntity import ChromaDocumentEntity
@@ -43,9 +45,9 @@ class ChromaVectorStoreRepository:
             documents (list[ChromaDocumentEntity]): A list of documents to be loaded.
         Returns:
             VectorStoreLog: An object containing the log of the operation.
-        
         Raises:
             Exception: If an error occurs while loading the documents.
+            (requests.exceptions.ConnectTimeout, ConnectTimeoutError): If a timeout occurs while connecting to the Chroma server.
         """
         try:
             date_format = "%Y-%m-%d %H:%M:%S"
@@ -162,7 +164,7 @@ class ChromaVectorStoreRepository:
                             raise e
                         if incoming_creation_date < db_insertion_date:
                             # Il file è stato creato prima dell'ultimo aggiornamento, quindi in questo aggiornamento viene solo modificato.
-                            # Non si considera quindi aggiunto (ricreato), ma bensì modificato.
+                            # Non si considera quindi aggiunto (ricreato) e neanche eliminato, ma bensì modificato.
                             num_modified_items += 1
                             num_added_items -= 1
                             num_deleted_items -= 1
@@ -207,8 +209,8 @@ class ChromaVectorStoreRepository:
             )
 
             return log
-        except Exception as e:
-            logger.error(f"Error loading documents into Chroma vector store: {e}")
+        except (requests.exceptions.ConnectTimeout, ConnectTimeout) as e:
+            logger.error(f"Timeout in Chroma server connection: {e}")
             italy_tz = pytz.timezone('Europe/Rome')
             log = VectorStoreLog(
                 timestamp=datetime.now(italy_tz),
@@ -218,6 +220,9 @@ class ChromaVectorStoreRepository:
                 num_deleted_items=0
             )
             return log
+        except Exception as e:
+            logger.error(f"Error loading documents into Chroma vector store: {e}")
+            raise e
 
     def similarity_search(self, query: str) -> QueryResultEntity:
         """ 

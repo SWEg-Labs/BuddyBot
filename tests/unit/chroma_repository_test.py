@@ -1,5 +1,7 @@
 import pytest
 from unittest.mock import MagicMock
+import requests
+from requests.exceptions import ConnectTimeout
 
 from entities.chromaDocumentEntity import ChromaDocumentEntity
 from repositories.chromaVectorStoreRepository import ChromaVectorStoreRepository
@@ -39,7 +41,7 @@ def test_load_exception():
     documents = [MagicMock(spec=ChromaDocumentEntity)]
     documents[0].get_metadata.return_value = {"doc_id": "1"}
     documents[0].get_page_content.return_value = "content_1"
-    mock_collection.add.side_effect = Exception("Load error")
+    mock_collection.add.side_effect = ConnectTimeout("Load error")
 
     # Act
     result = repository.load(documents)
@@ -62,13 +64,11 @@ def test_load_exception_preparing_new_data():
     documents[0].get_metadata.side_effect = Exception("Metadata error")
 
     # Act
-    result = repository.load(documents)
+    with pytest.raises(Exception) as exc_info:
+        repository.load(documents)
 
     # Assert
-    assert result.get_outcome() is False
-    assert result.get_num_added_items() == 0
-    assert result.get_num_modified_items() == 0
-    assert result.get_num_deleted_items() == 0
+    assert str(exc_info.value) == "Metadata error"
 
 
 # Verifica che il metodo load di ChromaVectorStoreRepository gestisca correttamente le eccezioni durante il recupero dei vecchi dati
@@ -77,7 +77,7 @@ def test_load_exception_preparing_new_data():
 def test_load_exception_fetching_old_data():
     # Arrange
     mock_collection = MagicMock()
-    mock_collection.get.side_effect = Exception("Fetch error")
+    mock_collection.get.side_effect = requests.exceptions.ConnectTimeout("Fetch error")
     repository = ChromaVectorStoreRepository(mock_collection)
     documents = [MagicMock(spec=ChromaDocumentEntity)]
     documents[0].get_metadata.return_value = {"doc_id": "1"}
@@ -113,13 +113,11 @@ def test_load_exception_parsing_datetime_non_github_file():
     }
 
     # Act
-    result = repository.load(documents)
+    with pytest.raises(Exception) as exc_info:
+        repository.load(documents)
 
     # Assert
-    assert result.get_outcome() is False
-    assert result.get_num_added_items() == 0
-    assert result.get_num_modified_items() == 0
-    assert result.get_num_deleted_items() == 0
+    assert str(exc_info.value) == "time data 'invalid_date' does not match format '%Y-%m-%d %H:%M:%S'"
 
 
 # Verifica che il metodo load di ChromaVectorStoreRepository gestisca correttamente le eccezioni durante il parsing delle date
@@ -143,13 +141,11 @@ def test_load_exception_parsing_dates_github_file():
     }
 
     # Act
-    result = repository.load(documents)
+    with pytest.raises(Exception) as exc_info:
+        repository.load(documents)
 
     # Assert
-    assert result.get_outcome() is False
-    assert result.get_num_added_items() == 0
-    assert result.get_num_modified_items() == 0
-    assert result.get_num_deleted_items() == 0
+    assert str(exc_info.value) == "time data 'invalid_date' does not match format '%Y-%m-%d %H:%M:%S'"
 
 
 # Verifica che il metodo load di ChromaVectorStoreRepository gestisca correttamente l'eccezione riguardante un documento
@@ -164,13 +160,11 @@ def test_load_missing_path_field_in_github_file():
     documents[0].get_page_content.return_value = "content_1"
 
     # Act
-    result = repository.load(documents)
+    with pytest.raises(Exception) as exc_info:
+        repository.load(documents)
 
     # Assert
-    assert result.get_outcome() is False
-    assert result.get_num_added_items() == 0
-    assert result.get_num_modified_items() == 0
-    assert result.get_num_deleted_items() == 0
+    assert str(exc_info.value) == "Missing 'path' field in metadata for GitHub File with doc_id 1"
 
 
 # Verifica che il metodo load di ChromaVectorStoreRepository segnali correttamente la modifica di un documento di tipo GitHub File,
@@ -258,7 +252,7 @@ def test_load_exception_while_deleting_documents():
     documents[0].get_metadata.return_value = {"doc_id": "1"}
     documents[0].get_page_content.return_value = "content_1"
     mock_collection.get.return_value = {"ids": ["2"], "metadatas": [{}]}
-    mock_collection.delete.side_effect = Exception("Delete error")
+    mock_collection.delete.side_effect = ConnectTimeout("Delete error")
 
     # Act
     result = repository.load(documents)
