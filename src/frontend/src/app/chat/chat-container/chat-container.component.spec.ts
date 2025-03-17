@@ -57,7 +57,7 @@ describe('ChatContainerComponent', () => {
       expect(mockDatabaseService.loadLastLoadOutcome).toHaveBeenCalled();
     });
 
-    it("Verifica che il metodo loadOldMessages di ChatContainerComponent ordini e formatti correttamente i messaggi" +
+    it("Verifica che il metodo loadOldMessages di ChatContainerComponent ordini e formatti correttamente i messaggi " +
       "ricevuti da DatabaseService", fakeAsync(() => {
       // Arrange:
       const msg1 = new Message('B', new Date(2020, 1, 2), MessageSender.USER);
@@ -75,7 +75,7 @@ describe('ChatContainerComponent', () => {
       expect(component.scrollToBottom).toHaveBeenCalled();
     }));
 
-    it("Verifica che il metodo loadOldMessages di ChatContainerComponent imposti errorMessage in caso di errore" +
+    it("Verifica che il metodo loadOldMessages di ChatContainerComponent imposti errorMessage in caso di errore " +
       "nel recupero dei messaggi restituito da DatabaseService", fakeAsync(() => {
       // Arrange:
       mockDatabaseService.getMessages.and.returnValue(throwError(() => new Error("Test Error")));
@@ -86,7 +86,7 @@ describe('ChatContainerComponent', () => {
       expect(component.errorMessage).toBe("Errore nel recupero dello storico dei messaggi");
     }));
 
-    it("Verifica che il metodo loadOldMessages di ChatContainerComponent resetti errorMessage se il recupero" +
+    it("Verifica che il metodo loadOldMessages di ChatContainerComponent resetti errorMessage se il recupero " +
       "dei messaggi da DatabaseService ha successo", fakeAsync(() => {
       // Arrange:
       const msg1 = new Message('Test message', new Date(), MessageSender.USER);
@@ -167,7 +167,7 @@ describe('ChatContainerComponent', () => {
       expect(component.loadOldMessages).toHaveBeenCalledWith(component.messagesPerPage, 1);
     });
 
-    it("Verifica che il metodo onScrollChange di ChatContainerComponent, chiamato con valore true," +
+    it("Verifica che il metodo onScrollChange di ChatContainerComponent, chiamato con valore true, " +
       "aggiorni l'attributo showScrollToBottom a true", () => {
       // Act:
       component.onScrollChange(true);
@@ -175,7 +175,7 @@ describe('ChatContainerComponent', () => {
       expect(component.showScrollToBottom).toBeTrue();
     });
 
-    it("Verifica che il metodo onScrollChange di ChatContainerComponent, chiamato con valore false," +
+    it("Verifica che il metodo onScrollChange di ChatContainerComponent, chiamato con valore false, " +
       "aggiorni l'attributo showScrollToBottom a false", () => {
       // Act:
       component.onScrollChange(false);

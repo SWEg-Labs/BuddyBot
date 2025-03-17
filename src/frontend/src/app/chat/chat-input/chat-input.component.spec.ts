@@ -101,7 +101,7 @@ describe('ChatInputComponent', () => {
       expect(button.disabled).toBeTrue();
     });
 
-    it("Verifica che il bottone 'Invia' di ChatInputComponent sia abilitato se l'attributo isLoading è false e userInput contiene" +
+    it("Verifica che il bottone 'Invia' di ChatInputComponent sia abilitato se l'attributo isLoading è false e userInput contiene " +
       "un messaggio valido", () => {
       // Arrange:
       component.isLoading = false;
@@ -142,7 +142,7 @@ describe('ChatInputComponent', () => {
       expect(component.userInput).toBe('');
     });
 
-    it("Verifica che il metodo onSend di ChatInputComponent non emetta alcun segnale se l'input dell'utente è vuoto" +
+    it("Verifica che il metodo onSend di ChatInputComponent non emetta alcun segnale se l'input dell'utente è vuoto " +
       "oppure contiene solo spazi", () => {
       // Arrange:
       spyOn(component.sendMessage, 'emit');
