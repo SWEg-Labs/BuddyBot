@@ -23,7 +23,7 @@
 
     <span class="text" [innerHTML]="msg.sanitizedContent || msg.content"></span>
 
-    <span class="timestamp" *ngIf="!msg.timestamp; else errorDateTemplate">
+    <span class="timestamp" *ngIf="msg.timestamp; else errorDateTemplate">
       {{ msg.timestamp | date:'dd/MM/yyyy HH:mm' }}
     </span>
     <ng-template #errorDateTemplate>
