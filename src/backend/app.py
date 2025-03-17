@@ -38,7 +38,7 @@ get_messages_controller = frontend_dependencies["get_messages_controller"]
 get_next_possible_questions_controller = frontend_dependencies["get_next_possible_questions_controller"]
 
 
-'''
+
 @beartype_personalized
 @app.post("/api/chat", summary="Send a messagge to the chatbot", response_model=Dict[str, str])
 async def chat(request: Request) -> Dict[str, str] | JSONResponse:
@@ -61,7 +61,7 @@ async def chat(request: Request) -> Dict[str, str] | JSONResponse:
         error_message = f"Error processing chat request: {e}"
         logger.error(error_message)
         return JSONResponse(content={"status": "error", "message": error_message}, status_code=500)
-'''
+
 
 @beartype_personalized
 @app.post("/api/get_next_possible_questions", summary="Get the next possible questions based on the last question and the last answer",
