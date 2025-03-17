@@ -9,8 +9,7 @@
     *ngFor="let msg of messages"
     [ngClass]="{
       'user-message': msg.sender === messageSender.USER,
-      'bot-message': msg.sender === messageSender.CHATBOT,
-      'error-message': msg.content === errorMessage
+      'bot-message': msg.sender === messageSender.CHATBOT
     }"
   >
     <span

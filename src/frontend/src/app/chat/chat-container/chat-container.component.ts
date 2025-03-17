@@ -35,7 +35,6 @@ export class ChatContainerComponent implements OnInit {
   lastBotAnswer = '';
   hideSuggestions = false;
   errorMessage = '';
-  errorChatBotMessage = "C'è stato un errore!";
   errorTimeout: any = null;
   currentPage = 1;
   messagesPerPage = 50;
@@ -202,7 +201,7 @@ export class ChatContainerComponent implements OnInit {
         this.hideSuggestions = false;
       },
       error: () => {
-        const errorMsg = new Message(this.errorChatBotMessage, new Date(), MessageSender.CHATBOT);
+        const errorMsg = new Message("C'è stato un errore!", new Date(), MessageSender.CHATBOT);
         this.messages.push(errorMsg);
         this.databaseService.saveMessage(errorMsg).subscribe();
         this.isLoading = false;

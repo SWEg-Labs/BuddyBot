@@ -38,7 +38,6 @@ get_messages_controller = frontend_dependencies["get_messages_controller"]
 get_next_possible_questions_controller = frontend_dependencies["get_next_possible_questions_controller"]
 
 
-
 @beartype_personalized
 @app.post("/api/chat", summary="Send a messagge to the chatbot", response_model=Dict[str, str])
 async def chat(request: Request) -> Dict[str, str] | JSONResponse:
