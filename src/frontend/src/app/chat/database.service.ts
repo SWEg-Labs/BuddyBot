@@ -12,7 +12,7 @@ export class DatabaseService {
   private readonly apiBaseUrl = 'http://localhost:5000';
 
   private readonly lastLoadOutcomeSubject = new BehaviorSubject<LastLoadOutcome>(LastLoadOutcome.TRUE);
-  public lastLoadOutcome$ = this.lastLoadOutcomeSubject.asObservable();  
+  public lastLoadOutcome$ = this.lastLoadOutcomeSubject.asObservable();
 
   constructor(private readonly http: HttpClient) {}
 
