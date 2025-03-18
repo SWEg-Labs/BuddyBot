@@ -113,6 +113,7 @@ export class ChatContainerComponent implements OnInit {
   showErrorMessage(message: string): void {
     this.errorMessage = message;
   }
+
   showTemporaryErrorMessage(message: string, duration: number = 5000): void {
     this.errorMessage = message;
     
@@ -220,6 +221,7 @@ export class ChatContainerComponent implements OnInit {
 
   formatResponse(response: string): string {
     const codeRegex = /```(\w+)?([\s\S]*?)```/g;
+    const linkRegex = /\b((?:(?:https?:\/\/)|(?:www\.))[\w\-]+(?:\.[\w\-]+)+(?:\/[\w.,@?^=%&:\/~+#\-]*)?)(?=[\s.,;:!?)\]]|$)/gi;
     let formatted = response.replace(codeRegex, (match, maybeLang, codeBlock) => {
       const trimmed = codeBlock.replace(/^\n+|\n+$/g, '');
       const escapedCode = trimmed.replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -232,7 +234,8 @@ export class ChatContainerComponent implements OnInit {
     formatted = formatted
       .replace(/^### (.+)$/gm, '<h3>$1</h3>')
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>')
+      .replace(/`([^`]+)`/g, '<em>$1</em>')
+      .replace(linkRegex, '<a href="$1" target="_blank">$1</a>')
       .replace(/\n/g, '<br>');
 
       const linkBlockRegex = /(Link (?:correlati|utili):(?:<br>.*?))(?=<br><br>|$)/gis;
