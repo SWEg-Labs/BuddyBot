@@ -113,6 +113,7 @@ export class ChatContainerComponent implements OnInit {
   showErrorMessage(message: string): void {
     this.errorMessage = message;
   }
+
   showTemporaryErrorMessage(message: string, duration: number = 5000): void {
     this.errorMessage = message;
     
