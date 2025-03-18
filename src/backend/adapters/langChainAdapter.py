@@ -136,10 +136,10 @@ class LangChainAdapter(GenerateAnswerPort, GetNextPossibleQuestionsPort):
     def __count_tokens(self, text: str) -> int:
         """
         Calculates the approximate number of tokens based on the provided text.
-        Approximation: roughly 1 token every 3 characters.
+        Approximation: roughly 1 token every 2 characters.
         Args:
             text (str): The text for which to calculate the number of tokens.
         Returns:
             int: The approximate number of tokens.
         """
-        return max(1, int(len(text) / 3))
+        return max(1, int(len(text) / 2))
