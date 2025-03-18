@@ -39,8 +39,8 @@ def test_load_calls_all_methods_and_handles_exceptions():
     jira_issues_log = PlatformLog(loading_items=LoadingItems.JiraIssues, timestamp=starting_timestamp, outcome=True)
     confluence_pages_log = PlatformLog(loading_items=LoadingItems.ConfluencePages, timestamp=starting_timestamp, outcome=True)
 
-    github_commits = [Document(page_content="commit1", metadata={"type": "text"})]
-    github_files = [Document(page_content="file1", metadata={"type": "python"})]
+    github_commits = [Document(page_content="commit1", metadata={"type": "text", "date": "2023-10-01 10:00:00"})]
+    github_files = [Document(page_content="file1", metadata={"type": "python", "path": "src/file1.py"})]
     jira_issues = [Document(page_content="issue1", metadata={"type": "text"})]
     confluence_pages = [Document(page_content="page1", metadata={"type": "html"})]
     cleaned_confluence_pages = [Document(page_content="cleaned_page1", metadata={"type": "html"})]
@@ -119,8 +119,8 @@ def test_load_raises_exception_if_db_save_fails():
     jira_issues_log = PlatformLog(loading_items=LoadingItems.JiraIssues, timestamp=starting_timestamp, outcome=True)
     confluence_pages_log = PlatformLog(loading_items=LoadingItems.ConfluencePages, timestamp=starting_timestamp, outcome=True)
 
-    github_commits = [Document(page_content="commit1", metadata={"type": "text"})]
-    github_files = [Document(page_content="file1", metadata={"type": "python"})]
+    github_commits = [Document(page_content="commit1", metadata={"type": "text", "date": "2023-10-01 10:00:00"})]
+    github_files = [Document(page_content="file1", metadata={"type": "python", "path": "src/file1.py"})]
     jira_issues = [Document(page_content="issue1", metadata={"type": "text"})]
     confluence_pages = [Document(page_content="page1", metadata={"type": "html"})]
     cleaned_confluence_pages = [Document(page_content="cleaned_page1", metadata={"type": "html"})]
@@ -218,6 +218,109 @@ def test_load_confluence_pages_handles_exception():
 
     # Assert
     assert str(exc_info.value) == "Confluence pages error"
+
+
+# Verifica che il metodo get_github_files_new_metadata di LoadFilesService aggiorni correttamente i metadati
+# "last_update" e "creation_date" dei file di GitHub
+
+def test_get_github_files_new_metadata_updates_metadata_correctly():
+    # Arrange
+    mock_github_port = MagicMock(spec=GitHubPort)
+    load_files_service = LoadFilesService(
+        mock_github_port, MagicMock(), MagicMock(), MagicMock(), MagicMock(), MagicMock()
+    )
+
+    github_files = [
+        Document(page_content="file1", metadata={"path": "src/file1.py"}),
+        Document(page_content="file2", metadata={"path": "src/file2.py"}),
+    ]
+
+    github_commits = [
+        Document(page_content="commit1", metadata={
+            "date": "2023-10-01 10:00:00",
+            "files": [
+                "- src/file1.py (Status: added, Changes: 10)",
+                "- src/file2.py (Status: modified, Changes: 5)"
+            ]
+        }),
+        Document(page_content="commit2", metadata={
+            "date": "2023-10-02 12:00:00",
+            "files": [
+                "- src/file1.py (Status: renamed, Changes: 0)"
+            ]
+        }),
+    ]
+
+    # Act
+    updated_files = load_files_service.get_github_files_new_metadata(github_files, github_commits)
+
+    # Assert
+    assert updated_files[0].get_metadata()["last_update"] == "2023-10-02 12:00:00"
+    assert updated_files[0].get_metadata()["creation_date"] == "2023-10-02 12:00:00"
+    assert updated_files[1].get_metadata()["last_update"] == "2023-10-01 10:00:00"
+    assert "creation_date" not in updated_files[1].get_metadata()  # There are no commits that added this file
+
+
+# Verifica che il metodo get_github_files_new_metadata di LoadFilesService gestisca correttamente l'eccezione di path mancante
+# nei metadati dei file di GitHub
+
+def test_get_github_files_new_metadata_handles_missing_path():
+    # Arrange
+    mock_github_port = MagicMock(spec=GitHubPort)
+    load_files_service = LoadFilesService(
+        mock_github_port, MagicMock(), MagicMock(), MagicMock(), MagicMock(), MagicMock()
+    )
+
+    github_files = [
+        Document(page_content="file1", metadata={}),  # Missing "path"
+    ]
+
+    github_commits = [
+        Document(page_content="commit1", metadata={
+            "date": "2023-10-01 10:00:00",
+            "files": [
+                "- src/file1.py (Status: added, Changes: 10)"
+            ]
+        }),
+    ]
+
+    # Act
+    with pytest.raises(ValueError) as exc_info:
+        load_files_service.get_github_files_new_metadata(github_files, github_commits)
+
+    # Assert
+    assert str(exc_info.value) == "File path not found in GitHub file metadata."
+
+
+# Verifica che il metodo get_github_files_new_metadata di LoadFilesService gestisca correttamente le eccezioni di formato
+# della data errato o di data assente nei metadati dei commit di GitHub
+
+def test_get_github_files_new_metadata_handles_invalid_date_exception():
+    # Arrange
+    mock_github_port = MagicMock(spec=GitHubPort)
+    load_files_service = LoadFilesService(
+        mock_github_port, MagicMock(), MagicMock(), MagicMock(), MagicMock(), MagicMock()
+    )
+
+    github_files = [
+        Document(page_content="file1", metadata={"path": "src/file1.py"}),
+    ]
+
+    github_commits = [
+        Document(page_content="commit1", metadata={
+            "date": "invalid-date",
+            "files": [
+                "- src/file1.py (Status: added, Changes: 10)"
+            ]
+        }),
+    ]
+
+    # Act
+    with pytest.raises(ValueError) as exc_info:
+        load_files_service.get_github_files_new_metadata(github_files, github_commits)
+
+    # Assert
+    assert str(exc_info.value) == "Invalid date format in GitHub commit: invalid-date"
 
 
 # Verifica che il metodo clean_confluence_pages di LoadFilesService gestisca correttamente le eccezioni

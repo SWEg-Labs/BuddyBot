@@ -1,5 +1,7 @@
 import chromadb
 import pytz
+import requests
+from requests.exceptions import ConnectTimeout
 
 from models.loggingModels import VectorStoreLog
 from entities.chromaDocumentEntity import ChromaDocumentEntity
@@ -32,71 +34,183 @@ class ChromaVectorStoreRepository:
     def load(self, documents: list[ChromaDocumentEntity]) -> VectorStoreLog:
         """
         Loads the provided documents into the Chroma vector store.
+        This method also handles:
+         - Identifying obsolete documents (present in Chroma but not among the incoming ones).
+         - Preparing new documents (not already present in Chroma).
+         - For updates of non-GitHub File documents, if the "last_update" field of the incoming document is more recent,
+           the document is considered updated (modified).
+         - For GitHub Files, the "creation_date" field (incoming) is compared with the "insertion_date" field (DB) to determine
+           whether the file should be counted as "added" or "modified".
         Args:
             documents (list[ChromaDocumentEntity]): A list of documents to be loaded.
         Returns:
             VectorStoreLog: An object containing the log of the operation.
-        
         Raises:
             Exception: If an error occurs while loading the documents.
+            (requests.exceptions.ConnectTimeout, ConnectTimeoutError): If a timeout occurs while connecting to the Chroma server.
         """
         try:
-            ids = [doc.get_metadata()["doc_id"] for doc in documents]
-            documents_content = [doc.get_page_content() for doc in documents]
-            metadatas = [doc.get_metadata() for doc in documents]
+            date_format = "%Y-%m-%d %H:%M:%S"
 
-            # Initialize counters
+            # Preparazione dei documenti in arrivo: mappatura doc_id -> (metadata, page_content)
+            try:
+                incoming_docs = {
+                    doc.get_metadata()["doc_id"]: (doc.get_metadata(), doc.get_page_content())
+                    for doc in documents
+                }
+            except Exception as e:
+                logger.error(f"Error preparing new data for update: {e}")
+                raise e
+
+            # Inizializza i contatori
+            num_added_items = 0
             num_modified_items = 0
             num_deleted_items = 0
 
-            # Check and delete existing documents with the same IDs
-            for doc_id in ids:
-                try:
-                    # Check if document exists by trying to retrieve it
-                    existing_docs = self.__collection.get(ids=[doc_id])
-                    if existing_docs and len(existing_docs.get('ids', [])) > 0:
-                        # Document exists, delete it
-                        self.__collection.delete(ids=[doc_id])
-                        num_modified_items += 1
-                        logger.info(f"Deleted existing document with ID: {doc_id} for update")
-                except Exception as e:
-                    logger.error(f"Error checking document existence: {e}")
-                    raise e
-
-            # Check for documents in collection that are not in the current batch
+            # Fetch dei documenti già presenti in Chroma
             try:
-                all_docs = self.__collection.get()
-                all_ids = all_docs.get('ids', []) if all_docs else []
-
-                for existing_id in all_ids:
-                    if existing_id not in ids:
-                        # This document is not in the new batch, delete it
-                        self.__collection.delete(ids=[existing_id])
-                        num_deleted_items += 1
-                        logger.info(f"Deleted obsolete document with ID: {existing_id}")
+                db_docs = {}
+                chroma_data = self.__collection.get(include=["metadatas"])
+                i = 0
+                for doc_id in chroma_data['ids']:
+                    db_docs[doc_id] = chroma_data['metadatas'][i]
+                    i += 1
             except Exception as e:
-                logger.error(f"Error checking for obsolete documents: {e}")
+                logger.error(f"Error getting old data from chroma: {e}")
                 raise e
 
-            self.__collection.add(
-                ids=ids,
-                documents=documents_content,
-                metadatas=metadatas
-            )
+            logger.info(f"Fetched {len(db_docs)} documents from Chroma vector store.")
 
-            logger.info(f"Successfully loaded {len(documents)} documents into Chroma vector store.")
+            # Creazione della lista degli id da eliminare: documenti presenti in DB ma non negli incoming
+            db_ids_to_delete = [doc_id for doc_id in db_docs.keys() if doc_id not in incoming_docs.keys()]
+            db_docs_to_delete = {doc_id: db_docs[doc_id] for doc_id in db_ids_to_delete}
+            num_deleted_items += len(db_ids_to_delete)
+            for doc_id in db_ids_to_delete:
+                db_docs.pop(doc_id)
+
+            # Creazione del dizionario dei documenti da aggiungere: quelli presenti negli incoming ma non in DB
+            incoming_docs_to_add = {
+                doc_id: value for doc_id, value in incoming_docs.items() if doc_id not in db_docs.keys()
+            }
+            num_added_items += len(incoming_docs_to_add)
+            for doc_id in list(incoming_docs_to_add.keys()):
+                incoming_docs.pop(doc_id)
+
+            # Tolti tutti gli elementi presenti in db e non in incoming, tolti tutti gli elementi presenti in incoming e non in db,
+            # rimangono solo gli elementi presenti in entrambi.
+
+            # -------------------------------------------------------------------------------
+            # Sezione: Aggiornamento per documenti NON GitHub File
+            # -------------------------------------------------------------------------------
+            try:
+                for incoming_id, incoming_value in list(incoming_docs.items()):
+                    metadata = incoming_value[0]
+                    # Se non è un GitHub File, procedi con il confronto delle date "last_update"
+                    if metadata.get("item_type") == "GitHub File":
+                        continue
+                    try:
+                        incoming_last_update = datetime.strptime(
+                            metadata.get("last_update"), date_format
+                        )
+                        db_last_update = datetime.strptime(
+                            db_docs[incoming_id]["last_update"], date_format
+                        )
+                    except Exception as e:
+                        logger.error(f"Error parsing datetime for doc_id {incoming_id}: {e}")
+                        raise e
+
+                    if incoming_last_update > db_last_update:
+                        # Il documento è stato aggiornato: verrà inserito in Chroma, e conta come modified.
+                        db_ids_to_delete.append(incoming_id)
+                        num_modified_items += 1
+                        incoming_docs_to_add[incoming_id] = incoming_value
+                        incoming_docs.pop(incoming_id)
+            except Exception as e:
+                logger.error(f"Error checking for modified documents: {e}")
+                raise e
+            # Fine sezione aggiornamenti non GitHub File.
+
+            # -------------------------------------------------------------------------------
+            # Sezione: Controllo specifico per i GitHub File
+            # Confronta "creation_date" (incoming) con "insertion_date" (DB) per stabilire se il file è aggiunto o modificato.
+            # -------------------------------------------------------------------------------
+            try:
+                # Costruiamo una mapping per i GitHub File già presenti in Chroma basata sul campo "path"
+                db_github_by_path = {}
+                for _, metadata in db_docs_to_delete.items():
+                    if metadata.get("item_type") == "GitHub File":
+                        path = metadata.get("path")
+                        if path:
+                            db_github_by_path[path] = metadata
+
+                for incoming_id, incoming_value in incoming_docs_to_add.items():
+                    metadata = incoming_value[0]
+                    if metadata.get("item_type") != "GitHub File":
+                        continue
+                    path = metadata.get("path")
+                    if not path:
+                        raise ValueError(f"Missing 'path' field in metadata for GitHub File with doc_id {incoming_id}")
+                    if path in db_github_by_path:
+                        db_metadata = db_github_by_path[path]
+                        try:
+                            incoming_creation_date = datetime.strptime(
+                                metadata.get("creation_date"), date_format
+                            )
+                            db_insertion_date = datetime.strptime(
+                                db_metadata.get("vector_store_insertion_date"), date_format
+                            )
+                        except Exception as e:
+                            logger.error(f"Error parsing dates for GitHub File with path {path}: {e}")
+                            raise e
+                        if incoming_creation_date < db_insertion_date:
+                            # Il file è stato creato prima dell'ultimo aggiornamento, quindi in questo aggiornamento viene solo modificato.
+                            # Non si considera quindi aggiunto (ricreato) e neanche eliminato, ma bensì modificato.
+                            num_modified_items += 1
+                            num_added_items -= 1
+                            num_deleted_items -= 1
+
+            except Exception as e:
+                logger.error(f"Error checking for GitHub File modifications: {e}")
+                raise e
+
+            # -------------------------------------------------------------------------------
+            # Aggiornamento del DB: eliminazione e aggiunta dei documenti identificati
+            # -------------------------------------------------------------------------------
+            try:
+                if db_ids_to_delete:
+                    self.__collection.delete(ids=db_ids_to_delete)
+            except Exception as e:
+                logger.error(f"Error deleting documents from db: {e}")
+                raise e
+
+            logger.info(f"Deleted {num_deleted_items} documents from Chroma vector store.")
+
+            try:
+                if incoming_docs_to_add:
+                    self.__collection.add(
+                        ids=[doc_id for doc_id in incoming_docs_to_add.keys()],
+                        documents=[doc[1] for doc in incoming_docs_to_add.values()],
+                        metadatas=[doc[0] for doc in incoming_docs_to_add.values()],
+                    )
+            except Exception as e:
+                logger.error(f"Error adding documents to db: {e}")
+                raise e
+
+            logger.info(f"Successfully loaded documents into Chroma vector store -> "
+                        f"Added: {num_added_items}, Modified: {num_modified_items}.")
+
             italy_tz = pytz.timezone('Europe/Rome')
             log = VectorStoreLog(
                 timestamp=datetime.now(italy_tz),
                 outcome=True,
-                num_added_items=len(documents) - num_modified_items,
+                num_added_items=num_added_items,
                 num_modified_items=num_modified_items,
                 num_deleted_items=num_deleted_items
             )
 
             return log
-        except Exception as e:
-            logger.error(f"Error loading documents into Chroma vector store: {e}")
+        except (requests.exceptions.ConnectTimeout, ConnectTimeout) as e:
+            logger.error(f"Timeout in Chroma server connection: {e}")
             italy_tz = pytz.timezone('Europe/Rome')
             log = VectorStoreLog(
                 timestamp=datetime.now(italy_tz),
@@ -106,6 +220,9 @@ class ChromaVectorStoreRepository:
                 num_deleted_items=0
             )
             return log
+        except Exception as e:
+            logger.error(f"Error loading documents into Chroma vector store: {e}")
+            raise e
 
     def similarity_search(self, query: str) -> QueryResultEntity:
         """ 

@@ -1,5 +1,7 @@
 import base64
 from beartype.typing import List, Tuple
+from datetime import datetime
+from pytz import timezone
 
 from models.document import Document
 from models.loggingModels import PlatformLog
@@ -24,6 +26,19 @@ class GitHubAdapter(GitHubPort):
         """
         self.__github_repository = github_repository
 
+    def __UTC_to_CET(self, timestamp: datetime) -> str:
+        """
+        Converts a timestamp from UTC to CET.
+        Args:
+            timestamp (datetime): The timestamp as a datetime object to be converted.
+        Returns:
+            str: The converted timestamp in CET in the string format '%Y-%m-%d %H:%M:%S'.
+        """
+        cet_timezone = timezone('Europe/Rome')
+        timestamp_tz = timestamp.astimezone(cet_timezone)
+        timestamp_str_tz = timestamp_tz.strftime("%Y-%m-%d %H:%M:%S")
+        return timestamp_str_tz
+
     def load_github_commits(self) -> Tuple[PlatformLog, List[Document]]:
         """
         Load commits from the GitHub repository and convert them into documents.
@@ -46,7 +61,7 @@ class GitHubAdapter(GitHubPort):
                         "email": commit.get_author_email()
                         if commit.get_author_email() is not None
                         else "/",
-                        "date": commit.get_author_date().strftime('%Y-%m-%d %H:%M:%S')
+                        "date": self.__UTC_to_CET(commit.get_author_date())
                         if commit.get_author_date() is not None
                         else "/",
                         "files": [
@@ -65,6 +80,8 @@ class GitHubAdapter(GitHubPort):
                         if commit.get_url() is not None
                         else "/",
                         "id": commit.get_sha() if commit.get_sha() is not None else "/",
+                        "last_update": self.__UTC_to_CET(commit.get_author_date())
+                        if commit.get_author_date() is not None else "/"
                     },
                 )
                 for commit in (commit_entities if commit_entities is not None else [])
@@ -99,6 +116,8 @@ class GitHubAdapter(GitHubPort):
                                 "item_type": "GitHub File",
                                 "url": file.get_html_url() if file.get_html_url() is not None else "/",
                                 "id": file.get_sha() if file.get_sha() is not None else "/",
+                                "last_update": "/",
+                                "creation_date": "/",
                             },
                         )
                     )

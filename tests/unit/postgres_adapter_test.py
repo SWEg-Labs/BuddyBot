@@ -3,14 +3,11 @@ from unittest.mock import MagicMock
 from datetime import datetime
 
 from models.loggingModels import LoadingAttempt, LoadingItems, PlatformLog, VectorStoreLog
-from models.dbSaveOperationResponse import DbSaveOperationResponse
 from models.message import Message, MessageSender
 from models.quantity import Quantity
-from models.lastLoadOutcome import LastLoadOutcome
-from entities.loggingEntities import PostgresLoadingAttempt, PostgresLoadingItems, PostgresPlatformLog, PostgresVectorStoreLog
+from models.page import Page
 from entities.postgresSaveOperationResponse import PostgresSaveOperationResponse
 from entities.postgresMessage import PostgresMessage, PostgresMessageSender
-from entities.postgresLastLoadOutcome import PostgresLastLoadOutcome
 from adapters.postgresAdapter import PostgresAdapter
 from repositories.postgresRepository import PostgresRepository
 
@@ -23,13 +20,14 @@ def test_get_messages_returns_empty_list():
     postgres_adapter = PostgresAdapter(mock_postgres_repository)
 
     quantity = 5
+    page = 1
     mock_postgres_repository.get_messages.return_value = []
 
     # Act
-    result = postgres_adapter.get_messages(Quantity(quantity))
+    result = postgres_adapter.get_messages(Quantity(quantity), Page(page))
 
     # Assert
-    mock_postgres_repository.get_messages.assert_called_once_with(quantity)
+    mock_postgres_repository.get_messages.assert_called_once_with(quantity, page)
     assert result == []
 
 
@@ -62,11 +60,12 @@ def test_get_messages_exception():
     postgres_adapter = PostgresAdapter(mock_postgres_repository)
 
     quantity = 5
+    page = 1
     mock_postgres_repository.get_messages.side_effect = Exception("Get messages error")
 
     # Act
     with pytest.raises(Exception) as exc_info:
-        postgres_adapter.get_messages(Quantity(quantity))
+        postgres_adapter.get_messages(Quantity(quantity), Page(page))
 
     # Assert
     assert str(exc_info.value) == "Get messages error"

@@ -17,6 +17,7 @@ export class ChatSuggestionsComponent implements OnChanges {
 
   continuationSuggestions: string[] = [];
   loadError = false;
+  errorMessage: string = '';
 
   constructor(private readonly chatService: ChatService) {}
 
@@ -30,6 +31,7 @@ export class ChatSuggestionsComponent implements OnChanges {
     } else if (this.hideSuggestions) {
       this.continuationSuggestions = [];
       this.loadError = false;
+      this.errorMessage = '';
     }
   }
 
@@ -46,10 +48,12 @@ export class ChatSuggestionsComponent implements OnChanges {
     this.chatService.getContinuationSuggestions(payload).subscribe({
       next: (res) => {
         this.continuationSuggestions = Object.values(res);
+        this.errorMessage = '';
         this.loadError = false;
       },
       error: (err) => {
         console.error('Errore nel caricamento delle suggestions', err);
+        this.errorMessage = "Errore nella generazione delle domande per proseguire la conversazione";
         this.loadError = true;
       }
     });

@@ -60,7 +60,7 @@ async def chat(request: Request) -> Dict[str, str] | JSONResponse:
         error_message = f"Error processing chat request: {e}"
         logger.error(error_message)
         return JSONResponse(content={"status": "error", "message": error_message}, status_code=500)
-    
+
 
 @beartype_personalized
 @app.post("/api/get_next_possible_questions", summary="Get the next possible questions based on the last question and the last answer",
@@ -105,18 +105,20 @@ async def save_message(message: MessageDTO) -> dict[str, bool | str] | JSONRespo
 
 @beartype_personalized
 @app.post("/api/get_messages", summary="Get messages from the Postgres database", response_model=List[MessageDTO])
-async def get_messages(quantity: dict[str, int]) -> List[MessageDTO] | JSONResponse:
+async def get_messages(request_data: dict[str, int]) -> List[MessageDTO] | JSONResponse:
     """
-    Retrieves a specified quantity of messages from the chat history.
+    Retrieves a specified quantity of messages from the chat history with pagination support.
     Args:
-        quantity (dict[str, int]): A dictionary containing the number of messages to retrieve as value
+        request_data (dict[str, int]): A dictionary containing:
+            - quantity (int): The number of messages to retrieve per page
+            - page (int), optional: The page number, defaults to 1
     Returns:
         Union[List[MessageDTO], JSONResponse]: 
             - If successful, returns a list of MessageDTO objects containing the messages
             - If an error occurs, returns a JSONResponse with error details and 500 status code
     """
     try:
-        return get_messages_controller.get_messages(quantity)
+        return get_messages_controller.get_messages(request_data)
     except Exception as e:
         error_message = f"Error getting the previous messages: {e}"
         logger.error(error_message)

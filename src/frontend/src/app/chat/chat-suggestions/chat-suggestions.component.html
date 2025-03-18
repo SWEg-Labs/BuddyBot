@@ -8,6 +8,7 @@
   </button>
 </div>
 
+<!-- Mostra il messaggio d'errore se loadError è true -->
 <div class="error-message" *ngIf="loadError">
-  Impossibile caricare i suggerimenti. Riprova più tardi!
+  {{ errorMessage }}
 </div>

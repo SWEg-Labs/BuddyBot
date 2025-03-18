@@ -62,7 +62,7 @@ def test_split_vector_store_insertion_date():
     result = adapter._ChromaVectorStoreAdapter__split(documents)
 
     # Assert
-    assert result[0].get_metadata()["vector_store_insertion_date"] == "2025-03-01T13:00:00"
+    assert result[0].get_metadata()["vector_store_insertion_date"] == "2025-03-01 13:00:00"
 
 
 # Verifica che il metodo split di ChromaVectorStoreAdapter gestisca correttamente i documenti con id duplicato
@@ -114,15 +114,42 @@ def test_split_date_formatting():
     adapter = ChromaVectorStoreAdapter(max_chunk_size, mock_repository)
     italy_tz = pytz.timezone('Europe/Rome')
     documents = [
-        Document(page_content="doc1", metadata={"author": "Author1", "id": "1", "date": italy_tz.localize(datetime(2025, 3, 1, 12, 0)), "creation_date": italy_tz.localize(datetime(2025, 3, 1, 12, 0))}),
+        Document(page_content="doc1",
+                metadata={"author": "Author1", "id": "1", 
+                          "date": italy_tz.localize(datetime(2025, 3, 1, 12, 0)),
+                          "creation_date": italy_tz.localize(datetime(2025, 3, 1, 12, 0)),
+                          "last_update": italy_tz.localize(datetime(2025, 3, 1, 12, 0)),
+                          }
+                ),
     ]
 
     # Act
     result = adapter._ChromaVectorStoreAdapter__split(documents)
 
     # Assert
-    assert result[0].get_metadata()["date"] == "2025-03-01T12:00:00"
-    assert result[0].get_metadata()["creation_date"] == "2025-03-01T12:00:00"
+    assert result[0].get_metadata()["date"] == "2025-03-01 12:00:00"
+    assert result[0].get_metadata()["creation_date"] == "2025-03-01 12:00:00"
+    assert result[0].get_metadata()["last_update"] == "2025-03-01 12:00:00"
+
+
+# Verifica che il metodo split di ChromaVectorStoreAdapter divida correttamente in più chunk i documenti che contengono più
+# caratteri dell'attributo max_chunk_size
+
+def test_split_logs_multiple_chunks():
+    # Arrange
+    mock_repository = MagicMock(spec=ChromaVectorStoreRepository)
+    max_chunk_size = 5  # Small chunk size to force splitting
+    adapter = ChromaVectorStoreAdapter(max_chunk_size, mock_repository)
+    documents = [
+        Document(page_content="This is a long document that will be split into multiple chunks.", 
+                    metadata={"author": "Author1", "id": "1"})
+    ]
+
+    # Act
+    result = adapter._ChromaVectorStoreAdapter__split(documents)
+
+    # Assert
+    assert len(result) == 13  # 13 chunks should be created
 
 
 # Verifica che il metodo similarity_search di ChromaVectorStoreAdapter gestisca correttamente le eccezioni
@@ -164,3 +191,4 @@ def test_similarity_search_skip_null_documents():
     assert len(result) == 1
     assert result[0].get_page_content() == "doc2"
     assert result[0].get_metadata()["distance"] == 0.2
+

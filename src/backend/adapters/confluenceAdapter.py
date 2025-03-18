@@ -6,6 +6,8 @@ from ports.confluencePort import ConfluencePort
 from repositories.confluenceRepository import ConfluenceRepository
 from utils.logger import logger
 from utils.beartype_personalized import beartype_personalized
+from datetime import datetime
+from pytz import timezone
 
 @beartype_personalized
 class ConfluenceAdapter(ConfluencePort):
@@ -22,6 +24,26 @@ class ConfluenceAdapter(ConfluencePort):
             confluence_repository (ConfluenceRepository): The repository used to interact with Confluence.
         """
         self.__confluence_repository = confluence_repository
+
+    def __UTC_to_CET(self, timestamp: str) -> str:
+        """
+        Converts a timestamp from UTC to CET.
+        Args:
+            timestamp (str): The timestamp in string format '%Y-%m-%dT%H:%M:%S.%fZ' to be converted.
+        Returns:
+            str: The converted timestamp in CET in the string format '%Y-%m-%d %H:%M:%S'.
+        Raises:
+            Exception: If there is an error during the conversion process.
+        """
+        try:
+            cet_timezone = timezone('Europe/Rome')
+            timestamp_dt = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
+            timestamp_dt_tz = timestamp_dt.astimezone(cet_timezone)
+            timestamp_str_tz = timestamp_dt_tz.strftime("%Y-%m-%d %H:%M:%S")
+            return timestamp_str_tz
+        except Exception as e:
+            logger.error(f"Error converting Confluence pages timestamp: {e}")
+            raise e
 
     def load_confluence_pages(self) -> Tuple[PlatformLog, List[Document]]:
         """
@@ -61,7 +83,7 @@ class ConfluenceAdapter(ConfluencePort):
                         ),
                         "item_type": "Confluence Page",
                         "creation_date": (
-                            page.get_version().get("when")
+                            self.__UTC_to_CET(page.get_version().get("when"))
                             if page.get_version().get("when") is not None
                             else "/"
                         ),
@@ -75,6 +97,11 @@ class ConfluenceAdapter(ConfluencePort):
                             page.get_id()
                             if page.get_id() is not None
                             else "/"
+                        ),
+                        "last_update": (
+                            self.__UTC_to_CET(page.get_version().get("when"))
+                            if page.get_version().get("when") is not None
+                            else datetime.now(timezone('Europe/Rome')).strftime('%Y-%m-%d %H:%M:%S')
                         ),
                     }
                 )

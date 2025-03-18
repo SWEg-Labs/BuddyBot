@@ -10,8 +10,6 @@ import { throwError } from 'rxjs';
   providedIn: 'root', 
 })
 export class ChatService {
-  private readonly isUpdatedSubject = new BehaviorSubject<boolean>(true);
-  public isUpdated$ = this.isUpdatedSubject.asObservable();
   private readonly apiBaseUrl = 'http://localhost:5000';
 
 
@@ -19,10 +17,6 @@ export class ChatService {
 
 
   constructor(private readonly http: HttpClient) {}
-
-  checkFileUpdates(): void {
-    this.isUpdatedSubject.next(!this.isUpdatedSubject.value);
-  }
 
   getLastMessageTimestamp(): number {
     return this.lastMessageTimestamp;

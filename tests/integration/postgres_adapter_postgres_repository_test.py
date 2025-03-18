@@ -5,6 +5,7 @@ from models.loggingModels import LoadingAttempt, LoadingItems, PlatformLog, Vect
 from models.dbSaveOperationResponse import DbSaveOperationResponse
 from models.message import Message, MessageSender
 from models.quantity import Quantity
+from models.page import Page
 from models.lastLoadOutcome import LastLoadOutcome
 from entities.loggingEntities import PostgresLoadingAttempt, PostgresLoadingItems, PostgresPlatformLog, PostgresVectorStoreLog
 from entities.postgresSaveOperationResponse import PostgresSaveOperationResponse
@@ -45,6 +46,7 @@ def test_get_messages_calls_repository_method():
     postgres_adapter = PostgresAdapter(mock_postgres_repository)
 
     quantity = 5
+    page = 1
     expected_response = [
         Message(content=f"Message {i}", timestamp=datetime(2021, 10, 10, 10, 10, i),
                 sender=MessageSender.USER if i%2==0 else MessageSender.CHATBOT) for i in range(quantity)
@@ -57,10 +59,10 @@ def test_get_messages_calls_repository_method():
     mock_postgres_repository.get_messages.return_value = postgres_messages
 
     # Act
-    result = postgres_adapter.get_messages(Quantity(quantity))
+    result = postgres_adapter.get_messages(Quantity(quantity), Page(page))
 
     # Assert
-    mock_postgres_repository.get_messages.assert_called_once_with(quantity)
+    mock_postgres_repository.get_messages.assert_called_once_with(quantity, page)
     assert result == expected_response
 
 

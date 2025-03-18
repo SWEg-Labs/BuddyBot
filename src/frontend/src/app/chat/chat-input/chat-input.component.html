@@ -1,4 +1,3 @@
-<!-- FILE: chat-input.component.html -->
 <div class="input-area">
   <input
     name="userInput"
@@ -11,7 +10,7 @@
   <button
     class="primary"
     (click)="onSend()"
-    [disabled]="isLoading"
+    [disabled]="isLoading || !userInput.trim()"
   >
     Invia
   </button>

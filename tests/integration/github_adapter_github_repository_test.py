@@ -28,7 +28,7 @@ def test_load_github_commits_calls_repository_method():
                 metadata={
                     "author": "John Doe",
                     "email": "john.doe@example.com",
-                    "date": "2025-02-28 12:34:56",
+                    "date": "2025-02-28 13:34:56",
                     "files": [
                         "- file1.txt (Status: modified, Changes: 10, Additions: 5, Deletions: 5)\n  Patch:\n@@ -1,2 +1,2 @@\n- old line\n+ new line",
                         "- file2.txt (Status: added, Changes: 20, Additions: 20, Deletions: 0)\n  Patch:\n@@ -0,0 +1,20 @@\n+ new content"
@@ -36,6 +36,7 @@ def test_load_github_commits_calls_repository_method():
                     "item_type": "GitHub Commit",
                     "url": "https://github.com/owner/repo/commit/abc123",
                     "id": "abc123",
+                    "last_update": "2025-02-28 13:34:56",
                 }
             )
         ]
@@ -108,8 +109,10 @@ def test_load_github_files_calls_repository_method():
                     "name": "example.txt",
                     "path": "path/to/example.txt",
                     "item_type": "GitHub File",
-                    "url": "https://github.com/owner/repo/blob/main/path/to/example.txt", # html_url
+                    "url": "https://github.com/owner/repo/blob/main/path/to/example.txt",
                     "id": "abc123",
+                    "last_update": "/",
+                    "creation_date": "/"
                 }
             )
         ]

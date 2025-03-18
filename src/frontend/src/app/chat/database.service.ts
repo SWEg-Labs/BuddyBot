@@ -12,13 +12,13 @@ export class DatabaseService {
   private readonly apiBaseUrl = 'http://localhost:5000';
 
   private readonly lastLoadOutcomeSubject = new BehaviorSubject<LastLoadOutcome>(LastLoadOutcome.TRUE);
-  public lastLoadOutcome$ = this.lastLoadOutcomeSubject.asObservable();  
+  public lastLoadOutcome$ = this.lastLoadOutcomeSubject.asObservable();
 
   constructor(private readonly http: HttpClient) {}
 
-  getMessages(quantity: number): Observable<Message[]> {
+  getMessages(quantity: number, page: number = 1): Observable<Message[]> {
     return this.http
-      .post<any[]>(`${this.apiBaseUrl}/api/get_messages`, { quantity })
+      .post<any[]>(`${this.apiBaseUrl}/api/get_messages`, { quantity, page })
       .pipe(
         map((responseArray: any[]) => {
           return responseArray.map(obj => {
@@ -31,16 +31,16 @@ export class DatabaseService {
       )
   }
 
-  saveMessage(msg: Message): Observable<{ status: boolean | string }> {
+  saveMessage(msg: Message): Observable<{ success: boolean; message: string }> {
     const payload = {
       content: msg.content,
       sender: msg.sender,
       timestamp: msg.timestamp,
-    }
-    return this.http.post<{ status: boolean | string }>(
+    };
+    return this.http.post<{ success: boolean; message: string }>(
       `${this.apiBaseUrl}/api/save_message`,
       payload
-    )
+    );
   }
 
   loadLastLoadOutcome(): void {

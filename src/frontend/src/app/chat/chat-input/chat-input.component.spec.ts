@@ -18,58 +18,37 @@ describe('ChatInputComponent', () => {
     fixture.detectChanges();
   });
 
+
   // ------------------------------------------------------
-  // Test di integrazione
+  // Test di unità
   // ------------------------------------------------------
-  describe('Test di integrazione', () => {
-    it("Verifica che il componente venga creato", () => {
-      // Arrange:
-      // Act:
-      // Assert:
+
+  describe('Test di unità', () => {
+    it("Verifica che il componente ChatInputComponent venga creato", () => {
+      // Act & Assert:
       expect(component).toBeTruthy();
     });
 
-    it("Verifica che il bottone 'Invia' sia disabilitato se isLoading è true", () => {
-      // Arrange:
-      component.isLoading = true;
-      fixture.detectChanges();
-      // Act:
-      const button = fixture.nativeElement.querySelector('button');
-      // Assert:
-      expect(button.disabled).toBeTrue();
-    });
-
-    it("Verifica che il bottone 'Invia' sia abilitato se isLoading è false", () => {
-      // Arrange:
-      component.isLoading = false;
-      fixture.detectChanges();
-      // Act:
-      const button = fixture.nativeElement.querySelector('button');
-      // Assert:
-      expect(button.disabled).toBeFalse();
-    });
-
-    it("Verifica che l'input abbia il placeholder 'Scrivi un messaggio...'", () => {
-      // Arrange:
+    it("Verifica che la barra di input di ChatInputContainer abbia il placeholder " +
+      "'Scrivi un messaggio...'", () => {
       // Act:
       const input = fixture.nativeElement.querySelector('input');
       // Assert:
       expect(input.placeholder).toBe('Scrivi un messaggio...');
     });
 
-    it("Verifica che l'input sia disabilitato se isLoading è true", async () => {
+    it("Verifica che la barra di input di ChatInputComponent sia disabilitata se l'attributo isLoading è true", async () => {
       // Arrange:
       component.isLoading = true;
       fixture.detectChanges();
       await fixture.whenStable();
       // Act:
       const input = fixture.nativeElement.querySelector('input');
-      // Assert (controllo dell'attributo 'disabled'):
+      // Assert
       expect(input.getAttribute('disabled')).not.toBeNull();
     });
-    
 
-    it("Verifica che l'input non sia disabilitato se isLoading è false", () => {
+    it("Verifica che la barra di input di ChatInputComponent non sia disabilitata se l'attributo isLoading è false", () => {
       // Arrange:
       component.isLoading = false;
       fixture.detectChanges();
@@ -79,7 +58,7 @@ describe('ChatInputComponent', () => {
       expect(input.disabled).toBeFalse();
     });
 
-    it("Verifica che, quando si digita nell'input, il valore userInput si aggiorna", () => {
+    it("Verifica che, quando si digita nella barra di input di ChatInputComponent, il valore dell'attributo userInput si aggiorni", () => {
       // Arrange:
       const input = fixture.debugElement.query(By.css('input')).nativeElement;
       // Act:
@@ -90,7 +69,51 @@ describe('ChatInputComponent', () => {
       expect(component.userInput).toBe('Nuovo messaggio');
     });
 
-    it("Verifica che, quando si clicca il bottone, venga inviata la stringa corretta", () => {
+    it("Verifica che il bottone 'Invia' di ChatInputComponent sia disabilitato se l'attributo isLoading è true", () => {
+      // Arrange:
+      component.isLoading = true;
+      fixture.detectChanges();
+      // Act:
+      const button = fixture.nativeElement.querySelector('button');
+      // Assert:
+      expect(button.disabled).toBeTrue();
+    });
+
+    it("Verifica che il bottone 'Invia' di ChatInputComponent sia disabilitato se l'attributo userInput è vuoto", () => {
+      // Arrange:
+      component.isLoading = false;
+      component.userInput = '';
+      fixture.detectChanges();
+      // Act:
+      const button = fixture.nativeElement.querySelector('button');
+      // Assert:
+      expect(button.disabled).toBeTrue();
+    });
+
+    it("Verifica che il bottone 'Invia' di ChatInputComponent sia disabilitato se l'attributo userInput contiene solo spazi", () => {
+      // Arrange:
+      component.isLoading = false;
+      component.userInput = '    ';
+      fixture.detectChanges();
+      // Act:
+      const button = fixture.nativeElement.querySelector('button');
+      // Assert:
+      expect(button.disabled).toBeTrue();
+    });
+
+    it("Verifica che il bottone 'Invia' di ChatInputComponent sia abilitato se l'attributo isLoading è false e userInput contiene " +
+      "un messaggio valido", () => {
+      // Arrange:
+      component.isLoading = false;
+      component.userInput = 'Test';
+      fixture.detectChanges();
+      // Act:
+      const button = fixture.nativeElement.querySelector('button');
+      // Assert:
+      expect(button.disabled).toBeFalse();
+    });
+
+    it("Verifica che, quando si clicca il bottone 'Invia' di ChatInputComponent, venga inviata la stringa corretta", () => {
       // Arrange:
       spyOn(component.sendMessage, 'emit');
       component.isLoading = false;
@@ -104,7 +127,8 @@ describe('ChatInputComponent', () => {
       expect(component.userInput).toBe('');
     });
 
-    it("Verifica che, quando si preme il tasto Enter nell'input, venga inviata la stringa corretta", () => {
+    it("Verifica che, quando si preme il tasto Enter e il focus sta nella barra di input di ChatInputComponent, venga inviata " +
+      "la stringa corretta", () => {
       // Arrange:
       spyOn(component.sendMessage, 'emit');
       component.isLoading = false;
@@ -117,13 +141,9 @@ describe('ChatInputComponent', () => {
       expect(component.sendMessage.emit).toHaveBeenCalledWith('Hello World');
       expect(component.userInput).toBe('');
     });
-  });
 
-  // ------------------------------------------------------
-  // Test di unità
-  // ------------------------------------------------------
-  describe('Test di unità', () => {
-    it("Verifica che onSend non emetta alcun valore se userInput è vuoto", () => {
+    it("Verifica che il metodo onSend di ChatInputComponent non emetta alcun segnale se l'input dell'utente è vuoto " +
+      "oppure contiene solo spazi", () => {
       // Arrange:
       spyOn(component.sendMessage, 'emit');
       component.userInput = '   ';
@@ -133,7 +153,7 @@ describe('ChatInputComponent', () => {
       expect(component.sendMessage.emit).not.toHaveBeenCalled();
     });
 
-    it("Verifica che onSend non emetta alcun valore se isLoading è true", () => {
+    it("Verifica che il metodo onSend di ChatInputComponent non emetta alcun segnale se isLoading è true", () => {
       // Arrange:
       spyOn(component.sendMessage, 'emit');
       component.userInput = 'Test';
@@ -145,7 +165,8 @@ describe('ChatInputComponent', () => {
       expect(component.userInput).toBe('Test');
     });
 
-    it("Verifica che onSend emetta il valore corretto e resetti userInput se le condizioni sono soddisfatte", () => {
+    it("Verifica che il metodo onSend di ChatInputComponent emetta il valore corretto e resetti l'input dell'utente se le condizioni " +
+      "di invio della domanda sono soddisfatte, cioè userInput contenga dei caratteri e isLoading sia false", () => {
       // Arrange:
       spyOn(component.sendMessage, 'emit');
       component.userInput = '  Example  ';
