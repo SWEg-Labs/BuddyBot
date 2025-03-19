@@ -73,7 +73,7 @@ class LoadFilesService(LoadFilesUseCase):
 
             db_save_operation_response = self.save_loading_attempt_in_db(loading_attempt)
             if db_save_operation_response.get_success():
-                logger.info("Loading attempt correctly saved in Postgres database.")
+                logger.info("Loading attempt successfully saved in Postgres database.")
             else:
                 raise Exception("Failed to save loading attempt in Postgres database: Connection to the database failed. "
                                 "Details: " + db_save_operation_response.get_message())
@@ -275,7 +275,7 @@ class LoadFilesService(LoadFilesUseCase):
             )
             file_logger.info(log_message)
 
-            logger.info("Loading attempt correctly saved in TXT file.")
+            logger.info("Loading attempt successfully saved in TXT file.")
         except Exception as e:
             logger.error(f"Error saving loading attempt in TXT file: {e}")
             raise e

@@ -169,8 +169,6 @@ class PostgresRepository:
                 vector_log.get_num_deleted_items()
             ))
 
-            logger.info("Loading attempt saved successfully in the Postgres database.")
-
             return PostgresSaveOperationResponse(success=True, message="Loading attempt saved successfully in the Postgres database.")
 
         except psycopg2.Error as e:

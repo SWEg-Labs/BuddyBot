@@ -63,9 +63,11 @@ class ChromaVectorStoreRepository:
                 raise e
 
             # Inizializza i contatori
+            num_initial_items = 0
             num_added_items = 0
             num_modified_items = 0
             num_deleted_items = 0
+            num_final_items = 0
 
             # Fetch dei documenti già presenti in Chroma
             try:
@@ -79,7 +81,8 @@ class ChromaVectorStoreRepository:
                 logger.error(f"Error getting old data from chroma: {e}")
                 raise e
 
-            logger.info(f"Fetched {len(db_docs)} documents from Chroma vector store.")
+            num_initial_items = len(db_docs)
+            logger.info(f"Fetched {num_initial_items} documents from Chroma vector store.")
 
             # Creazione della lista degli id da eliminare: documenti presenti in DB ma non negli incoming
             db_ids_to_delete = [doc_id for doc_id in db_docs.keys() if doc_id not in incoming_docs.keys()]
@@ -183,7 +186,8 @@ class ChromaVectorStoreRepository:
                 logger.error(f"Error deleting documents from db: {e}")
                 raise e
 
-            logger.info(f"Deleted {num_deleted_items} documents from Chroma vector store.")
+            logger.info(f"Deleted {len(db_ids_to_delete)} documents from Chroma vector store -> "
+                        f"Deleted: {num_deleted_items}; Will be modified: {num_modified_items}.")
 
             try:
                 if incoming_docs_to_add:
@@ -196,8 +200,11 @@ class ChromaVectorStoreRepository:
                 logger.error(f"Error adding documents to db: {e}")
                 raise e
 
-            logger.info(f"Successfully loaded documents into Chroma vector store -> "
-                        f"Added: {num_added_items}, Modified: {num_modified_items}.")
+            logger.info(f"Successfully loaded {len(incoming_docs_to_add)} documents into Chroma vector store -> "
+                        f"Added: {num_added_items}; Modified: {num_modified_items}.")
+            
+            num_final_items = num_initial_items - num_deleted_items + num_added_items
+            logger.info(f"Final number of documents in Chroma vector store: {num_final_items}")
 
             italy_tz = pytz.timezone('Europe/Rome')
             log = VectorStoreLog(

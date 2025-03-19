@@ -51,7 +51,7 @@ def initialize_langchain() -> LangChainAdapter:
     """
     try:
         openai_api_key = os.getenv("OPENAI_API_KEY")
-        model_name = os.getenv("OPENAI_MODEL_NAME", "gpt-4o-mini")  # Default model name
+        model_name = os.getenv("OPENAI_MODEL_NAME", "gpt-4o")  # Default model: GPT-4o
         llm = ChatOpenAI(
             openai_api_key=openai_api_key,
             model_name=model_name,
