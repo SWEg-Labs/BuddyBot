@@ -89,26 +89,29 @@ Il file si trova alla directory ~/.docker/config.json su Linux, C:\Users\<nome_u
 - Creare un nuovo ambiente virtuale e attivarlo con:
   ```
   python -m venv nome_ambiente
-  . nome_ambiente\scripts\activate
+  nome_ambiente\scripts\activate
   ```
   su Windows;
   ```
   python3 -m venv nome_ambiente
   source nome_ambiente/bin/activate
   ```
-  su Linux.
-- Installare nell'ambiente virtuale le dipendenze principali contenute in primary_requirements.
+  su Linux e macOS.
+- Installare nell'ambiente virtuale le dipendenze principali contenute in *primary_requirements.txt*.
+  ```
+  pip install -r primary_requirements.txt
+  ```
 - Creare un file con tutte le dipendenze secondarie con le versioni precise con:
   ```
   pip freeze > requirements.txt
   ```
-  Questo comando scrive sul file requirements.txt tutte le dipendenze contenute nell'ambiente virtuale, con la loro versione.
+  Questo comando scrive sul file requirements.txt tutte le dipendenze contenute nell'ambiente virtuale, con la loro versione.  
   Dovreste ottenere qualcosa di molto simile a quanto già presente nel file requirements.txt.
 
-Alla prima costruzione del container Docker "compila" la cache con tutti i pacchetti necessari, alle build successive verranno semplicemente installati i pacchetti elencati in requirements.txt già presenti nella cache, riducendo il tempo di build.
-Il comando pip freeze compila il file requirements.txt con tutte le dipendenze contenute nell'ambiente virtuale, quindi è importante installare nell'ambiente virtuale solo i pacchetti necessari per evitare di aumentare inutilmente il tempo di build.
+Alla prima costruzione del container Docker "compila" la cache con tutti i pacchetti necessari, alle build successive verranno semplicemente installati i pacchetti elencati in requirements.txt già presenti nella cache, riducendo il tempo di build.  
+Il comando pip freeze compila il file requirements.txt con tutte le dipendenze contenute nell'ambiente virtuale, quindi è importante installare nell'ambiente virtuale solo i pacchetti necessari per evitare di aumentare inutilmente il tempo di build.  
 Di conseguenza se bisogna aggiungere una dipendenza a primary_requirements è sufficiente installarla nell'ambiente virtuale e richiamare pip freeze per aggiungere le nuove dipendenze secondarie a requirements.txt. Infatti, pip freeze fa una sovrascrizione completa del file requirements precedente, quindi lo restituisce aggiornato.
-Se una dipendenza di primary_requirements non è più necessaria: 
+Se una dipendenza di primary_requirements non è più necessaria:  
 - bisogna toglierla dal file primary_requirements.txt, 
 - installare pip-autoremove con 'pip install pip-autoremove'
 - eseguire 'pip uninstall nome-dipendenza',
@@ -117,15 +120,13 @@ Se una dipendenza di primary_requirements non è più necessaria:
 
 
 
-## Come visualizzare i file di log
+## Aggiornamento automatico dei documenti
 
 Esistono due file che registrano l'attività di aggiornamento automatico del cron:
-- *src/backend/logs_db_update.txt*: per informazioni consuntive sugli aggiornamenti terminati
-- */var/log/cron.log*: per informazioni di monitoraggio delle attività del cron, cioè vengono registrati i log lanciati dallo script che esegue l'aggiornamento automatico
+- *src/backend/logs_db_update.txt*: per informazioni consuntive sugli aggiornamenti terminati.
+- */var/log/cron.log*: per informazioni di monitoraggio delle attività del cron, cioè vengono registrati i log lanciati dallo script che esegue l'aggiornamento automatico.
 
-### Come visualizzare i file di log
-
-#### Visualizzazione del file `logs_db_update.txt`
+### Come visualizzare il file `logs_db_update.txt`
 È possibile visualizzare il contenuto del file `logs_db_update.txt` seguendo i passaggi riportati di seguito:
 1. Eseguire l'applicativo BuddyBot mediante Docker, come descritto nella sezione **Installazione** qui sopra.
 2. Tramite Docker Desktop, accedere al container denominato `buddybot-backend`.
@@ -136,7 +137,7 @@ Esistono due file che registrano l'attività di aggiornamento automatico del cro
   ```
 5. Se il container è stato appena creato, inizialmente il file sarà vuoto. Attendere qualche minuto e riprovare.
 
-#### Visualizzazione del file `cron.log`
+### Come visualizzare il file `cron.log`
 È possibile visualizzare il contenuto del file `cron.log` seguendo i passaggi riportati di seguito:
 1. Eseguire l'applicativo BuddyBot mediante Docker, come descritto nella sezione **Installazione** qui sopra.
 2. Tramite Docker Desktop, accedere al container denominato `buddybot-backend`.
@@ -152,3 +153,142 @@ Per entrambi i file, se si vuole accedere al terminale del container `buddybot-b
   docker exec -it buddybot-backend /bin/bash
   ```
 Diventa a questo punto possibile visualizzare i due file log con gli stessi comandi `cat` descritti sopra.
+
+### Come cambiare la frequenza di aggiornamento
+Attualmente il cron aggiorna i documenti ogni 20 minuti, e, nel caso un aggiornamento fallisca perchè viene lanciata un'eccezione, viene incrementata la frequenza a 15 minuti per 3 tentativi di *retry*, per poi tornare alla frequenza normale. E' possibile cambiare la frequenza di aggiornamento seguendo i passaggi riportati di seguito:
+1. Recarsi dentro *src/backend*
+2. Aprire il file `Dockerfile`
+3. Cercare le seguenti righe:
+  ```
+  ENV DB_UPDATE_FREQUENCY="*/20 * * * *" 
+  ENV DB_UPDATE_ERROR_FREQUENCY="*/15 * * * *"
+  ```
+4. Se si desidera impostare l'aggiornamento automatico ogni 24 ore, e svolgere un retry dopo 1 ora in caso di fallimento, modificare le suddette righe nel seguente modo:
+  ```
+  ENV DB_UPDATE_FREQUENCY="*/1440 * * * *" 
+  ENV DB_UPDATE_ERROR_FREQUENCY="*/60 * * * *"
+  ```
+Bisogna dunque convertire il valore temporale desiderato in minuti.
+
+
+
+## Come eseguire BuddyBot senza Docker Compose
+Nel caso si desideri eseguire BuddyBot al di fuori del container creato con Docker Compose, come risulta molto comodo fare soprattutto in fase di sviluppo, seguire i passaggi qui riportati:
+1. Installare Python dal seguente link: https://www.python.org/downloads/
+2. Installare Angular dal seguente link: https://angular.dev/installation
+2. Installare PostgreSQL dal seguente link: https://www.postgresql.org/download/
+3. Se si desidera un'interfaccia grafica per la gestione dei database di Postgres, installare pgAdmin 4 dal seguente link: https://www.pgadmin.org/download/
+4. In Postgres, creare uno user `buddybot`, con password `buddybot`, e un database di nome `buddybot`
+5. Scaricare l'immagine di Chroma dal Docker Hub:
+  ```
+  docker pull chromadb/chroma
+  ```
+6. Avviare un container da tale immagine:
+  ```
+  docker run -d --name chromadb -p 8000:8000 chromadb/chroma
+  ```
+Dopo la creazione, il container sarà visualizzabile e gestibile tramite l'applicazione Docker Desktop.
+7. Aggiungere in fondo al file `.env` già creato nella sezione **Installazione** le seguenti voci:
+  ```
+  CHROMA_HOST=localhost
+  CHROMA_PORT=8000
+
+  POSTGRES_HOST=localhost
+  POSTGRES_PORT=5432
+  POSTGRES_USER=buddybot
+  POSTGRES_PASSWORD=buddybot
+  POSTGRES_DB_NAME=buddybot
+
+  LOGGING_ENABLED=true
+  TIMEOUT=10
+  DB_UPDATE_ERROR='0'
+  DB_UPDATE_RETRY='2'
+  DB_UPDATE_MAX_RETRIES=3
+  DB_UPDATE_FREQUENCY=*/10 * * * *
+  DB_UPDATE_ERROR_FREQUENCY=*/5 * * * *
+
+  CRONTAB_PATH=/etc/cron.d/crontab
+  CRONJOB_COMMAND=/usr/local/bin/python /backend/vector_store_update_controller.py >> /var/log/cron.log
+  ```
+8. Recarsi su *src/backend*, aprire il file  `vector_store_update_controller.py` e cercare le seguenti righe:
+  ```
+  # Inizializza cron
+  cron = CronTab(tabfile=crontab_path)
+  # cron = CronTab(user=True)   # Per debug in locale
+  ```
+9. Commentare la prima riga di inizializzazione cron e decommentare la seconda:
+  ```
+  # Inizializza cron
+  # cron = CronTab(tabfile=crontab_path)
+  cron = CronTab(user=True)   # Per debug in locale
+  ```
+10. Dopo essersi assicurati che il container di Chroma sia attivo, nel terminale, recarsi nella cartella *src/backend*, ed eseguire:
+  ```
+  python vector_store_update_controller.py
+  ```
+Questo comando, dovesse andare a buon fine, in una decina di minuti aggiornerà il database vettoriale Chroma  
+11. Invertire i punti 7 e 9 di questa lista, cioè tornare al vecchio file `.env` e al vecchio file `vector_store_update_controller.py`  
+12. Aprire un nuovo terminale, accedere ancora alla cartella *src/backend*, ed eseguire questo comando per creare un nuovo ambiente virtuale:
+  ```
+  python -m venv nome_ambiente
+  ```
+13. Attivare l'ambiente virtuale:
+  ```
+  nome_ambiente\scripts\activate
+  ```
+  su Windows;
+  ```
+  source nome_ambiente/bin/activate
+  ```
+  su Linux e macOS.  
+14. Installare le dipendenze nell'ambiente virtuale:
+  ```
+  pip install -r primary_requirements.txt
+  ```
+15. Avviare il backend di BuddyBot:
+  ```
+  python app.py
+  ```
+16. Aprire un nuovo terminale, accedere alla cartella *src/frontend*, ed eseguire questo comando per avviare il frontend di BuddyBot
+  ```
+  ng serve
+  ```
+17. Aprire un browser ed accedere all'indirizzo
+  ```
+  localhost:4200
+  ```
+E' ora possibile utilizzare BuddyBot senza usufruire di un container Docker.  
+In caso si facciano sviluppi nel backend, è necessario impartire `Ctrl+C` nel terminale su cui era stato avviato `app.py`, e riavviarlo subito dopo.  
+In caso si facciano sviluppi nel frontend, non ci sono problemi poichè Angular aggiorna la pagina in tempo reale.
+
+
+
+## Come eseguire i test sul codice di BuddyBot
+BuddyBot è stato testato con test di unità e test di integrazione, sia lato backend sia lato frontend, raggiungendo in entrambi i casi una coverage delle righe di codice del 90%.  
+I test del backend sono disponibili dentro la cartella *tests*, suddivisi in test di unità e test di integrazione.  
+I test del frontend, invece, sono distribuiti in vari file situati accanto al codice sorgente che si sta testando, com'è caratteristico dei progetti Angular. E' possibile visualizzarli accedendo a *src/frontend/src/app/chat* e, all'interno delle cartelle dedicate a ciascun componente, considerare i file con estensione `.spec.ts`.
+
+### Come eseguire i test del backend
+1. Se non si ha già creato un ambiente virtuale Python, crearlo seguendo i punti 12, 13 e 14 della sezione **Come eseguire BuddyBot senza Docker Compose**, e, al termine, tornare nella root del progetto con:
+  ```
+  cd ../..
+  ```
+2. Eseguire il seguente comando per avviare i test:
+  ```
+  pytest
+  ```
+Sul terminale verrà visualizzato l'esito dei test e la coverage delle righe raggiunta.  
+Se si desidera sviluppare nuovi test, in caso uno di questi fallisca, è possibile visualizzare un output più esaustivo dell'errore eseguendo:
+  ```
+  pytest -vv
+  ```
+
+### Come eseguire i test del frontend
+1. Da terminale, accedere alla cartella *src/frontend*
+2. Eseguire il seguente comando per avviare i test:
+  ```
+  ng test
+  ```
+Si aprirà una finestra di browser in cui verrà visualizzato l'esito dei test svolti e il nome dei test assieme alla loro classificazione (tipo di test e componente di riferimento).  
+Sul terminale, rimasto attivo, apparirà la coverage raggiunta: per il progetto è stata presa in considerazione solo la coverage delle righe, cioè l'ultima visualizzata.  
+Per chiudere la finestra del browser, non è possibile cliccare la "X" in alto a destra, poichè in tal modo essa verrà poi ricreata; occorre invece impartire `Ctrl+C` nel terminale, e ciò chiuderà l'ambiente di test di Angular.
