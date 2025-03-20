@@ -1,9 +1,82 @@
 <h1 align="center">BuddyBot</h1>
 
-## Prerequisiti
+Progetto didattico svolto dal gruppo SWEg Labs per il corso di Ingegneria del Software - Università di Padova, 2024-25.  
+Azienda proponente: [AzzurroDigitale](https://www.azzurrodigitale.com/)  
+Capitolato: [C9 - BuddyBot](https://www.math.unipd.it/~tullio/IS-1/2024/Progetto/C9.pdf)  
+
+## Installazione
+
+### Installazione di Docker
+Prima di procedere con l'installazione di *BuddyBot* è importante verificare che Docker sia installato sulla propria macchina e pronto all'uso.  
+Per farlo, digitare nel terminale:
+```
+docker --version
+```
+Se la console fornisce come output un numero di versione (ad esempio "Docker version 27.3.1, build ce12230"), allora Docker è correttamente installato e funzionante.  
+Nel caso in cui il terminale segnali un errore, è possibile scaricare Docker seguendo la guida presente al link [https://docs.docker.com/get-started/get-docker/](https://docs.docker.com/get-started/get-docker/) *(Ultimo accesso: 03/04/2025)*.  
+Il gruppo *SWEg Labs* ha testato l'applicazione utilizzando Docker in versione 27.3.1, dunque si consiglia di utilizzare una versione uguale o superiore per garantire il corretto funzionamento dell'applicazione.
+
+### Download dell'Applicazione
+È possibile clonare la repository *GitHub* di BuddyBot eseguendo sul proprio terminale:
+```
+git clone https://github.com/SWEg-Labs/BuddyBot.git
+```
+Una volta scaricato il repository, posizionarsi nella cartella del progetto con il comando:
+```
+cd BuddyBot
+```
+
+### Creazione e configurazione del file `.env`
+Tutte le variabili di sistema di configurazione sono già incluse nel *Dockerfile*.  
+Tuttavia, per le impostazioni sensibili e personalizzabili, occorre creare nella directory `src/backend` un file `.env` contenente le seguenti voci (adattandole alle proprie esigenze):
+```
+OPENAI_API_KEY = la_tua_chiave_openai
+OPENAI_MODEL_NAME = modello_llm_scelto
+
+GITHUB_TOKEN = il_tuo_token_github
+OWNER = proprietario_repository
+REPO = nome_repository
+
+ATLASSIAN_TOKEN = il_tuo_token_atlassian
+ATLASSIAN_USER_EMAIL = la_tua_mail_atlassian
+
+JIRA_BASE_URL = url_base_jira
+JIRA_PROJECT_KEY = jira_project_key
+
+CONFLUENCE_BASE_URL = confluence_base_key
+CONFLUENCE_SPACE_KEY = confluence_space_key
+```
+
+### Creazione dell'immagine e avvio del container
+Una volta pronti, è possibile creare l'immagine Docker posizionandosi nella cartella del progetto ed eseguendo:
+```
+docker compose up --build
+```
+La creazione dell'immagine impiegherà poco più di 5 minuti.  
+Al termine della creazione di quest'ultima, verrà creato ed avviato il container `buddybot`. Al termine dell'utilizzo, per spegnere l'applicazione è possibile fermare il container con la combinazione di tasti `Ctrl+C`.  
+Per i successivi accessi, aprire *Docker Desktop* e premere il tasto Play sul container `buddybot` per avviare di nuovo il container dell'applicazione. Per stopparlo, premere il tasto Stop dalla stessa interfaccia.  
+Se si vuole continuare ad interagire da terminale con il container, è possibile eseguire il comando:
+```
+docker compose up
+```
+per avviarlo, e poi, come sopra, `Ctrl+C` per stopparlo.
+
+### Esecuzione dell'Applicazione
+Per avviare BuddyBot, è sufficiente aprire un *browser* e digitare nella barra degli indirizzi:
+```
+localhost:4200
+```
+Si aprirà dunque l'interfaccia grafica dell'applicazione web, pronta per ricevere domande dalla barra di input visibile nella parte inferiore dello schermo.  
+Le istruzioni per l'utilizzo dell'applicazione sono fornite nel documento [Manuale Utente](https://sweg-labs.github.io/Documentazione/output/PB/Documentazione%20esterna/manuale_utente_v1.0.0.pdf).
+
+
+
+## Come velocizzare la creazione dell'immagine Docker
+
+### Prerequisiti
 - È necessario avere Docker installato (versione 27.3.1 o successiva) con BuildKit abilitato.
 
-## Come abilitare BuildKit
+### Come abilitare BuildKit
 Nel file config.json di Docker aggiungere la seguente opzione:
 ```
 {
@@ -14,7 +87,7 @@ Nel file config.json di Docker aggiungere la seguente opzione:
 ```
 Il file si trova alla directory ~/.docker/config.json su Linux, C:\Users\<nome_utente>\.docker\config.json su Windows
 
-## Come sfruttare il cache mount per ridurre il tempo di installazione delle dipendenze
+### Come sfruttare il cache mount per ridurre il tempo di installazione delle dipendenze
 - Creare un nuovo ambiente virtuale e attivarlo con:
   ```
   python -m venv nome_ambiente
@@ -44,78 +117,3 @@ Se una dipendenza di primary_requirements non è più necessaria:
 - eseguire 'pip-autoremove nome_dipendenza -y' per rimuovere eventuali sottodipendenze installate esclusivamente per quella dipendenza
 - aggiornare requirements.txt con 'pip freeze > requirements.txt'
 
-
-## Avvio del container
-Per avviare il container la prima volta, e ogni volta che si eseguono modifiche nel codice sorgente, eseguire il comando:
-```
-docker compose up --build
-```
-
-Al termine eseguire il comando:
-```
-docker compose down
-```
-
-Per riavviare il container senza modifiche nel codice è sufficiente
-```
-docker compose up
-```
-
-## Esecuzione dell'applicazione da terminale
-- Andare nel terminale del container
-  - Tra i Containers di Docker Desktop, selezionare "backend"
-  - Una volta entrati nel container andare alla voce "Exec"
-- Eseguire:
-  ```
-  python backend/main.py
-  ```
-- Se attendete da 2 a 5 minuti dall'inizio di un minuto che finisce per 0 (es.: 10:40, 16:30, 14:10) ed inserite nel chatBot il comando "v" per vedere i documenti presenti nel database, vedrete che il database non è vuoto.
-- E' possibile visionare i log dell'aggiornamento uscendo dall'app con "exit" e digitando nel container:
-  ```
-  cat /var/log/cron.log
-  ```
-- L'aggiornamento verrà effettuato ogni 10 minuti, cioè inizierà in ogni minuto che finisce per 0, per avere il database vettoriale sempre aggiornato!
-Piccola nota: dovesse essere eliminato un documento in una delle piattaforme collegate, nel database vettoriale esso non verrebbe eliminato.
-
-In alternativa dal terminale della macchina si può eseguire: 
-```
-docker exec -it buddybot-backend /bin/bash
- ```
-Per accedere al terminale del container chiamato buddybot-backend.
-
-
-## Esecuzione dell'applicazione da browser
-
-E' sufficiente aprire un browser e digitare:
-```
-localhost:4200
-```
-Per accedere all'interfaccia grafica di BuddyBot.
-
-Una volta lì, è possibile o caricare i file nel database vettoriale utilizzando i pulsanti appositi,
-oppure aspettare 10 minuti e lasciare che vengano caricati in automatico.
-
-Una volta caricati, sarà dunque possibile porre domande nell'apposita barra e ricevere risposte nel riquadro sovrastante.
-
-
-## .env
-Tutte le variabili di sistema di configurazione sono nel dockerfile.
-Nel .env servono solo le sequenti voci:
-```
-OPENAI_API_KEY = la_tua_chiave_openai
-OPENAI_MODEL_NAME = modello_llm_scelto
-
-GITHUB_TOKEN = il_tuo_token_github
-OWNER = owner_repository
-REPO = nome_repository
-
-ATLASSIAN_TOKEN = il_tuo_token_atlassian
-ATLASSIAN_USER_EMAIL = la_tua_mail_atlassian
-
-JIRA_BASE_URL= url_base_jira
-JIRA_PROJECT_KEY= jira_project_key
-
-CONFLUENCE_BASE_URL= confluence_base_key
-CONFLUENCE_SPACE_KEY= confluence_space_key
-```
-Inserire il .env nella directory src/backend.
