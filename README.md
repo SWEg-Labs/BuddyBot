@@ -4,6 +4,7 @@ Progetto didattico svolto dal gruppo SWEg Labs per il corso di Ingegneria del So
 Azienda proponente: [AzzurroDigitale](https://www.azzurrodigitale.com/)  
 Capitolato: [C9 - BuddyBot](https://www.math.unipd.it/~tullio/IS-1/2024/Progetto/C9.pdf)  
 
+
 ## Installazione
 
 ### Installazione di Docker
@@ -73,9 +74,6 @@ Le istruzioni per l'utilizzo dell'applicazione sono fornite nel documento [Manua
 
 ## Come velocizzare la creazione dell'immagine Docker
 
-### Prerequisiti
-- È necessario avere Docker installato (versione 27.3.1 o successiva) con BuildKit abilitato.
-
 ### Come abilitare BuildKit
 Nel file config.json di Docker aggiungere la seguente opzione:
 ```
@@ -109,7 +107,7 @@ Il file si trova alla directory ~/.docker/config.json su Linux, C:\Users\<nome_u
 
 Alla prima costruzione del container Docker "compila" la cache con tutti i pacchetti necessari, alle build successive verranno semplicemente installati i pacchetti elencati in requirements.txt già presenti nella cache, riducendo il tempo di build.
 Il comando pip freeze compila il file requirements.txt con tutte le dipendenze contenute nell'ambiente virtuale, quindi è importante installare nell'ambiente virtuale solo i pacchetti necessari per evitare di aumentare inutilmente il tempo di build.
-Di conseguenza se bisogna aggiungere una dipendenza a primary_requirements è sufficiente installarla nell'ambiente virtuale e richiamare pip freeze per aggiungere le nuove dipendenze secondarie a requirements.txt. Infatti, pip freeze fa una sovrascrizione completa del file precedente, quindi lo restituisce aggiornato.
+Di conseguenza se bisogna aggiungere una dipendenza a primary_requirements è sufficiente installarla nell'ambiente virtuale e richiamare pip freeze per aggiungere le nuove dipendenze secondarie a requirements.txt. Infatti, pip freeze fa una sovrascrizione completa del file requirements precedente, quindi lo restituisce aggiornato.
 Se una dipendenza di primary_requirements non è più necessaria: 
 - bisogna toglierla dal file primary_requirements.txt, 
 - installare pip-autoremove con 'pip install pip-autoremove'
@@ -117,3 +115,40 @@ Se una dipendenza di primary_requirements non è più necessaria:
 - eseguire 'pip-autoremove nome_dipendenza -y' per rimuovere eventuali sottodipendenze installate esclusivamente per quella dipendenza
 - aggiornare requirements.txt con 'pip freeze > requirements.txt'
 
+
+
+## Come visualizzare i file di log
+
+Esistono due file che registrano l'attività di aggiornamento automatico del cron:
+- *src/backend/logs_db_update.txt*: per informazioni consuntive sugli aggiornamenti terminati
+- */var/log/cron.log*: per informazioni di monitoraggio delle attività del cron, cioè vengono registrati i log lanciati dallo script che esegue l'aggiornamento automatico
+
+### Come visualizzare i file di log
+
+#### Visualizzazione del file `logs_db_update.txt`
+È possibile visualizzare il contenuto del file `logs_db_update.txt` seguendo i passaggi riportati di seguito:
+1. Eseguire l'applicativo BuddyBot mediante Docker, come descritto nella sezione **Installazione** qui sopra.
+2. Tramite Docker Desktop, accedere al container denominato `buddybot-backend`.
+3. Recarsi nella sezione **Exec** del container.
+4. Eseguire il comando:
+  ```
+  cat logs_db_update.txt
+  ```
+5. Se il container è stato appena creato, inizialmente il file sarà vuoto. Attendere qualche minuto e riprovare.
+
+#### Visualizzazione del file `cron.log`
+È possibile visualizzare il contenuto del file `cron.log` seguendo i passaggi riportati di seguito:
+1. Eseguire l'applicativo BuddyBot mediante Docker, come descritto nella sezione **Installazione** qui sopra.
+2. Tramite Docker Desktop, accedere al container denominato `buddybot-backend`.
+3. Recarsi nella sezione **Exec** del container.
+4. Eseguire il comando:
+  ```
+  cat /var/log/cron.log
+  ```
+5. Se il container è stato appena creato, inizialmente il file non esisterà. Attendere qualche minuto e riprovare. Poiché il file viene scritto progressivamente durante l'esecuzione del cron, è possibile visualizzare un'istantanea di quanto scritto fino al momento in cui si preme Invio. Riprovando ad eseguire `cat` dopo qualche minuto, si potrà visualizzare la segnalazione di fine aggiornamento.
+
+Per entrambi i file, se si vuole accedere al terminale del container `buddybot-backend` senza usare l'interfaccia grafica ed il limitato terminale di Docker Desktop, è possibile utilizzare il terminale del proprio sistema operativo digitandovi:
+  ```
+  docker exec -it buddybot-backend /bin/bash
+  ```
+Diventa a questo punto possibile visualizzare i due file log con gli stessi comandi `cat` descritti sopra.
