@@ -54,7 +54,7 @@ Una volta pronti, è possibile creare l'immagine Docker posizionandosi nella car
 docker compose up --build
 ```
 La creazione dell'immagine impiegherà poco più di 5 minuti.  
-Al termine della creazione di quest'ultima, verrà creato ed avviato il container `buddybot`. Al termine dell'utilizzo, per spegnere l'applicazione è possibile fermare il container impartendo la combinazione di tasti `Ctrl+C` nel terminale, oppure premendo il tasto Stop nell'applicazione *Docker Stop*.  
+Al termine della creazione di quest'ultima, verrà creato ed avviato il container `buddybot`. Al termine dell'utilizzo, per spegnere l'applicazione è possibile fermare il container impartendo la combinazione di tasti `Ctrl+C` nel terminale, oppure premendo il tasto Stop nell'applicazione *Docker Desktop*.  
 Per i successivi accessi, aprire *Docker Desktop* e premere il tasto Play sul container `buddybot` per avviare di nuovo il container dell'applicazione. Per stopparlo, premere il tasto Stop dalla stessa interfaccia.  
 Se si vuole continuare ad interagire da terminale con il container, è possibile eseguire il comando:
 ```
@@ -146,7 +146,7 @@ Esistono due file che registrano l'attività di aggiornamento automatico del cro
   ```
   cat /var/log/cron.log
   ```
-5. Se il container è stato appena creato, inizialmente il file non esisterà. Attendere qualche minuto e riprovare. Poiché il file viene scritto progressivamente durante l'esecuzione del cron, è possibile visualizzare un'istantanea di quanto scritto fino al momento in cui si è premuto Invio. Riprovando ad eseguire `cat` dopo qualche minuto, si potrà visualizzare la segnalazione di fine aggiornamento.
+5. Se il container è stato appena creato, inizialmente il file non esisterà. Attendere qualche minuto e riprovare. Poiché il file viene scritto progressivamente durante l'esecuzione del cron, è possibile visualizzare un'istantanea di quanto scritto fino all'esatto momento in cui si è premuto Invio. Riprovando ad eseguire `cat` dopo qualche minuto, si potrà visualizzare la segnalazione di fine aggiornamento.
 
 Per entrambi i file, se si vuole accedere al terminale del container `buddybot-backend` senza usare l'interfaccia grafica ed il limitato terminale di Docker Desktop, è possibile utilizzare il terminale del proprio sistema operativo digitandovi:
   ```
