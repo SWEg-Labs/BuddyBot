@@ -171,7 +171,7 @@ Attualmente il cron aggiorna i documenti ogni 20 minuti, e, nel caso un aggiorna
   ENV DB_UPDATE_FREQUENCY="0 0 * * *" 
   ENV DB_UPDATE_ERROR_FREQUENCY="0 * * * *"
   ```
-  Potete trovare degli esempi su come usare le cron expressions al link: https://crontab.guru/examples.html
+  Potete trovare degli esempi su come usare le cron expressions al link: https://crontab.guru/examples.html.
 
 5. Ricreare l'immagine Docker come spiegato nell'[apposita sezione](#creazione-dellimmagine-e-avvio-del-container-docker).
 
