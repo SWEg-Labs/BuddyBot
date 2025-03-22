@@ -1,6 +1,6 @@
 <h1 align="center">BuddyBot</h1>
 
-Progetto didattico svolto dal gruppo SWEg Labs per il corso di Ingegneria del Software 2024-25 - Università di Padova, laurea triennale in Infromatica.  
+Progetto didattico svolto dal gruppo SWEg Labs per il corso di Ingegneria del Software 2024-25 - Università di Padova, laurea triennale in Informatica.  
 Azienda proponente: [AzzurroDigitale](https://www.azzurrodigitale.com/)  
 Capitolato: [C9 - BuddyBot](https://www.math.unipd.it/~tullio/IS-1/2024/Progetto/C9.pdf)  
 
@@ -109,9 +109,9 @@ Il file si trova alla directory *~/.docker/config.json* su Linux, *C:\Users\<nom
   Questo comando scrive sul file requirements.txt tutte le dipendenze contenute nell'ambiente virtuale, con la loro versione.  
   Dovreste ottenere qualcosa di molto simile a quanto già presente nel file requirements.txt.
 
-Alla prima costruzione del container Docker "compila" la cache con tutti i pacchetti necessari, alle build successive verranno semplicemente installati i pacchetti elencati in requirements.txt già presenti nella cache, riducendo il tempo di build.  
-Il comando `pip freeze` compila il file requirements.txt con tutte le dipendenze contenute nell'ambiente virtuale, quindi è importante installare nell'ambiente virtuale solo i pacchetti necessari per evitare di aumentare inutilmente il tempo di build.  
-Di conseguenza se bisogna aggiungere una dipendenza a primary_requirements è sufficiente installarla nell'ambiente virtuale e richiamare `pip freeze` per aggiungere le nuove dipendenze secondarie a requirements.txt. Infatti, `pip freeze` fa una sovrascrizione completa del file requirements.txt precedente, quindi lo restituisce aggiornato.
+Alla prima costruzione del container Docker "compila" la cache con tutti i pacchetti necessari; alle build successive verranno semplicemente installati i pacchetti elencati in requirements.txt già presenti nella cache, riducendo il tempo di build.
+Dato che il comando `pip freeze` compila il file requirements.txt con tutte le dipendenze contenute nell'ambiente virtuale, è importante installare nell'ambiente virtuale solo i pacchetti necessari per evitare di aumentare inutilmente il tempo di build.
+Di conseguenza se bisogna aggiungere una dipendenza a primary_requirements è sufficiente installarla nell'ambiente virtuale e richiamare `pip freeze` per aggiungere le nuove dipendenze secondarie a requirements.txt. Infatti, `pip freeze` fa una sovrascrittura completa del file requirements.txt precedente, quindi lo restituisce aggiornato.
 Se una dipendenza di primary_requirements non è più necessaria:  
 1. Bisogna toglierla dal file primary_requirements.txt.
 2. Installare pip-autoremove con `pip install pip-autoremove`.
@@ -136,7 +136,7 @@ Esistono due file che registrano l'attività di aggiornamento automatico del cro
   ```
   cat logs_db_update.txt
   ```
-5. Se il container è stato appena creato, inizialmente il file sarà vuoto. Attendere qualche minuto e riprovare.
+5. Se il container è stato appena creato, inizialmente il file sarà vuoto. Attendere la prima esecuzione del cron e riprovare.
 
 ### Come visualizzare il file `cron.log`
 È possibile visualizzare il contenuto del file `cron.log` seguendo i passaggi riportati di seguito:
@@ -147,7 +147,7 @@ Esistono due file che registrano l'attività di aggiornamento automatico del cro
   ```
   cat /var/log/cron.log
   ```
-5. Se il container è stato appena creato, inizialmente il file non esisterà. Attendere qualche minuto e riprovare. Poiché il file viene scritto progressivamente durante l'esecuzione del cron, è possibile visualizzare un'istantanea di quanto scritto fino all'esatto momento in cui si è premuto Invio. Riprovando ad eseguire `cat` dopo qualche minuto, si potrà visualizzare la segnalazione di fine aggiornamento.
+5. Se il container è stato appena creato, inizialmente il file non esisterà. Attendere la prima esecuzione del cron e riprovare. Poiché il file viene scritto progressivamente durante l'esecuzione del cron, è possibile visualizzare un'istantanea di quanto scritto fino all'esatto momento in cui si è premuto Invio. Riprovando ad eseguire `cat` dopo qualche minuto, si potrà visualizzare la segnalazione di fine aggiornamento.
 
 Per entrambi i file, se si vuole accedere al terminale del container `buddybot-backend` senza usare l'interfaccia grafica ed il limitato terminale di Docker Desktop, è possibile utilizzare il terminale del proprio sistema operativo digitandovi:
   ```
@@ -168,10 +168,10 @@ Attualmente il cron aggiorna i documenti ogni 20 minuti, e, nel caso un aggiorna
 4. Se si desidera impostare l'aggiornamento automatico ogni 24 ore, e svolgere un retry dopo 1 ora in caso di fallimento, con massimo numero di retry pari a 5, modificare le suddette righe nel seguente modo:
   ```
   ENV DB_UPDATE_MAX_RETRIES=5
-  ENV DB_UPDATE_FREQUENCY="*/1440 * * * *" 
-  ENV DB_UPDATE_ERROR_FREQUENCY="*/60 * * * *"
+  ENV DB_UPDATE_FREQUENCY="0 0 * * *" 
+  ENV DB_UPDATE_ERROR_FREQUENCY="0 * * * *"
   ```
-Bisogna dunque convertire il valore temporale desiderato in minuti.
+Potete trovare degli esempi su come usare le cron expressions al [seguente link](#https://crontab.guru/examples.html)
 5. Ricreare l'immagine Docker come spiegato nell'[apposita sezione](#creazione-dellimmagine-e-avvio-del-container-docker).
 
 
