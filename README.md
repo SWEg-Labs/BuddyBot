@@ -106,24 +106,24 @@ Il file si trova alla directory *~/.docker/config.json* su Linux, *C:\Users\<nom
   ```
   pip freeze > requirements.txt
   ```
-  Questo comando scrive sul file requirements.txt tutte le dipendenze contenute nell'ambiente virtuale, con la loro versione.  
-  Dovreste ottenere qualcosa di molto simile a quanto già presente nel file requirements.txt.
+  Questo comando scrive sul file *requirements.txt* tutte le dipendenze contenute nell'ambiente virtuale, con la loro versione.  
+  Dovreste ottenere qualcosa di molto simile a quanto già presente nel file *requirements.txt*.
 
-Alla prima costruzione del container Docker "compila" la cache con tutti i pacchetti necessari; alle build successive verranno semplicemente installati i pacchetti elencati in requirements.txt già presenti nella cache, riducendo il tempo di build.
-Dato che il comando `pip freeze` compila il file requirements.txt con tutte le dipendenze contenute nell'ambiente virtuale, è importante installare nell'ambiente virtuale solo i pacchetti necessari per evitare di aumentare inutilmente il tempo di build.
-Di conseguenza se bisogna aggiungere una dipendenza a primary_requirements è sufficiente installarla nell'ambiente virtuale e richiamare `pip freeze` per aggiungere le nuove dipendenze secondarie a requirements.txt. Infatti, `pip freeze` fa una sovrascrittura completa del file requirements.txt precedente, quindi lo restituisce aggiornato.
-Se una dipendenza di primary_requirements non è più necessaria:  
-1. Bisogna toglierla dal file primary_requirements.txt.
+Alla prima costruzione del container Docker "compila" la cache con tutti i pacchetti necessari; alle build successive verranno semplicemente installati i pacchetti elencati in *requirements.txt* già presenti nella cache, riducendo il tempo di build.
+Dato che il comando `pip freeze` compila il file *requirements.txt* con tutte le dipendenze contenute nell'ambiente virtuale, è importante installare in quest'ultimo solo i pacchetti strettamente necessari per evitare di aumentare inutilmente il tempo di build.
+Di conseguenza se bisogna aggiungere una dipendenza a *primary_requirements.txt* è sufficiente installarla nell'ambiente virtuale e richiamare `pip freeze` per aggiungere le nuove dipendenze secondarie a *requirements.txt*. Infatti, `pip freeze` fa una sovrascrittura completa del file *requirements.txt* precedente, quindi lo restituisce aggiornato.
+Se una dipendenza di *primary_requirements.txt* non è più necessaria:  
+1. Bisogna toglierla dal file *primary_requirements.txt*.
 2. Installare pip-autoremove con `pip install pip-autoremove`.
 3. Eseguire `pip uninstall nome-dipendenza`.
 4. Eseguire `pip-autoremove nome_dipendenza -y` per rimuovere eventuali sottodipendenze installate esclusivamente per quella dipendenza.
-5. Aggiornare requirements.txt con `pip freeze > requirements.txt`.
+5. Aggiornare *requirements.txt* con `pip freeze > requirements.txt`.
 
 
 
 ## Aggiornamento automatico dei documenti
 
-Esistono due file che registrano l'attività di aggiornamento automatico del cron:
+Esistono due file che registrano l'attività di aggiornamento automatico eseguito dal cron:
 - *src/backend/logs_db_update.txt*: per informazioni consuntive sugli aggiornamenti terminati.
 - */var/log/cron.log*: per informazioni di monitoraggio sulle attività del cron, cioè vengono registrati i log lanciati dallo script che esegue l'aggiornamento automatico.
 
@@ -171,7 +171,7 @@ Attualmente il cron aggiorna i documenti ogni 20 minuti, e, nel caso un aggiorna
   ENV DB_UPDATE_FREQUENCY="0 0 * * *" 
   ENV DB_UPDATE_ERROR_FREQUENCY="0 * * * *"
   ```
-  Potete trovare degli esempi su come usare le cron expressions al link: https://crontab.guru/examples.html.
+  Potete trovare ulteriori esempi su come usare le cron expressions al link: https://crontab.guru/examples.html.
 
 5. Ricreare l'immagine Docker come spiegato nell'[apposita sezione](#creazione-dellimmagine-e-avvio-del-container-docker).
 
