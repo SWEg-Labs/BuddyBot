@@ -1,92 +1,80 @@
-from langchain_openai import ChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate
-from langchain.chains.combine_documents import create_stuff_documents_chain
-from repositories.vectorStoreRepository import VectorStoreRepository
+from models.question import Question
+from models.answer import Answer
+from models.document import Document
+from use_cases.chatUseCase import ChatUseCase
+from services.similaritySearchService import SimilaritySearchService
+from services.generateAnswerService import GenerateAnswerService
 from utils.logger import logger
+from utils.beartype_personalized import beartype_personalized
 
-class ChatService:
+@beartype_personalized
+class ChatService(ChatUseCase):
     """
     A service class that processes user input and generates a response using a language model.
     
-    Requires an instance of the ChatOpenAI language model and a VectorStoreRepository instance
+    Requires instances of SimilaritySearchService and GenerateAnswerService.
 
     Raises:
         Exception: If an error occurs during initialization.
     """
-    def __init__(self, llm: ChatOpenAI, vector_store: VectorStoreRepository):
+
+    def __init__(self, similarity_search_service: SimilaritySearchService, generate_answer_service: GenerateAnswerService):
         """
-        Initializes the ChatService with a language model and a vector store repository.
+        Initializes the ChatService with the required services.
+        Args:
+            similarity_search_service (SimilaritySearchService): An instance of the SimilaritySearchService.
+            generate_answer_service (GenerateAnswerService): An instance of the GenerateAnswerService.
+        """
+        self.__similarity_search_service = similarity_search_service
+        self.__generate_answer_service = generate_answer_service
+
+    def get_answer(self, user_input: Question) -> Answer:
+        """
+        Processes the user input to generate an answer.
 
         Args:
-            llm (ChatOpenAI): An instance of the ChatOpenAI language model.
-            vector_store (VectorStoreRepository): An instance of the VectorStoreRepository.
-
-        Raises:
-            Exception: If an error occurs during initialization.
-        """
-        try:
-            self.llm = llm
-            self.vector_store = vector_store
-            self.header = """Sei un assistente virtuale esperto che risponde a domande in italiano.
-                            Di seguito di verrà fornita una domanda dall'utente e un contesto, e riguarderanno 
-                            codice, issues o documentazione di un'azienda informatica, provenienti rispettivamente da GitHub, Jira e Confluence.
-                            Rispondi alla domanda basandoti esclusivamente sui dati forniti come contesto,
-                            dando una spiegazione dettagliata ed esaustiva della risposta data.
-                            Se possibile rispondi con un elenco puntato o numerato.
-                            Se la domanda ti chiede informazioni allora tu cercale nel contesto e forniscile.
-                            Se non riesci a trovare la risposta nei documenti forniti, ma la domanda è comunque legata all'informatica,
-                            rispondi con "Informazione non trovata".
-                            Se l'utente è uscito dal contesto informatico, rispondi con "La domanda è fuori contesto".
-                            """
-        except Exception as e:
-            logger.error(f"Error initializing ChatService: {e}")
-
-    def process_user_input(self, user_input: str) -> str:
-        """
-        Processes the user's input by performing a similarity search and generating a response.
-
-        Args:
-            user_input (str): The input provided by the user.
+            user_input (Question): The user's input question.
 
         Returns:
-            str: The generated response from the language model.
-
-        Raises:
-            Exception: If an error occurs while processing the user input.
+            Answer: The generated answer.
         """
         try:
-            # Esegue una ricerca di similarità per ottenere documenti rilevanti
-            relevant_docs = self.vector_store.similarity_search_by_threshold_with_gap(user_input)
-            logger.info(f"Found {len(relevant_docs)} relevant documents")
-
-            # Aggiorna page_content di ogni documento con metadati e contenuto completo
-            # Perchè create_stuff_documents_chain fornisce al chatbot solo il campo page_content di ogni documento
-            for doc in relevant_docs:
-                doc.page_content = f"Metadata: {doc.metadata}\nContent: {doc.page_content}"
-
-            # Crea un PromptTemplate per il modello AI
-            prompt = ChatPromptTemplate.from_messages(
-                [("user", "{header}\n\n\n{user_input}\n\n\n{context}")]
-            )
-
-            # Crea una catena RAG (Retrieval-Augmented Generation)
-            rag_chain = create_stuff_documents_chain(
-                llm=self.llm,
-                prompt=prompt
-            )
-
-            print("relevant_docs : ")
-            for i, doc in enumerate(relevant_docs, start=1):
-                print(f"\nDocumento {i}:\n{doc.page_content}")
-
-            # Esegue la catena per ottenere una risposta
-            response = rag_chain.invoke({
-                "header": self.header,
-                "user_input": user_input,
-                "context": relevant_docs
-            })
-
-            return response
+            relevant_docs = self.similarity_search(user_input)
+            answer = self.generate_answer(user_input, relevant_docs)
+            return answer
         except Exception as e:
-            logger.error(f"Error processing user input: {e}")
-            raise
+            logger.error(f"Error in get_answer: {e}")
+            raise e
+
+    def similarity_search(self, user_input: Question) -> list[Document]:
+        """
+        Searches for relevant documents based on user input.
+
+        Args:
+            user_input (Question): The user's input question.
+
+        Returns:
+            list[Document]: The relevant documents.
+        """
+        try:
+            return self.__similarity_search_service.similarity_search(user_input)
+        except Exception as e:
+            logger.error(f"Error in similarity_search: {e}")
+            raise e
+
+    def generate_answer(self, user_input: Question, relevant_docs: list[Document]) -> Answer:
+        """
+        Generates an answer based on user input and relevant documents.
+
+        Args:
+            user_input (Question): The user's input question.
+            relevant_docs (list[Document]): The relevant documents.
+
+        Returns:
+            Answer: The generated answer.
+        """
+        try:
+            return self.__generate_answer_service.generate_answer(user_input, relevant_docs)
+        except Exception as e:
+            logger.error(f"Error in generate_answer: {e}")
+            raise e

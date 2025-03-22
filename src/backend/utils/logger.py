@@ -1,47 +1,38 @@
 import os
+import time
+import sys
+import logging
+from dotenv import load_dotenv
 
-# Ottiene la configurazione LOGGING_ENABLED dalle variabili di ambiente
+# Carica le variabili d'ambiente
+load_dotenv()
+
+# Imposta il fuso orario italiano, se la funzione tzset esiste (Solo su sistemi Unix/Linux)
+os.environ["TZ"] = "Europe/Rome"
+if hasattr(time, "tzset"):
+    time.tzset()
+
 LOGGING_ENABLED = os.getenv("LOGGING_ENABLED", "true").lower() == "true"
+LOG_FILE_PATH = os.getenv("LOG_FILE_PATH", "logs_db_update.txt")
 
-class Logger:
-    """
-    Utility logger that can be enabled/disabled via environment variables.
-    Wraps print with additional formatting and checks.
 
-    Requires the `LOGGING_ENABLED` environment variable to be set to `true` to enable logging.
-    """
-    @staticmethod
-    def info(message: str):
-        """
-        Logs an informational message.
+### LOGGER 1: Logging standard su stdout ###
+logger = logging.getLogger("console_logger")
+logger.setLevel(logging.DEBUG if LOGGING_ENABLED else logging.WARNING)
 
-        Args:
-            message (str): The message to log.
+# Crea un handler per scrivere su sys.stdout (console)
+console_handler = logging.StreamHandler(sys.stdout)
+console_handler.setFormatter(logging.Formatter("%(asctime)s - %(filename)s - %(levelname)s - %(message)s"))
 
-        Raises:
-            Exception: If an error occurs while logging the message.
-        """
-        try:
-            if LOGGING_ENABLED:
-                print(f"[INFO] {message}")
-        except Exception as e:
-            print(f"Error logging message: {e}")
+logger.addHandler(console_handler)
 
-    @staticmethod
-    def error(message: str):
-        """
-        Logs an error message.
 
-        Args:
-            message (str): The error message to log.
+### LOGGER 2: Logging standard su file (plain_file_logger) ###
 
-        Raises:
-            Exception: If an error occurs while logging the message.
-        """
-        try:
-            if LOGGING_ENABLED:
-                print(f"[ERROR] {message}")
-        except Exception as e:
-            print(f"Error logging message: {e}")
+file_logger = logging.getLogger("plain_file_logger")
+file_logger.setLevel(logging.INFO)
 
-logger = Logger()
+file_handler = logging.FileHandler(LOG_FILE_PATH)
+file_handler.setFormatter(logging.Formatter("%(message)s"))
+
+file_logger.addHandler(file_handler)

@@ -13,15 +13,14 @@ export class ChatInputComponent {
   @Input() isLoading = false;
   @Output() sendMessage = new EventEmitter<string>();
 
-  userInput: string = '';
+  userInput = '';
 
   onSend() {
+    console.log('onSend triggered', this.userInput, this.isLoading);
     if (!this.userInput.trim() || this.isLoading) {
       return;
     }
-  
     this.sendMessage.emit(this.userInput.trim());
     this.userInput = '';
   }
-  
 }

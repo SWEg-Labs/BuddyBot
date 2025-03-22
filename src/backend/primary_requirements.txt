@@ -1,0 +1,15 @@
+langchain_openai
+langchain_community
+langchain_core
+langchain==0.3.18
+chromadb
+python-dotenv
+PyGithub
+python-crontab
+pytest==8.3.4
+pytest-asyncio
+pytest-cov
+freezegun
+psycopg2
+pytz
+beartype

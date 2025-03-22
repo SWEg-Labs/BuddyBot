@@ -1,31 +1,56 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import {HttpClient } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { tap, catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
+
+
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root', 
 })
 export class ChatService {
-  private apiUrl = 'http://localhost:5000/api/chat';
-  private apiLoadJira = 'http://localhost:5000/api/jira/load';
-  private apiloadGithub = 'http://localhost:5000/api/github/load';
-  private apiLoadConfluence = 'http://localhost:5000/api/confluence/load';
+  private readonly apiBaseUrl = 'http://localhost:5000';
 
-  constructor(private http: HttpClient) {}
+
+  private lastMessageTimestamp: number = Date.now();
+
+
+  constructor(private readonly http: HttpClient) {}
+
+  getLastMessageTimestamp(): number {
+    return this.lastMessageTimestamp;
+  }
+  setLastMessageTimestamp(time: number) {
+    this.lastMessageTimestamp = time;
+  }
 
   sendMessage(message: string): Observable<{ response: string }> {
-    return this.http.post<{ response: string }>(this.apiUrl, { message });
+    this.setLastMessageTimestamp(Date.now());
+    return this.http.post<{ response: string }>(`${this.apiBaseUrl}/api/chat`, { message });
   }
 
-  loadJira(): Observable<{ response: string }> {
-    return this.http.get<{ response: string }>(this.apiLoadJira, {});
+  getContinuationSuggestions(payload: {
+    question: string;
+    answer: string;
+    quantity: number;
+  }): Observable<Record<string, string>> {
+    console.log('Chiamata getContinuationSuggestions(), payload =', payload);
+
+    return this.http
+      .post<Record<string, string>>(
+        `${this.apiBaseUrl}/api/get_next_possible_questions`,
+        payload
+      )
+      .pipe(
+        tap((response) => {
+          console.log('Risposta da getContinuationSuggestions():', response);
+        }),
+        catchError((error) => {
+          console.error('Errore da getContinuationSuggestions():', error);
+          return throwError(() => error);
+        })
+      );
   }
 
-  loadGithub(): Observable<{ response: string }> {
-    return this.http.get<{ response: string }>(this.apiloadGithub, {});
-  }
-
-  loadConfluence(): Observable<{ response: string }> {
-    return this.http.get<{ response: string }>(this.apiLoadConfluence, {});
-  }
 }

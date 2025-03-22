@@ -1,19 +1,50 @@
-<div #scrollMe class="messages">
-  <div
-    *ngFor="let msg of messages"
-    class="message"
-    [ngClass]="{
-      'user-message': msg.sender === 'Utente',
-      'bot-message': msg.sender === 'Bot'
-    }"
-  >
-    <span class="sender">{{ msg.sender }}:</span>
-    <span class="text" [innerHTML]="msg.text"></span>
+<div #scrollMe class="messages" (scroll)="onScroll()">
+  <div *ngIf="loadingOlderMessages" class="message bot-message loading-older-messages">
+    <app-chat-loading-indicator></app-chat-loading-indicator>
+    <span class="text">Caricamento messaggi precedenti...</span>
   </div>
 
-  <!-- Placeholder per il caricamento -->
+  <div
+    class="message"
+    *ngFor="let msg of messages"
+    [ngClass]="{
+      'user-message': msg.sender === messageSender.USER,
+      'bot-message': msg.sender === messageSender.CHATBOT
+    }"
+  >
+    <span
+      *ngIf="msg.sender === messageSender.CHATBOT"
+      class="copy-icon"
+      [ngClass]="{ 'copied': msg.copied }"
+      [innerHTML]="msg.copied ? '✔' : '📋'"
+      (click)="copyToClipboard(msg)"
+      title="Copia l'intero messaggio"
+    ></span>
+
+    <span class="text" [innerHTML]="msg.sanitizedContent || msg.content"></span>
+
+    <span class="timestamp" *ngIf="msg.timestamp; else errorDateTemplate">
+      {{ msg.timestamp | date:'dd/MM/yyyy HH:mm' }}
+    </span>
+    <ng-template #errorDateTemplate>
+      <span class="timestamp error">
+      Errore nel recupero dell'orario di invio del messaggio
+      </span>
+    </ng-template>
+  </div>
+
   <div *ngIf="isLoading" class="message bot-message loading-placeholder">
     <app-chat-loading-indicator></app-chat-loading-indicator>
     <span class="text"></span>
   </div>
+  
+<!-- Pulsante scroll to button -->
+<button 
+  *ngIf="showScrollToBottom" 
+  class="scroll-to-bottom-btn" 
+  (click)="scrollToBottom()"
+  title="Torna ai messaggi recenti"
+>
+  <mat-icon>arrow_downward</mat-icon>
+</button>
 </div>

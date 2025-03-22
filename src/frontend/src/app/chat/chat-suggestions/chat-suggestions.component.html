@@ -1,0 +1,14 @@
+<div class="suggestions" *ngIf="!loadError && continuationSuggestions.length > 0">
+  <button
+    class="suggestion-btn"
+    *ngFor="let s of continuationSuggestions"
+    (click)="onSuggestionClick(s)"
+  >
+    {{ s }}
+  </button>
+</div>
+
+<!-- Mostra il messaggio d'errore se loadError è true -->
+<div class="error-message" *ngIf="loadError">
+  {{ errorMessage }}
+</div>
