@@ -29,7 +29,7 @@ cd BuddyBot
 
 ### Creazione e configurazione del file `.env`
 Tutte le variabili di sistema di configurazione sono già incluse nel *Dockerfile*.  
-Tuttavia, per le impostazioni sensibili e personalizzabili, occorre creare nella directory `src/backend` un file `.env` contenente le seguenti voci (adattandole alle proprie esigenze):
+Tuttavia, per le impostazioni sensibili e personalizzabili, occorre creare nella directory `src/backend` un file `.env` contenente le seguenti voci (alle quali associare i propri dati):
 ```
 OPENAI_API_KEY = la_tua_chiave_openai
 OPENAI_MODEL_NAME = modello_llm_scelto
@@ -56,7 +56,7 @@ docker compose up --build
 La creazione dell'immagine impiegherà poco più di 5 minuti.  
 Al termine della creazione di quest'ultima, verrà creato ed avviato il container `buddybot`. Al termine dell'utilizzo, per spegnere l'applicazione è possibile fermare il container impartendo la combinazione di tasti `Ctrl+C` nel terminale, oppure premendo il tasto Stop nell'applicazione *Docker Desktop*.  
 Per i successivi accessi, aprire *Docker Desktop* e premere il tasto Play sul container `buddybot` per avviare di nuovo il container dell'applicazione. Per stopparlo, premere il tasto Stop dalla stessa interfaccia.  
-Se si vuole continuare ad interagire da terminale con il container, è possibile eseguire il comando:
+Se si vuole continuare ad interagire con il container da terminale, è possibile eseguire il comando:
 ```
 docker compose up
 ```
@@ -153,7 +153,7 @@ Per entrambi i file, se si vuole accedere al terminale del container `buddybot-b
   ```
   docker exec -it buddybot-backend /bin/bash
   ```
-Diventa a questo punto possibile visualizzare i due file log con gli stessi comandi `cat` descritti sopra.
+Diventa a questo punto possibile visualizzare i due file di log con gli stessi comandi `cat` descritti in precedenza.
 
 ### Come cambiare la frequenza di aggiornamento automatico
 Attualmente il cron aggiorna i documenti ogni 20 minuti, e, nel caso un aggiornamento fallisca perchè viene lanciata un'eccezione, viene incrementata la frequenza a 15 minuti per massimo 3 tentativi di *retry*, per poi tornare alla frequenza normale in caso di successo o in caso venga superato il numero massimo di retry. E' possibile cambiare la frequenza di aggiornamento seguendo i passaggi riportati di seguito:
