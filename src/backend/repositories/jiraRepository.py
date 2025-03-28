@@ -48,7 +48,7 @@ class JiraRepository:
             url = f"{self.__base_url}/rest/api/2/search"
             params = {
                 'jql': f'project={self.__project_key}',
-                "maxResults": 50
+                "maxResults": 100
             }
 
             response = requests.get(url, headers=self.__headers, params=params, timeout=self.__timeout)
