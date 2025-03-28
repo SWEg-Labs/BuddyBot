@@ -38,7 +38,7 @@ class JiraRepository:
 
     def load_jira_issues(self) -> Tuple[PlatformLog, List[IssueEntity]]:
         """
-        Fetches issues from the Jira project.
+        Fetches all issues from the Jira project using pagination.
         Returns:
             Tuple[PlatformLog, List[IssueEntity]]: A tuple containing a log of the operation and a list of issues.
         Raises:
@@ -46,30 +46,53 @@ class JiraRepository:
         """
         try:
             url = f"{self.__base_url}/rest/api/2/search"
-            params = {
-                'jql': f'project={self.__project_key}',
-                "maxResults": 100
-            }
+            start_at = 0
+            max_results = 100
+            issues = []
+            total = None  # Il totale delle issues, impostato al primo fetch
 
-            response = requests.get(url, headers=self.__headers, params=params, timeout=self.__timeout)
-            response.raise_for_status()
-            issues_data = response.json().get('issues', [])
+            while total is None or start_at < total:
+                params = {
+                    'jql': f'project={self.__project_key}',
+                    'startAt': start_at,
+                    'maxResults': max_results
+                }
 
-            issues = [IssueEntity(
-                id=issue['id'],
-                key=issue['key'],
-                summary=issue['fields']['summary'],
-                description=issue['fields'].get('description', ''),
-                issuetype=issue['fields']['issuetype'],
-                project=issue['fields']['project'],
-                status=issue['fields']['status'],
-                priority=issue['fields'].get('priority', {}),
-                assignee=issue['fields'].get('assignee', {}),
-                reporter=issue['fields'].get('reporter', {}),
-                created=issue['fields']['created'],
-                updated=issue['fields']['updated'],
-                attachment=issue['fields'].get('attachment', [])
-            ) for issue in issues_data]
+                response = requests.get(url, headers=self.__headers, params=params, timeout=self.__timeout)
+                response.raise_for_status()
+                data = response.json()
+
+                # Al primo ciclo, impostiamo il totale delle issues presenti in Jira
+                if total is None:
+                    total = data.get('total', 0)
+
+                issues_data = data.get('issues', [])
+
+                # Converte ogni issue in IssueEntity
+                issues.extend([
+                    IssueEntity(
+                        id=issue['id'],
+                        key=issue['key'],
+                        summary=issue['fields']['summary'],
+                        description=issue['fields'].get('description', ''),
+                        issuetype=issue['fields']['issuetype'],
+                        project=issue['fields']['project'],
+                        status=issue['fields']['status'],
+                        priority=issue['fields'].get('priority', {}),
+                        assignee=issue['fields'].get('assignee', {}),
+                        reporter=issue['fields'].get('reporter', {}),
+                        created=issue['fields']['created'],
+                        updated=issue['fields']['updated'],
+                        attachment=issue['fields'].get('attachment', [])
+                    ) for issue in issues_data
+                ])
+
+                # logger.info(f"Fetched {len(issues_data)} issues (startAt={start_at}) from Jira project {self.__project_key}") # Per debug
+                start_at += max_results
+
+                # Se non sono state ritornate altre issues, interrompiamo il ciclo
+                if len(issues_data) < max_results:
+                    break
 
             logger.info(f"Fetched {len(issues)} issues from Jira project {self.__project_key}")
             italy_tz = pytz.timezone('Europe/Rome')

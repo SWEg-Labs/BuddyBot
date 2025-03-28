@@ -43,7 +43,7 @@ class ConfluenceRepository:
 
     def load_confluence_pages(self) -> Tuple[PlatformLog, List[PageEntity]]:
         """
-        Fetches pages from the Confluence space.
+        Fetches all pages from the Confluence space using pagination.
         Returns:
             Tuple[PlatformLog, List[PageEntity]]: A tuple containing a log of the operation and a list of pages.
         Raises:
@@ -51,28 +51,46 @@ class ConfluenceRepository:
         """
         try:
             url = f"{self.__base_url}/rest/api/content"
-            params = {
-                "spaceKey": self.__project_key,
-                "expand": "body.view,version,ancestors,space,extensions,links",
-                "limit": 50
-            }
+            start = 0
+            limit = 100
+            pages = []
 
-            response = requests.get(url, headers=self.__headers, params=params, timeout=self.__timeout)
-            response.raise_for_status()
-            pages_data = response.json().get('results', [])
+            while True:
+                params = {
+                    "spaceKey": self.__project_key,
+                    "expand": "body.view,version,ancestors,space,extensions,links",
+                    "limit": limit,
+                    "start": start
+                }
 
-            pages = [PageEntity(
-                id=page['id'],
-                type=page['type'],
-                title=page['title'],
-                space=page['space'],
-                body=page['body'],
-                version=page['version'],
-                status=page['status'],
-                ancestors=page['ancestors'],
-                extensions=page['extensions'],
-                links=page['_links']
-            ) for page in pages_data]
+                response = requests.get(url, headers=self.__headers, params=params, timeout=self.__timeout)
+                response.raise_for_status()
+                data = response.json()
+                pages_data = data.get('results', [])
+                
+                # Converte ogni page in PageEntity
+                pages.extend([
+                    PageEntity(
+                        id=page['id'],
+                        type=page['type'],
+                        title=page['title'],
+                        space=page['space'],
+                        body=page['body'],
+                        version=page['version'],
+                        status=page['status'],
+                        ancestors=page['ancestors'],
+                        extensions=page['extensions'],
+                        links=page['_links']
+                    ) for page in pages_data
+                ])
+
+                # logger.info(f"Fetched {len(pages_data)} pages (start={start}) from Confluence space {self.__project_key}") # Per debug
+
+                # Se il numero di elementi restituiti è inferiore al limite, non ci sono altre pagine
+                if len(pages_data) < limit:
+                    break
+
+                start += limit
 
             logger.info(f"Fetched {len(pages)} pages from Confluence space {self.__project_key}")
             italy_tz = pytz.timezone('Europe/Rome')

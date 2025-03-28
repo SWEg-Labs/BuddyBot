@@ -2,7 +2,7 @@ from utils.beartype_personalized import beartype_personalized
 
 @beartype_personalized
 class IssueEntity:
-    def __init__(self, id: str, key: str, summary: str, description: str | None, issuetype: dict, project: dict, status: dict, priority: dict, assignee: dict, reporter: dict, created: str, updated: str, attachment: list):
+    def __init__(self, id: str, key: str, summary: str, description: str | None, issuetype: dict, project: dict, status: dict, priority: dict | None, assignee: dict | None, reporter: dict | None, created: str, updated: str, attachment: list | None):
         """
         Inizializza un nuovo oggetto IssueEntity, basato su una issue di Jira.
 
@@ -10,16 +10,16 @@ class IssueEntity:
             id (str): L'ID dell'issue.
             key (str): La chiave dell'issue.
             summary (str): Un breve riassunto dell'issue.
-            description (str | None): Una descrizione dettagliata dell'issue oppure None se non presente.
+            description (str | None): Una descrizione dettagliata dell'issue, oppure None se non presente.
             issuetype (dict): Un dizionario che descrive il tipo di issue.
             project (dict): Un dizionario che descrive il progetto a cui appartiene l'issue.
             status (dict): Un dizionario che descrive lo stato dell'issue.
-            priority (dict): Un dizionario che descrive la priorità dell'issue.
-            assignee (dict): Un dizionario che descrive la persona assegnata all'issue.
-            reporter (dict): Un dizionario che descrive la persona che ha segnalato l'issue.
+            priority (dict | None): Un dizionario che descrive la priorità dell'issue, oppure None se non presente.
+            assignee (dict | None): Un dizionario che descrive la persona assegnata all'issue, oppure None se non presente.
+            reporter (dict | None): Un dizionario che descrive la persona che ha segnalato l'issue, oppure None se non presente.
             created (str): La data e l'ora di creazione dell'issue.
             updated (str): La data e l'ora dell'ultimo aggiornamento dell'issue.
-            attachment (list): Una lista di dizionari che descrivono gli allegati dell'issue.
+            attachment (list | None): Una lista di dizionari che descrivono gli allegati dell'issue, oppure None se non presenti.
         """
         self.__id = id
         self.__key = key
@@ -56,13 +56,13 @@ class IssueEntity:
     def get_status(self) -> dict:
         return self.__status
 
-    def get_priority(self) -> dict:
+    def get_priority(self) -> dict | None:
         return self.__priority
 
-    def get_assignee(self) -> dict:
+    def get_assignee(self) -> dict | None:
         return self.__assignee
 
-    def get_reporter(self) -> dict:
+    def get_reporter(self) -> dict | None:
         return self.__reporter
 
     def get_created(self) -> str:
@@ -71,7 +71,7 @@ class IssueEntity:
     def get_updated(self) -> str:
         return self.__updated
 
-    def get_attachment(self) -> list:
+    def get_attachment(self) -> list | None:
         return self.__attachment
 
     def __repr__(self):
