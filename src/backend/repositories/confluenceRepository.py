@@ -86,11 +86,12 @@ class ConfluenceRepository:
 
                 # logger.info(f"Fetched {len(pages_data)} pages (start={start}) from Confluence space {self.__project_key}") # Per debug
 
+                # Incrementa il valore di start per la prossima chiamata
+                start += limit
+
                 # Se il numero di elementi restituiti è inferiore al limite, non ci sono altre pagine
                 if len(pages_data) < limit:
                     break
-
-                start += limit
 
             logger.info(f"Fetched {len(pages)} pages from Confluence space {self.__project_key}")
             italy_tz = pytz.timezone('Europe/Rome')

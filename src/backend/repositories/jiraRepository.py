@@ -88,6 +88,8 @@ class JiraRepository:
                 ])
 
                 # logger.info(f"Fetched {len(issues_data)} issues (startAt={start_at}) from Jira project {self.__project_key}") # Per debug
+
+                # Incrementa il valore di start_at per la prossima chiamata
                 start_at += max_results
 
                 # Se non sono state ritornate altre issues, interrompiamo il ciclo
