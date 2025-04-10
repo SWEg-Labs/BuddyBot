@@ -238,12 +238,12 @@ export class ChatContainerComponent implements OnInit {
       .replace(linkRegex, '<a href="$1" target="_blank">$1</a>')
       .replace(/\n/g, '<br>');
 
-      const linkBlockRegex = /(Link (?:correlati|utili):(?:<br>.*?))(?=<br><br>|$)/gis;
-      formatted = formatted.replace(linkBlockRegex, (fullMatch) => {
-        const clean = fullMatch.replace(/<br>$/, '');
-        return `<div class="related-links-block">${clean}</div>`;
-      });
-      
+    const linkBlockRegex = /(?:<h3>)?(Link (?:correlati|utili):)(?:<\/h3>)?(?:<br>.*?)(?=<br><br>|$)/gis;
+    formatted = formatted.replace(linkBlockRegex, (fullMatch) => {
+      const clean = fullMatch.replace(/<br>$/, '').replace(/<\/?h3>/g, '');
+      return `<div class="related-links-block">${clean}</div>`;
+    });
+
     return formatted;
   }
 
