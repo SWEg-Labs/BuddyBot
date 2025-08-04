@@ -256,15 +256,15 @@ Questo script, dovesse andare a buon fine, in una decina di minuti aggiornerà i
   ```
   python app.py
   ```
-16. Aprire un nuovo terminale, accedere alla cartella *src/frontend*, ed eseguire questo comando per installare le dipendenze del frontend
+16. Aprire un nuovo terminale, accedere alla cartella *src/frontend*, ed eseguire questo comando per installare le dipendenze del frontend:
   ```
   npm install
   ```
-17. Eseguire questo comando per avviare il frontend di BuddyBot
+17. Eseguire questo comando per avviare il frontend di BuddyBot:
   ```
   ng serve
   ```
-18. Aprire un browser ed accedere all'indirizzo
+18. Aprire un browser ed accedere all'indirizzo:
   ```
   localhost:4200
   ```
