@@ -70,11 +70,6 @@ docker compose up --build
 La creazione dell'immagine impiegherà poco più di 5 minuti.  
 Al termine della creazione di quest'ultima, verrà creato ed avviato il container `buddybot`. Al termine dell'utilizzo, per spegnere l'applicazione è possibile fermare il container impartendo la combinazione di tasti `Ctrl+C` nel terminale, oppure premendo il tasto Stop nell'applicazione *Docker Desktop*.  
 Per i successivi accessi, aprire *Docker Desktop* e premere il tasto Play sul container `buddybot` per avviare di nuovo il container dell'applicazione. Per stopparlo, premere il tasto Stop dalla stessa interfaccia.  
-Se si vuole continuare ad interagire con il container da terminale, è possibile eseguire il comando:
-```
-docker compose up
-```
-per avviarlo, e poi, come sopra, `Ctrl+C` per stopparlo.
 
 ### Esecuzione dell'Applicazione
 Per avviare BuddyBot, è sufficiente aprire un *browser* e digitare nella barra degli indirizzi:
