@@ -6,11 +6,17 @@ Capitolato: [C9 - BuddyBot](https://www.math.unipd.it/~tullio/IS-1/2024/Progetto
 
 ## 📋 Indice
 
+- [Video di presentazione](#video-di-presentazione)
 - [Installazione ed esecuzione](#installazione-ed-esecuzione)
 - [Come velocizzare la creazione dell'immagine Docker](#come-velocizzare-la-creazione-dellimmagine-docker)
 - [Aggiornamento automatico dei documenti](#aggiornamento-automatico-dei-documenti)
 - [Come eseguire BuddyBot senza Docker Compose](#come-eseguire-buddybot-senza-docker-compose)
 - [Come eseguire i test del codice di BuddyBot](#come-eseguire-i-test-del-codice-di-buddybot)
+
+
+## Video di presentazione
+
+Il seguente video contiene una demo del prodotto _BuddyBot_, nella quale vengono mostrate tutte le funzionalità implementate. Il video è disponibile in [italiano](https://drive.google.com/file/d/1D9ot1KJJ6Iua0RWLWWTIFQx0Gzrnbhux/view?usp=sharing) ed in [inglese](https://drive.google.com/file/d/1Spi9SWxseNlQefjgpnEdaYXbxq2QKNoI/view?usp=sharing).
 
 
 ## Installazione ed esecuzione
