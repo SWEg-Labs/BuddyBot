@@ -243,14 +243,8 @@ Dopo la creazione, il container sarà visualizzabile e gestibile tramite l'appli
   # cron = CronTab(tabfile=crontab_path)
   cron = CronTab(user=True)   # Per caricare i documenti manualmente
   ```
-11. Dopo essersi assicurati che il container di Chroma sia attivo, nel terminale, recarsi nella cartella *src/backend*, ed eseguire:
-  ```
-  python vector_store_update_controller.py
-  ```
-Questo script, dovesse andare a buon fine, in una decina di minuti aggiornerà il database vettoriale Chroma hostato sul container a parte creato sopra.  
 
-12. Disfare i punti 8 e 10 di questa lista, cioè tornare al vecchio file `.env` e al vecchio file `vector_store_update_controller.py`  
-13. Aprire un nuovo terminale, accedere ancora alla cartella *src/backend*, ed eseguire questi comandi per creare e attivare un nuovo ambiente virtuale:
+11. Aprire un nuovo terminale, accedere alla cartella *src/backend*, ed eseguire questi comandi per creare e attivare un nuovo ambiente virtuale:
   ```
   python -m venv nome_ambiente
   nome_ambiente\scripts\activate
@@ -262,10 +256,19 @@ Questo script, dovesse andare a buon fine, in una decina di minuti aggiornerà i
   ```
   su Linux e macOS.  
 
-14. Installare le dipendenze nell'ambiente virtuale:
+12. Installare le dipendenze nell'ambiente virtuale:
   ```
   pip install -r primary_requirements.txt
   ```
+
+13. Dopo essersi assicurati che il container di Chroma sia attivo, nel terminale, ancora dentro la cartella *src/backend*, eseguire:
+  ```
+  python vector_store_update_controller.py
+  ```
+Questo script, dovesse andare a buon fine, in una decina di minuti aggiornerà il database vettoriale Chroma hostato sul container a parte creato sopra.  
+
+14. Disfare i punti 8 e 10 di questa lista, cioè tornare al vecchio file `.env` e al vecchio file `vector_store_update_controller.py`  
+
 15. Avviare il backend di BuddyBot:
   ```
   python app.py
@@ -294,7 +297,7 @@ I test del backend sono disponibili dentro la cartella *tests*, suddivisi in tes
 I test del frontend, invece, sono suddivisi per componente e sono distribuiti in vari file situati accanto al codice sorgente che si sta testando, com'è caratteristico dei progetti Angular. Accedendo a *src/frontend/src/app/chat* e, all'interno delle cartelle dedicate a ciascun componente, dentro i file con estensione `.spec.ts`, si possono visualizzare i test di integrazione e test di unità per quello specifico componente, suddivisi in blocchi `describe` dedicati.
 
 ### Come eseguire i test del backend
-1. Se non si ha già creato un ambiente virtuale Python, crearlo seguendo i punti 13 e 14 della guida [Come eseguire BuddyBot senza Docker Compose](#come-eseguire-buddybot-senza-docker-compose), e, al termine, tornare nella root del progetto con:
+1. Se non si ha già creato un ambiente virtuale Python, crearlo seguendo i punti 11 e 12 della guida [Come eseguire BuddyBot senza Docker Compose](#come-eseguire-buddybot-senza-docker-compose), e, al termine, tornare nella root del progetto con:
   ```
   cd ../..
   ```
