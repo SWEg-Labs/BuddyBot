@@ -4,8 +4,16 @@ Progetto didattico svolto dal gruppo SWEg Labs per il corso di Ingegneria del So
 Azienda proponente: [AzzurroDigitale](https://www.azzurrodigitale.com/)  
 Capitolato: [C9 - BuddyBot](https://www.math.unipd.it/~tullio/IS-1/2024/Progetto/C9.pdf)  
 
+## 📋 Indice
 
-## Installazione
+- [Installazione ed esecuzione](#installazione-ed-esecuzione)
+- [Come velocizzare la creazione dell'immagine Docker](#come-velocizzare-la-creazione-dellimmagine-docker)
+- [Aggiornamento automatico dei documenti](#aggiornamento-automatico-dei-documenti)
+- [Come eseguire BuddyBot senza Docker Compose](#come-eseguire-buddybot-senza-docker-compose)
+- [Come eseguire i test del codice di BuddyBot](#come-eseguire-i-test-del-codice-di-buddybot)
+
+
+## Installazione ed esecuzione
 
 ### Installazione di Docker
 Prima di procedere con l'installazione di *BuddyBot* è importante verificare che Docker sia installato sulla propria macchina e pronto all'uso.  
@@ -274,7 +282,7 @@ In caso si facciano sviluppi nel frontend, non ci sono problemi poichè Angular 
 
 
 
-## Come eseguire i test sul codice di BuddyBot
+## Come eseguire i test del codice di BuddyBot
 BuddyBot è stato testato con test di unità e test di integrazione, sia lato backend sia lato frontend, raggiungendo in entrambi i casi una coverage delle righe di codice pari al 90%, quindi superiore alla soglia minima del 75% concordata con il proponente.  
 I test del backend sono disponibili dentro la cartella *tests*, suddivisi in test di unità e test di integrazione.  
 I test del frontend, invece, sono suddivisi per componente e sono distribuiti in vari file situati accanto al codice sorgente che si sta testando, com'è caratteristico dei progetti Angular. Accedendo a *src/frontend/src/app/chat* e, all'interno delle cartelle dedicate a ciascun componente, dentro i file con estensione `.spec.ts`, si possono visualizzare i test di integrazione e test di unità per quello specifico componente, suddivisi in blocchi `describe` dedicati.
