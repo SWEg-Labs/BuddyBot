@@ -198,7 +198,7 @@ Nel caso si desideri eseguire BuddyBot al di fuori del container creato con Dock
 2. Installare Angular dal seguente link: https://angular.dev/installation
 3. Installare PostgreSQL dal seguente link: https://www.postgresql.org/download/
 4. Se si desidera un'interfaccia grafica per la gestione del database di Postgres, installare *pgAdmin 4* dal seguente link: https://www.pgadmin.org/download/
-5. In Postgres, creare uno user `buddybot`, con password `buddybot`, e un database di nome `buddybot`
+5. In Postgres, creare uno user `buddybot`, con password `buddybot`, e un database di nome `buddybot`. Fare attenzione a fornire il nuovo user dei permessi di CREATE e USAGE sullo schema public.
 6. Scaricare l'immagine di Chroma dal *Docker Hub*:
   ```
   docker pull chromadb/chroma
