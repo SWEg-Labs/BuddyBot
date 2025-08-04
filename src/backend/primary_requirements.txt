@@ -13,3 +13,4 @@ freezegun
 psycopg2
 pytz
 beartype
+fastapi
