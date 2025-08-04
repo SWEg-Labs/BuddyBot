@@ -49,7 +49,7 @@ CONFLUENCE_SPACE_KEY = confluence_space_key
 ```
 
 ### Creazione dell'immagine e avvio del container Docker
-Una volta pronti, è possibile creare l'immagine Docker posizionandosi nella cartella del progetto ed eseguendo:
+Una volta pronti, è possibile creare l'immagine Docker posizionandosi nella cartella radice del progetto ed eseguendo:
 ```
 docker compose up --build
 ```
@@ -86,7 +86,8 @@ Nel file config.json di Docker aggiungere la seguente opzione:
 Il file si trova alla directory *~/.docker/config.json* su Linux, *C:\Users\<nome_utente>\.docker\config.json* su Windows
 
 ### Come sfruttare il cache mount per ridurre il tempo di installazione delle dipendenze
-1. Creare un nuovo ambiente virtuale e attivarlo con:
+1. Da terminale, accedere alla cartella *src/backend*
+2. Creare un nuovo ambiente virtuale e attivarlo con:
   ```
   python -m venv nome_ambiente
   nome_ambiente\scripts\activate
@@ -98,22 +99,22 @@ Il file si trova alla directory *~/.docker/config.json* su Linux, *C:\Users\<nom
   ```
   su Linux e macOS.
 
-2. Installare nell'ambiente virtuale le dipendenze principali contenute in *primary_requirements.txt*:
+3. Installare nell'ambiente virtuale le dipendenze principali contenute in *primary_requirements.txt*:
   ```
   pip install -r primary_requirements.txt
   ```
-3. Creare un file con tutte le dipendenze secondarie con le versioni precise con:
+4. Creare un file con tutte le dipendenze secondarie con le versioni precise con:
   ```
   pip freeze > requirements.txt
   ```
   Questo comando scrive sul file *requirements.txt* tutte le dipendenze contenute nell'ambiente virtuale, con la loro versione.  
-  Dovreste ottenere qualcosa di molto simile a quanto già presente nel file *requirements.txt*.
+  Dovreste ottenere qualcosa di molto simile a quanto è presente attualmente nel file *requirements.txt*.
 
-Alla prima costruzione del container Docker "compila" la cache con tutti i pacchetti necessari; alle build successive verranno semplicemente installati i pacchetti elencati in *requirements.txt* già presenti nella cache, riducendo il tempo di build.
+Così facendo, alla prima costruzione del container ([qui](#creazione-dellimmagine-e-avvio-del-container-docker) la guida), Docker "compila" la cache con tutti i pacchetti necessari, mentre nelle build successive verranno semplicemente installati i pacchetti elencati in *requirements.txt* già presenti nella cache, riducendo il tempo di build.  
 Dato che il comando `pip freeze` compila il file *requirements.txt* con tutte le dipendenze contenute nell'ambiente virtuale, è importante installare in quest'ultimo solo i pacchetti strettamente necessari per evitare di aumentare inutilmente il tempo di build.
-Di conseguenza se bisogna aggiungere una dipendenza a *primary_requirements.txt* è sufficiente installarla nell'ambiente virtuale e richiamare `pip freeze` per aggiungere le nuove dipendenze secondarie a *requirements.txt*. Infatti, `pip freeze` fa una sovrascrittura completa del file *requirements.txt* precedente, quindi lo restituisce aggiornato.
-Se una dipendenza di *primary_requirements.txt* non è più necessaria:  
-1. Bisogna toglierla dal file *primary_requirements.txt*.
+Di conseguenza se bisogna aggiungere una dipendenza a *primary_requirements.txt* è sufficiente installarla nell'ambiente virtuale e richiamare `pip freeze` per aggiungere le nuove dipendenze secondarie a *requirements.txt*. Infatti, `pip freeze` fa una sovrascrittura completa del file *requirements.txt* precedente, quindi lo restituisce aggiornato.  
+Se una dipendenza di *primary_requirements.txt* non è più necessaria, occorre:  
+1. Toglierla dal file *primary_requirements.txt*.
 2. Installare pip-autoremove con `pip install pip-autoremove`.
 3. Eseguire `pip uninstall nome-dipendenza`.
 4. Eseguire `pip-autoremove nome_dipendenza -y` per rimuovere eventuali sottodipendenze installate esclusivamente per quella dipendenza.
@@ -153,7 +154,7 @@ Per entrambi i file, se si vuole accedere al terminale del container `buddybot-b
   ```
   docker exec -it buddybot-backend /bin/bash
   ```
-Diventa a questo punto possibile visualizzare i due file di log con gli stessi comandi `cat` descritti in precedenza.
+Diventa a questo punto possibile visualizzare i due file di log tramite gli stessi comandi `cat` descritti in precedenza.
 
 ### Come cambiare la frequenza di aggiornamento automatico
 Attualmente il cron aggiorna i documenti ogni 20 minuti, e, nel caso un aggiornamento fallisca perchè viene lanciata un'eccezione, viene incrementata la frequenza a 15 minuti per massimo 3 tentativi di *retry*, per poi tornare alla frequenza normale in caso di successo o in caso venga superato il numero massimo di retry. E' possibile cambiare la frequenza di aggiornamento seguendo i passaggi riportati di seguito:
@@ -178,7 +179,7 @@ Attualmente il cron aggiorna i documenti ogni 20 minuti, e, nel caso un aggiorna
 
 
 ## Come eseguire BuddyBot senza Docker Compose
-Nel caso si desideri eseguire BuddyBot al di fuori del container creato con Docker Compose, come risulta molto comodo fare soprattutto in fase di sviluppo, seguire i passaggi qui riportati:
+Nel caso si desideri eseguire BuddyBot al di fuori del container creato con Docker Compose, come risulta molto comodo fare in fase di sviluppo, seguire i passaggi qui riportati:
 1. Installare Python dal seguente link: https://www.python.org/downloads/
 2. Installare Angular dal seguente link: https://angular.dev/installation
 3. Installare PostgreSQL dal seguente link: https://www.postgresql.org/download/
@@ -188,7 +189,7 @@ Nel caso si desideri eseguire BuddyBot al di fuori del container creato con Dock
   ```
   docker pull chromadb/chroma
   ```
-7. Avviare un container da tale immagine:
+7. Avviare un container di nome `chromadb` da tale immagine:
   ```
   docker run -d --name chromadb -p 8000:8000 chromadb/chroma
   ```
@@ -232,32 +233,34 @@ Dopo la creazione, il container sarà visualizzabile e gestibile tramite l'appli
   ```
   python vector_store_update_controller.py
   ```
-Questo script, dovesse andare a buon fine, in una decina di minuti aggiornerà il database vettoriale Chroma hostato sul container a parte creato sopra  
+Questo script, dovesse andare a buon fine, in una decina di minuti aggiornerà il database vettoriale Chroma hostato sul container a parte creato sopra.  
 
-12. Invertire i punti 7 e 9 di questa lista, cioè tornare al vecchio file `.env` e al vecchio file `vector_store_update_controller.py`  
-13. Aprire un nuovo terminale, accedere ancora alla cartella *src/backend*, ed eseguire questo comando per creare un nuovo ambiente virtuale:
+12. Disfare i punti 8 e 10 di questa lista, cioè tornare al vecchio file `.env` e al vecchio file `vector_store_update_controller.py`  
+13. Aprire un nuovo terminale, accedere ancora alla cartella *src/backend*, ed eseguire questi comandi per creare e attivare un nuovo ambiente virtuale:
   ```
   python -m venv nome_ambiente
-  ```
-14. Attivare l'ambiente virtuale:
-  ```
   nome_ambiente\scripts\activate
   ```
   su Windows;
   ```
+  python3 -m venv nome_ambiente
   source nome_ambiente/bin/activate
   ```
   su Linux e macOS.  
 
-15. Installare le dipendenze nell'ambiente virtuale:
+14. Installare le dipendenze nell'ambiente virtuale:
   ```
   pip install -r primary_requirements.txt
   ```
-16. Avviare il backend di BuddyBot:
+15. Avviare il backend di BuddyBot:
   ```
   python app.py
   ```
-17. Aprire un nuovo terminale, accedere alla cartella *src/frontend*, ed eseguire questo comando per avviare il frontend di BuddyBot
+16. Aprire un nuovo terminale, accedere alla cartella *src/frontend*, ed eseguire questo comando per installare le dipendenze del frontend
+  ```
+  npm install
+  ```
+17. Eseguire questo comando per avviare il frontend di BuddyBot
   ```
   ng serve
   ```
@@ -265,7 +268,7 @@ Questo script, dovesse andare a buon fine, in una decina di minuti aggiornerà i
   ```
   localhost:4200
   ```
-E' ora possibile utilizzare BuddyBot senza usufruire di Docker Compose.  
+E' ora possibile utilizzare BuddyBot senza bisogno di Docker Compose.  
 In caso si facciano sviluppi nel backend, è necessario impartire `Ctrl+C` nel terminale su cui era stato avviato `app.py`, e riavviarlo subito dopo.  
 In caso si facciano sviluppi nel frontend, non ci sono problemi poichè Angular aggiorna la pagina in tempo reale.
 
@@ -274,10 +277,10 @@ In caso si facciano sviluppi nel frontend, non ci sono problemi poichè Angular 
 ## Come eseguire i test sul codice di BuddyBot
 BuddyBot è stato testato con test di unità e test di integrazione, sia lato backend sia lato frontend, raggiungendo in entrambi i casi una coverage delle righe di codice pari al 90%, quindi superiore alla soglia minima del 75% concordata con il proponente.  
 I test del backend sono disponibili dentro la cartella *tests*, suddivisi in test di unità e test di integrazione.  
-I test del frontend, invece, sono distribuiti in vari file situati accanto al codice sorgente che si sta testando, com'è caratteristico dei progetti Angular. Accedendo a *src/frontend/src/app/chat* e, all'interno delle cartelle dedicate a ciascun componente, dentro i file con estensione `.spec.ts`, si possono visualizzare i test di integrazione e test di unità per quel componente, suddivisi in blocchi `describe` dedicati.
+I test del frontend, invece, sono suddivisi per componente e sono distribuiti in vari file situati accanto al codice sorgente che si sta testando, com'è caratteristico dei progetti Angular. Accedendo a *src/frontend/src/app/chat* e, all'interno delle cartelle dedicate a ciascun componente, dentro i file con estensione `.spec.ts`, si possono visualizzare i test di integrazione e test di unità per quello specifico componente, suddivisi in blocchi `describe` dedicati.
 
 ### Come eseguire i test del backend
-1. Se non si ha già creato un ambiente virtuale Python, crearlo seguendo i punti 12, 13 e 14 della guida [Come eseguire BuddyBot senza Docker Compose](#come-eseguire-buddybot-senza-docker-compose), e, al termine, tornare nella root del progetto con:
+1. Se non si ha già creato un ambiente virtuale Python, crearlo seguendo i punti 13 e 14 della guida [Come eseguire BuddyBot senza Docker Compose](#come-eseguire-buddybot-senza-docker-compose), e, al termine, tornare nella root del progetto con:
   ```
   cd ../..
   ```
@@ -299,4 +302,4 @@ Se si desidera sviluppare nuovi test, in caso uno di questi fallisca, è possibi
   ```
 Si aprirà una finestra di browser in cui verrà visualizzato l'esito dei test svolti, la loro descrizione e la loro classificazione (componente testato e tipo di test (unità o integrazione)).  
 Sul terminale, rimasto attivo, apparirà la coverage raggiunta: per il progetto didattico è stata presa in considerazione solo la coverage delle righe, cioè l'ultima visualizzata.  
-Per chiudere la finestra del browser, non è possibile cliccare la X in alto a destra, poichè così facendo verrà poi ricreata automaticamente una nuova finestra; occorre invece impartire `Ctrl+C` nel terminale, e ciò chiuderà l'ambiente di test di Angular. Tuttavia, è possibile anche tenerlo attivo, poichè, così facendo, nel caso venga sviluppato un nuovo test, esso verrà eseguito in tempo reale senza dover reimpartire alcun comando.  
+Per chiudere la finestra del browser, non è possibile cliccare la X in alto a destra, poichè così facendo verrà poi ricreata automaticamente una nuova finestra identica; occorre invece impartire `Ctrl+C` nel terminale, e ciò chiuderà l'ambiente di test di Angular. Tuttavia, è possibile anche tenerlo attivo, poichè, così facendo, nel caso venga sviluppato un nuovo test, esso verrà eseguito automaticamente senza dover reimpartire alcun comando, poichè Angular aggiorna i test in tempo reale.  
